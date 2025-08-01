@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+  <title>피드백</title>
+  <link rel="stylesheet" th:href="@{${reactCssPath}}"> <!-- React CSS 경로 -->
+</head>
+
+<div layout:fragment="content">
+
+  <div class="container_main2">
+    <div id="react-root"></div>
+    
+    <script th:src="@{${reactJsPath}}"></script>
+  </div>
+  
+</div>
+  
+</html>

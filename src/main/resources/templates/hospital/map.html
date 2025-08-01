@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="ko" layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org">
+<head>
+<!-- 숨숨이들 병원 지도 테마 -->
+<link rel="stylesheet" href="/css/hospital_map.css">
+
+  <meta charset="UTF-8">
+  <title>주변 동물병원 찾기</title>
+
+  <!-- ✅ Kakao Maps JS SDK -->
+  <script src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=e6250ce3219e0f6e365ccf6ec89361a3&autoload=true&libraries=services"></script>
+<script>
+  function createOverlay(place, map) {
+    const content = document.createElement('div');
+    content.className = 'custom-overlay';
+    content.innerHTML = `
+      <div class="title">${place.place_name}</div>
+      <div>📍 ${place.road_address_name || place.address_name}</div>
+      <div>☎️ ${place.phone || '전화번호 없음'}</div>
+      <a href="${place.place_url}" target="_blank">🔗 카카오맵에서 보기</a>
+    `;
+
+    const overlay = new kakao.maps.CustomOverlay({
+      content: content,
+      position: new kakao.maps.LatLng(place.y, place.x),
+      xAnchor: 0.5,
+      yAnchor: 1.1
+    });
+
+    let hideTimer;
+
+    // 오버레이 내부 진입 시 타이머 제거
+    content.addEventListener("mouseenter", () => {
+      clearTimeout(hideTimer);
+    });
+
+    // 오버레이에서 벗어나면 일정 시간 후 닫기
+    content.addEventListener("mouseleave", () => {
+      hideTimer = setTimeout(() => overlay.setMap(null), 10);
+    });
+
+    return {
+      overlay,
+      show: () => overlay.setMap(map),
+      hideDelayed: () => {
+        hideTimer = setTimeout(() => overlay.setMap(null), 10);
+      }
+    };
+  }
+
+  function searchNearby(lat, lng, map) {
+    const ps = new kakao.maps.services.Places();
+
+    ps.keywordSearch('동물병원', function(result, status) {
+      if (status === kakao.maps.services.Status.OK) {
+        for (let i = 0; i < result.length; i++) {
+          const place = result[i];
+
+          const marker = new kakao.maps.Marker({
+            map: map,
+            position: new kakao.maps.LatLng(place.y, place.x)
+          });
+
+          const { overlay, show, hideDelayed } = createOverlay(place, map);
+
+          kakao.maps.event.addListener(marker, 'mouseover', show);
+          kakao.maps.event.addListener(marker, 'mouseout', hideDelayed);
+        }
+      }
+    }, {
+      location: new kakao.maps.LatLng(lat, lng),
+      radius: 5000
+    });
+  }
+
+  window.onload = function () {
+    navigator.geolocation.getCurrentPosition(function (position) {
+      const lat = position.coords.latitude;
+      const lng = position.coords.longitude;
+
+      const map = new kakao.maps.Map(document.getElementById('map'), {
+        center: new kakao.maps.LatLng(lat, lng),
+        level: 5
+      });
+
+      new kakao.maps.Marker({
+        position: new kakao.maps.LatLng(lat, lng),
+        map: map
+      });
+
+      searchNearby(lat, lng, map);
+    }, function () {
+      alert("위치 정보를 사용할 수 없어 기본 위치로 표시됩니다.");
+
+      const defaultLat = 37.5665, defaultLng = 126.9780;
+      const map = new kakao.maps.Map(document.getElementById('map'), {
+        center: new kakao.maps.LatLng(defaultLat, defaultLng),
+        level: 5
+      });
+
+      new kakao.maps.Marker({
+        position: new kakao.maps.LatLng(defaultLat, defaultLng),
+        map: map
+      });
+
+      searchNearby(defaultLat, defaultLng, map);
+    });
+  };
+</script>
+
+</head>
+
+<body>
+<main layout:fragment="content" class="container_main">
+
+  <h2 class="title_line">📍 내 주변 동물병원</h2>
+  <div id="map"></div>
+</main>
+
+
+</body>
+</html>

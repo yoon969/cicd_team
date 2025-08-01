@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html layout:decorate="~{layout}">
+
+<head>
+  <title>게시글 삭제</title>
+  <link rel="stylesheet" href="/css/post.css">
+</head>
+
+<div layout:fragment="content">
+  <div class="container_box">
+    <!-- 🔸 제목 + 경로 라인 -->
+    <div class="title_line">
+      <span th:text="${postVO.title}">제목</span> &gt; 삭제
+    </div>
+
+    <!-- 🔸 오른쪽 상단 메뉴 -->
+    <aside class="aside_right">
+      <a href="javascript:location.reload();">새로고침</a>
+      <span class='menu_divide'>│</span>
+      <a th:href="@{|/post/list?speciesno=${postVO.speciesno}|}">목록</a>
+    </aside>
+
+    <div class="menu_line"></div>
+
+    <!-- 🔸 삭제 카드 전체 -->
+    <div class="post-delete-wrapper">
+      <div class="delete-card two-column-layout">
+
+        <!-- 🔹 왼쪽: 이미지 -->
+        <div class="delete-image-side">
+          <div th:if="${postVO.file1saved != null and !#strings.isEmpty(postVO.file1saved)}">
+            <img th:src="@{/contents/storage/{file}(file=${postVO.file1saved})}" alt="게시글 이미지">
+          </div>
+
+          <div th:if="${postVO.file1saved == null or #strings.isEmpty(postVO.file1saved)}">
+            <p style="margin-top: 8px; color: gray;">📷 등록된 이미지가 없습니다</p>
+          </div>
+        </div>
+
+        <!-- 🔹 오른쪽: 콘텐츠 -->
+        <div class="delete-content-side">
+          <h3 th:text="${postVO.title}">제목</h3>
+          <p th:utext="${postVO.content}">내용 미리보기</p>
+
+          <!-- 태그 -->
+          <div th:if="${postVO.word != null and !#strings.isEmpty(postVO.word)}" class="post-tags">
+            <strong>태그:</strong> <span th:text="${postVO.word}"></span>
+          </div>
+
+          <!-- 경고 -->
+          <div class="delete-warning">
+            <div class="warning-content">
+              <span class="warning-icon">❗</span>
+              <span class="warning-text">정말 삭제하시겠습니까?</span>
+              <b>삭제하면 복구할 수 없습니다.</b>
+            </div>
+          </div>
+
+          <!-- 폼 -->
+          <form method="POST" th:action="@{/post/delete}">
+            <input type="hidden" name="postno" th:value="${postVO.postno}">
+            <input type="hidden" name="speciesno" th:value="${postVO.speciesno}">
+            <input type="hidden" name="grp" th:value="${postVO.grp}">
+            <input type="hidden" name="now_page" th:value="${now_page}">
+            <input type="hidden" name="word" th:value="${word}">
+
+            <div class="youtube-btn-group">
+              <button type="submit" class="navbar-btn">삭제</button>
+              <button type="button" onclick="history.back();" class="btn-delete">취소</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</html>

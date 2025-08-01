@@ -1,0 +1,114 @@
+<!-- fragments/navbar.html -->
+<div th:fragment="navbarFragment">
+  <link rel="stylesheet" href="/css/navbar.css" />
+
+  <nav class="navbar">
+    <div class="navbar-container">
+      <a class="navbar-logo" href="/">
+        <img src="/images/logo.png" alt="숨숨이들 로고" />
+      </a>
+      <div class="navbar-user">
+        <a class="navbar-btn" th:if="${session.usersno == null}" href="/users/login">로그인</a>
+        <span th:if="${session.usersno != null}">
+          <!-- 🔔 알림 종 아이콘 -->
+          <div class="alarm-wrapper">
+            <span class="alarm-icon" onclick="goAlarm()">🔔</span>
+            <span class="alarm-dot" id="alarm-dot" style="display: none;">●</span> <!-- ← id 추가 -->
+          </div>
+
+          <a class="navbar-btn" href="/users/mypage">마이페이지</a>
+          <a class="navbar-btn" href="/users/logout" th:text="|${session.email} 로그아웃|"></a>
+        </span>
+      </div>
+
+    </div>
+
+    <ul class="navbar-menu">
+      <li class="menu-item">
+        <a href="#">병원</a>
+        <ul class="dropdown">
+          <li><a href="/hospital/recommend">병원 찾기</a></li>
+          <li><a href="/hospital/map">지도에서 보기</a></li>
+          <li><a href="/hospital/list_all">전체 병원 목록</a></li>
+        </ul>
+      </li>
+      <li class="menu-item">
+        <a href="#">AI 상담</a>
+        <ul class="dropdown">
+          <li><a href="/ai_consult/chat">AI 상담</a></li>
+          <li><a href="/ai_consult/list">내 상담 목록</a></li>
+          <li><a href="/recommendation/guide">입양추천 받기</a></li>
+        </ul>
+      </li>
+      <li class="menu-item">
+        <a href="#">특수동물 정보</a>
+        <ul class="dropdown">
+          <li><a href="/post/list_by_grp?grp=설치류">설치류</a></li>
+          <li><a href="/post/list_by_grp?grp=조류">조류</a></li>
+          <li><a href="/post/list_by_grp?grp=파충류">파충류</a></li>
+          <li><a href="/post/list_by_grp?grp=양서류">양서류</a></li>
+          <li><a href="/post/list_by_grp?grp=소형포유류">소형포유류</a></li>
+          <li><a href="/post/list_by_grp?grp=절지류">절지류</a></li>
+          <li><a href="/post/list_by_grp?grp=어류">어류</a></li>
+        </ul>
+      </li>
+      <li class="menu-item">
+        <a href="#">캘린더</a>
+        <ul class="dropdown">
+          <li><a href="/calendar/list_search">캘린더 목록</a></li>
+          <li><a href="/calendar/list_calendar">월간 일정</a></li>
+        </ul>
+      </li>
+      <li class="menu-item">
+        <a href="#">일러스트</a>
+        <ul class="dropdown">
+          <li><a href="/memory/comment">일러스트 만드는 법</a></li>
+          <li><a href="/memory/create">추억 생성하기</a></li>
+          <li><a href="/memory/list">내 일러스트 보기</a></li>
+        </ul>
+      </li>
+      <li class="menu-item">
+        <a href="/notice/page">공지사항</a>
+      </li>
+      <li class="menu-item">
+        <a href="/feedback/page">피드백</a>
+      </li>
+      
+      <!-- 🔐 관리자 메뉴 (hover 드롭다운 적용됨) -->
+      <li class="menu-item" th:if="${session.role == 'admin'}">
+        <a href="#">관리자</a>
+        <ul class="dropdown">
+          <li><a th:href="@{|/species/list_search?word=${word}|}">종분류 목록</a></li>
+          <li><a th:href="@{|/users/list_search|}">유저 목록</a></li>
+          <li><a th:href="@{|/calendar/list_search|}">캘린더 목록</a></li>
+          <li><a th:href="@{|/calendar/list_calendar|}">월간 일정</a></li>
+          <li><a th:href="@{/ai_consult/list_all}">전체 상담 목록</a></li>
+        </ul>
+      </li>
+    </ul>
+
+  </nav>
+</div>
+
+<!-- fragments/navbar.html -->
+<th:block th:fragment="navbarScript">
+  <script th:inline="javascript">
+    function fetchAlarmCount() {
+      fetch('/alarm/unread_count')
+        .then(response => response.json())
+        .then(count => {
+          const dot = document.getElementById('alarm-dot');
+          if (dot) {
+            dot.style.display = count > 0 ? 'inline' : 'none';
+          }
+        });
+    }
+
+    fetchAlarmCount();
+    setInterval(fetchAlarmCount, 30000);
+
+    function goAlarm() {
+      location.href = "/alarm/list";
+    }
+  </script>
+</th:block>

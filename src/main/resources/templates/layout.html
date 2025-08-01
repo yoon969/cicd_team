@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+
+<head>
+  <meta charset="UTF-8">
+  <title>숨숨이들 - 특수반려동물 플랫폼</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- ✅ 공통 CSS -->
+  <!-- layout.html 또는 index.html head 영역 -->
+  <link rel="stylesheet" href="/css/common.css" />
+  <link rel="stylesheet" href="/css/navbar.css" />
+
+  <!-- ✅ highlight.js 추가 -->
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
+  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>hljs.highlightAll();</script>
+
+  <meta name="_csrf" th:content="${_csrf.token}">
+  <meta name="_csrf_header" th:content="${_csrf.headerName}">
+
+  <!-- ✅ 개별 페이지 CSS (선택) -->
+  <th:block layout:fragment="styles"></th:block>
+</head>
+
+<body>
+
+  <!-- ✅ 네브바 포함 -->
+  <th:block th:replace="~{navbar :: navbarFragment}"></th:block>
+
+
+  <!-- ✅ 콘텐츠 영역 -->
+  <main layout:fragment="content"></main>
+
+  <!-- ✅ 푸터 -->
+  <footer class="footer">
+    <p>© 2025 숨숨이들 | 우리 친구들의 건강한 하루를 응원해요 🐾</p>
+    <div>
+      <a th:href="@{/about}">회사소개</a> |
+      <a th:href="@{/policy}">이용약관</a> |
+      <a th:href="@{/privacy}">개인정보처리방침</a>
+    </div>
+  </footer>
+
+  <!-- ✅ 공통 JS -->
+  <script src="/js/main.js"></script>
+
+  <script>
+    function closePopup() {
+      const modal = document.getElementById('popupModal');
+      if (modal) {
+        modal.style.display = 'none';
+      }
+    }
+  </script>
+
+  <th:block th:replace="~{navbar::navbarScript}"></th:block>
+
+</body>
+
+</html>

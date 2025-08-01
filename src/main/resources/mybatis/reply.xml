@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="dev.mvc.reply.ReplyDAOInter">
+
+  <!-- 댓글 등록 (일반 + 대댓글 모두 가능) -->
+  <insert id="create" parameterType="dev.mvc.reply.ReplyVO">
+    INSERT INTO reply (
+      replyno, content, rdate, usersno, postno, parentno
+    ) VALUES (
+      reply_seq.NEXTVAL, #{content}, SYSDATE, #{usersno}, #{postno}, #{parentno}
+    )
+  </insert>
+
+  <!-- 특정 게시글의 댓글 전체 조회 (좋아요 수 + 내가 누른 좋아요 여부 포함) -->
+  <select id="listByPostnoWithLiked" parameterType="map" resultType="dev.mvc.reply.ReplyVO">
+    SELECT
+      r.replyno,
+      r.content,
+      TO_CHAR(r.rdate, 'YYYY-MM-DD HH24:MI:SS') AS rdate,
+      r.usersno,
+      r.postno,
+      r.parentno,
+      u.usersname AS usersname,
+  
+      -- 🆕 부모 댓글 작성자의 닉네임 가져오기
+      (SELECT u2.usersname
+       FROM reply rp
+       JOIN users u2 ON rp.usersno = u2.usersno
+       WHERE rp.replyno = r.parentno) AS parentWriter,
+  
+      -- 좋아요 수
+      (SELECT COUNT(*) FROM reply_like rl WHERE rl.replyno = r.replyno) AS likeCount,
+  
+      -- 로그인 사용자가 좋아요 눌렀는지 여부
+      (SELECT COUNT(*) FROM reply_like rl WHERE rl.replyno = r.replyno AND rl.usersno = #{usersno}) AS liked
+  
+    FROM reply r
+    JOIN users u ON r.usersno = u.usersno
+    WHERE r.postno = #{postno}
+    ORDER BY r.parentno ASC, r.replyno ASC
+  </select>
+
+  <!-- 댓글 수정 -->
+  <update id="update" parameterType="dev.mvc.reply.ReplyVO">
+    UPDATE reply
+    SET content = #{content}
+    WHERE replyno = #{replyno}
+  </update>
+
+  <!-- 댓글 삭제 -->
+  <!-- 댓글 삭제 (본댓글 + 연결된 대댓글까지 함께 삭제) -->
+  <delete id="delete" parameterType="int">
+    DELETE FROM reply
+    WHERE replyno = #{replyno}
+       OR parentno = #{replyno}
+  </delete>
+
+  <!-- 특정 게시글의 댓글 수 카운트 -->
+  <select id="countByPostno" parameterType="int" resultType="int">
+    SELECT COUNT(*) FROM reply WHERE postno = #{postno}
+  </select>
+
+  <!-- 게시글 삭제 시 댓글 일괄 삭제 -->
+  <delete id="deleteByPostno" parameterType="int">
+    DELETE FROM reply WHERE postno = #{postno}
+  </delete>
+
+  <!-- 회원 탈퇴 시 댓글 일괄 삭제 -->
+  <delete id="deleteByUsersno" parameterType="int">
+    DELETE FROM reply WHERE usersno = #{usersno}
+  </delete>
+
+  <!-- 댓글 목록 (Map 형태로 반환) -->
+  <select id="listWithLike" parameterType="map" resultType="map">
+    SELECT 
+      r.replyno,
+      r.content,
+      TO_CHAR(r.rdate, 'YYYY-MM-DD HH24:MI:SS') AS rdate,
+      u.usersname,
+      r.usersno,
+      r.parentno,
+      (SELECT COUNT(*) FROM reply_like rl WHERE rl.replyno = r.replyno) AS likecnt,
+      CASE 
+        WHEN EXISTS (
+          SELECT 1 FROM reply_like rl 
+          WHERE rl.replyno = r.replyno AND rl.usersno = #{usersno}
+        ) THEN 1
+        ELSE 0
+      END AS liked
+    FROM reply r
+      JOIN users u ON r.usersno = u.usersno
+    WHERE r.postno = #{postno}
+    ORDER BY NVL(r.parentno, r.replyno), r.replyno
+  </select>
+
+  <!-- 내가 쓴 댓글 3개 조회 -->
+  <select id="listByUsersno" resultType="dev.mvc.reply.ReplyVO" parameterType="int">
+    SELECT
+      r.replyno,
+      r.content,
+      TO_CHAR(r.rdate, 'YYYY-MM-DD HH24:MI:SS') AS rdate,
+      r.postno,
+      r.usersno,
+      r.parentno,
+      u.usersname
+    FROM reply r
+      JOIN users u ON r.usersno = u.usersno
+    WHERE r.usersno = #{usersno}
+    ORDER BY r.replyno DESC
+    FETCH FIRST 3 ROWS ONLY
+  </select>
+
+  <!-- 내가 쓴 댓글 개수 -->
+  <select id="countByUsersno" resultType="int" parameterType="int">
+    SELECT COUNT(*) FROM reply WHERE usersno = #{usersno}
+  </select>
+
+  <!-- 내가 쓴 댓글 전체 조회 -->
+  <select id="listByUsersnoAll" resultType="dev.mvc.reply.ReplyVO" parameterType="int">
+    SELECT
+      r.replyno,
+      r.content,
+      TO_CHAR(r.rdate, 'YYYY-MM-DD HH24:MI:SS') AS rdate,
+      r.postno,
+      r.usersno,
+      r.parentno,
+      u.usersname
+    FROM reply r
+      JOIN users u ON r.usersno = u.usersno
+    WHERE r.usersno = #{usersno}
+    ORDER BY r.replyno DESC
+  </select>
+
+  <!-- 특정 게시글의 댓글 번호 목록 -->
+  <select id="getReplynosByPostno" parameterType="int" resultType="int">
+    SELECT replyno FROM reply WHERE postno = #{postno}
+  </select>
+
+  <!-- 내가 쓴 댓글 + 게시글 제목 포함, 검색/정렬 필터링 -->
+  <select id="listByUsersnoFiltered" resultType="dev.mvc.reply.ReplyVO" parameterType="map">
+    SELECT r.*, p.title
+    FROM reply r
+      JOIN post p ON r.postno = p.postno
+    WHERE r.usersno = #{usersno}
+    <if test="keyword != null and keyword != ''">
+      AND (p.title LIKE '%' || #{keyword} || '%' OR r.content LIKE '%' || #{keyword} || '%')
+    </if>
+    ORDER BY r.replyno
+    <choose>
+      <when test="sort == 'asc'">ASC</when>
+      <otherwise>DESC</otherwise>
+    </choose>
+  </select>
+
+  <!-- 필터링된 댓글 개수 -->
+  <select id="countByUsersnoFiltered" parameterType="map" resultType="int">
+    SELECT COUNT(*)
+    FROM reply r
+      JOIN post p ON r.postno = p.postno
+    WHERE r.usersno = #{usersno}
+    <if test="keyword != null and keyword != ''">
+      AND (p.title LIKE '%' || #{keyword} || '%' OR r.content LIKE '%' || #{keyword} || '%')
+    </if>
+  </select>
+
+  <!-- 내가 쓴 댓글 + 페이징 -->
+  <select id="listByUsersnoPaging" resultType="dev.mvc.reply.ReplyVO" parameterType="map">
+    SELECT r.*, p.title
+    FROM reply r
+      JOIN post p ON r.postno = p.postno
+    WHERE r.usersno = #{usersno}
+    <if test="keyword != null and keyword != ''">
+      AND (p.title LIKE '%' || #{keyword} || '%' OR r.content LIKE '%' || #{keyword} || '%')
+    </if>
+    ORDER BY r.replyno
+    <choose>
+      <when test="sort == 'asc'">ASC</when>
+      <otherwise>DESC</otherwise>
+    </choose>
+    OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
+  </select>
+
+  <!-- 댓글 목록 (VO 기반, 좋아요 수/여부 포함) -->
+  <select id="listWithLikeVO" parameterType="map" resultType="dev.mvc.reply.ReplyVO">
+    SELECT 
+      r.replyno,
+      r.content,
+      TO_CHAR(r.rdate, 'YYYY-MM-DD HH24:MI:SS') AS rdate,
+      r.usersno,
+      r.postno,
+      r.parentno,
+      u.usersname,
+      (
+        SELECT COUNT(*) 
+        FROM reply_like rl 
+        WHERE rl.replyno = r.replyno
+      ) AS likeCount,
+      (
+        SELECT COUNT(*) 
+        FROM reply_like rl2 
+        WHERE rl2.replyno = r.replyno AND rl2.usersno = #{usersno}
+      ) AS liked,
+      (
+        SELECT u2.usersname
+        FROM reply pr
+        LEFT JOIN users u2 ON pr.usersno = u2.usersno
+        WHERE pr.replyno = r.parentno
+      ) AS parentWriter
+    FROM reply r
+    LEFT JOIN users u ON r.usersno = u.usersno
+    WHERE r.postno = #{postno}
+    ORDER BY r.replyno ASC
+  </select>
+
+  <select id="read" parameterType="int" resultType="dev.mvc.reply.ReplyVO">
+    SELECT * FROM reply WHERE replyno = #{replyno}
+  </select>
+
+  <select id="getWriterByReplyno" resultType="int" parameterType="int">
+    SELECT usersno FROM reply WHERE replyno = #{replyno}
+  </select>
+
+</mapper>

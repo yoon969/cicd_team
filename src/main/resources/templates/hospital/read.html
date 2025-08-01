@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>병원 상세 정보</title>
+  <th:block layout:fragment="styles">
+    <link rel="stylesheet" th:href="@{/css/hospital_list.css}">
+  </th:block>
+</head>
+<body>
+<div layout:fragment="content" class="detail-container">
+  <div class="detail-title">🏥 병원 상세 정보</div>
+
+  <div class="info-row">
+    <span class="info-label">병원명:</span>
+    <span class="info-value" th:text="${hospitalVO.name}"></span>
+  </div>
+
+  <div class="info-row">
+    <span class="info-label">전화번호:</span>
+    <span class="info-value" th:text="${hospitalVO.tel}"></span>
+  </div>
+
+  <div class="info-row">
+    <span class="info-label">주소:</span>
+    <span class="info-value" th:text="${hospitalVO.address}"></span>
+  </div>
+
+  <div class="info-row">
+    <span class="info-label">홈페이지:</span>
+    <span class="info-value">
+      <a th:href="${hospitalVO.homepage}" th:text="${hospitalVO.homepage}" target="_blank"></a>
+    </span>
+  </div>
+
+  <div class="info-row">
+    <span class="info-label">등록일:</span>
+    <span class="info-value" th:text="${hospitalVO.regdate}"></span>
+  </div>
+
+<!-- ✅ 진료 동물 정보 영역 -->
+  <div class="info-row">
+  <span class="info-label">진료 동물:</span>
+  <span class="info-value">
+  <th:block th:each="s, iterStat : ${speciesList}">
+    <span th:if="${s.sname != '--'}" th:text="${s.sname}"></span><span th:if="${!iterStat.last && s.sname != '--'}">, </span>
+  </th:block>
+</span>
+</div>
+  
+  <div class="btn-box">
+    <a th:href="@{/hospital/list_all}" class="navbar-btn">← 목록으로</a>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="dev.mvc.calendar.CalendarDAOInter">
+
+  <!-- 등록 -->
+ <insert id="create" parameterType="dev.mvc.calendar.CalendarVO">
+  <selectKey keyProperty="calendarno" resultType="int" order="BEFORE">
+    SELECT calendar_seq.NEXTVAL FROM dual
+  </selectKey>
+  INSERT INTO calendar (
+    calendarno, usersno, title, content, labeldate, label,
+    seqno, regdate, summary, emotion
+  ) VALUES (
+    #{calendarno}, #{usersno}, #{title}, #{content}, #{labeldate}, #{label},
+    #{seqno}, sysdate, #{summary}, #{emotion}
+  )
+</insert>
+
+  <!-- 전체 목록 -->
+  <select id="list_all" resultType="dev.mvc.calendar.CalendarVO">
+    SELECT calendarno, labeldate, label, title, content,
+           cnt, seqno, regdate, usersno, summary, emotion
+    FROM calendar
+    ORDER BY labeldate DESC, seqno ASC
+  </select>
+
+  <!-- 일반적인 조회 -->
+  <select id="read" resultType="dev.mvc.calendar.CalendarVO" parameterType="int">
+    SELECT calendarno, labeldate, label, title, content,
+           cnt, regdate, seqno, usersno, summary, emotion
+    FROM calendar
+    WHERE calendarno = #{calendarno}
+  </select>
+
+  <!-- 조회수 증가 -->
+  <update id="increaseCnt" parameterType="int">
+    UPDATE calendar
+    SET cnt = cnt + 1
+    WHERE calendarno = #{calendarno}
+  </update>
+
+  <!-- 글 수정 -->
+  <update id="update" parameterType="dev.mvc.calendar.CalendarVO">
+    UPDATE calendar
+    SET labeldate = #{labeldate},
+        label = #{label},
+        title = #{title},
+        content = #{content},
+        seqno = #{seqno},
+        summary = #{summary},
+        emotion = #{emotion},
+    WHERE calendarno = #{calendarno}
+  </update>
+
+  <!-- 일정 삭제 -->
+  <delete id="delete" parameterType="int">
+    DELETE FROM calendar
+    WHERE calendarno = #{calendarno}
+  </delete>
+
+  <!-- 특정 달의 일정 목록 -->
+  <select id="list_calendar" resultType="dev.mvc.calendar.CalendarVO" parameterType="String">
+    SELECT calendarno, labeldate, label, title, seqno
+    FROM calendar
+    WHERE SUBSTR(labeldate, 1, 7) = #{labeldate}
+    ORDER BY labeldate ASC, seqno ASC
+  </select>
+
+  <!-- 특정 날짜의 일정 목록 -->
+  <select id="list_calendar_day" resultType="dev.mvc.calendar.CalendarVO" parameterType="String">
+    SELECT calendarno, labeldate, label, title, seqno
+    FROM calendar
+    WHERE labeldate = #{labeldate}
+    ORDER BY seqno ASC
+  </select>
+  
+  <!-- 특정 날짜의 상세 요약 및 감정 상태 포함된 조회 -->
+  <select id="list_detail_by_date" resultType="dev.mvc.calendar.CalendarVO" parameterType="String">
+    SELECT calendarno, labeldate, label, title, content, 
+           summary, emotion, seqno
+    FROM calendar
+    WHERE labeldate = #{labeldate}
+    ORDER BY seqno ASC
+  </select>
+
+  <!-- 사용자의 특정 날짜 기록만 불러오는 기능 (로그인 연동) -->
+  <select id="list_by_user_and_date" resultType="dev.mvc.calendar.CalendarVO" parameterType="map">
+    SELECT calendarno, labeldate, label, title, content, summary, emotion
+    FROM calendar
+    WHERE labeldate = #{labeldate} AND usersno = #{usersno}
+    ORDER BY seqno ASC
+  </select>
+
+  <!-- 감정에 따른 통계 분석 -->
+  <select id="emotion_stat_by_month" parameterType="map" resultType="map">
+    SELECT emotion, COUNT(*) AS cnt
+    FROM calendar
+    WHERE SUBSTR(labeldate, 1, 7) = #{labeldate}
+      AND usersno = #{usersno}
+    GROUP BY emotion
+  </select>
+  
+  <!-- 요약, 감정분석 정보 받아와서 저장 -->
+  <update id="updateSummaryEmotion" parameterType="dev.mvc.calendar.CalendarVO">
+    UPDATE calendar
+    SET summary = #{summary},
+        emotion = #{emotion}
+    WHERE calendarno = #{calendarno}
+  </update>
+  
+
+  <!-- 관리자 또는 사용자 본인 일정 조회 -->
+  <select id="list_search_paging" resultType="dev.mvc.calendar.CalendarVO" parameterType="Map">
+    SELECT calendarno, labeldate, label, title, content,
+           cnt, seqno, regdate, usersno, summary, emotion
+    FROM (
+      SELECT calendarno, labeldate, label, title, content,
+             cnt, seqno, regdate, usersno, summary, emotion, ROWNUM AS r
+      FROM (
+        SELECT calendarno, labeldate, label, title, content,
+               cnt, seqno, regdate, usersno, summary, emotion
+        FROM calendar
+        WHERE 1=1
+        <if test="word != null and word != ''">
+          AND (
+            UPPER(title) LIKE '%' || UPPER(#{word}) || '%'
+            OR UPPER(content) LIKE '%' || UPPER(#{word}) || '%'
+          )
+        </if>
+        <if test="usersno != null and usersno != 0">
+          AND usersno = #{usersno}
+        </if>
+        ORDER BY labeldate DESC, seqno ASC
+      )
+    )
+    WHERE r <![CDATA[ >= ]]> #{start_num} AND r <![CDATA[ <= ]]> #{end_num}
+  </select>
+  
+  <!-- 카운트 쿼리도 동일하게 -->
+  <select id="list_search_count" resultType="Integer" parameterType="Map">
+    SELECT COUNT(*) AS cnt
+    FROM calendar
+    WHERE 1=1
+    <if test="word != null and word != ''">
+      AND (
+        UPPER(title) LIKE '%' || UPPER(#{word}) || '%'
+        OR UPPER(content) LIKE '%' || UPPER(#{word}) || '%'
+      )
+    </if>
+    <if test="usersno != null and usersno != 0">
+      AND usersno = #{usersno}
+    </if>
+  </select>
+  
+  <!-- 유저 자기 자신의 월간 일정만 보기 -->
+  <select id="list_calendar_day_by_user" resultType="dev.mvc.calendar.CalendarVO" parameterType="map">
+    SELECT calendarno, labeldate, label, title, content, cnt, seqno, regdate,
+           usersno, summary, emotion, calendar_type, emoji AS emoji
+    FROM calendar
+    WHERE labeldate = #{labeldate}
+      AND usersno = #{usersno, jdbcType=INTEGER}
+  </select>
+  
+    <!-- 우선 순위 높임, 10 등 -> 1 등 -->
+    <update id="update_seqno_forward" parameterType="Integer">
+      UPDATE calendar SET seqno=seqno-1 WHERE calendarno=#{calendarno}
+    </update>
+  
+    <!-- 우선 순위 낮춤, 1 등 -> 10 등 -->
+    <update id="update_seqno_backward" parameterType="Integer">
+      UPDATE calendar SET seqno=seqno+1 WHERE calendarno=#{calendarno}
+    </update>
+
+  <select id="listToday" resultType="dev.mvc.calendar.CalendarVO">
+    SELECT *
+    FROM calendar
+    WHERE labeldate = #{today}
+  </select>
+
+  <select id="listTodayByRdate" resultType="dev.mvc.calendar.CalendarVO">
+    SELECT * FROM calendar
+    WHERE TO_CHAR(rdate, 'YYYY-MM-DD') = #{today}
+  </select>
+
+</mapper>

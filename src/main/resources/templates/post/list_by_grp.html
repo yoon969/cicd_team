@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <th:block layout:fragment="styles">
+    <link rel="stylesheet" href="/css/common.css">
+    <link rel="stylesheet" href="/css/post_list.css">
+  </th:block>
+</head>
+<div layout:fragment="content">
+  <div class="container_main">
+    <div class='title_line'>전체 글 목록</div>
+
+    <aside class="aside_right">
+      <a href="javascript:location.reload();">새로고침</a>
+      <span class='menu_divide'>│</span>
+      <a th:href="@{'/post/create?grp=' + ${grp}}">등록</a>
+    </aside>
+
+    <div class='menu_line'></div>
+
+    <!-- ✅ 검색창 위/아래 그룹 -->
+    <!-- ✅ 검색 + 중분류 전체 래퍼 -->
+    <div class="search-species-wrapper">
+      <!-- ✅ 오른쪽 검색 -->
+      <form th:action="@{/post/list_by_grp}" method="get" class="search-form">
+        <input type="hidden" name="grp" th:value="${grp}" />
+        <input type="text" name="word" th:value="${word}" placeholder="제목 또는 내용 검색" />
+        <button type="submit" class="btn-sm">검색</button>
+      </form>
+
+      <!-- ✅ 아래 줄 중분류 버튼 -->
+      <div class="sub-speciesno-nav">
+        <a th:each="species : ${speciesList}" th:href="@{/post/list(speciesno=${species.speciesno})}"
+          th:text="'🐾 ' + ${species.sname}" class="btn btn-outline-dark btn-sm">
+        </a>
+        <a th:href="@{/post/list_by_grp(grp=${grp})}" class="btn btn-outline-dark btn-sm">전체 보기</a>
+      </div>
+    </div>
+
+
+
+
+
+    <!-- 검색 결과 개수 표시 -->
+    <div th:if="${word != null and word != ''}" style="margin-bottom: 10px;">
+      "<span th:text="${word}"></span>"에 대한 검색 결과는
+      <strong th:text="${searchCount}">0</strong>건입니다.
+    </div>
+
+    <!-- ✅ 글 목록 -->
+
+    <!-- ✅ 삭제 완료 메시지 출력 -->
+    <div th:if="${msg != null}" class="alert alert-success" style="text-align:center; margin:20px;">
+      <p th:text="${msg}"></p>
+    </div>
+
+    <table class="table table-striped" style='width: 100%;'>
+      <colgroup>
+        <col style='width: 10%;' />
+        <col style='width: 30%;' />
+        <col style='width: 15%;' />
+        <col style='width: 15%;' />
+        <col style='width: 10%;' />
+        <col style='width: 10%;' />
+        <col style='width: 10%;' /> <!-- 💬 댓글 수 열 -->
+      </colgroup>
+      <thead>
+        <tr>
+          <th class='th_bs'>번호</th>
+          <th class='th_bs'>제목</th>
+          <th class='th_bs'>작성자</th>
+          <th class='th_bs'>등록일</th>
+          <th class='th_bs'>조회수</th>
+          <th class='th_bs'>추천수</th>
+          <th class='th_bs'>댓글수</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- ✅ 목록 있을 때 -->
+        <th:block th:if="${not #lists.isEmpty(list)}">
+          <tr th:each="postVO, iter : ${list}" th:onclick="|location.href='/post/read?postno=${postVO.postno}'|"
+            style="cursor: pointer;">
+            <td th:text="${startNum - iter.index}" class="td_basic"></td>
+            <td class='td_left'>
+              <span th:title="${postVO.title}" th:text="${postVO.title}" class="post-title"></span>
+            </td>
+            <td th:text="${postVO.nickname}">작성자</td>
+            <td th:text="${postVO.pdate}">날짜</td>
+            <td>
+              <span class="eye-count">
+                <span th:text="${postVO.cnt}">0</span> 👀
+              </span>
+            </td>
+            <td>
+              <span class="eye-count">
+                <span th:text="${postVO.recom}">0</span> 👍
+              </span>
+            </td>
+            <td>
+              <span class="comment-count">
+                <span th:text="${postVO.replycnt}">0</span> 💬
+              </span>
+            </td>
+          </tr>
+        </th:block>
+
+        <!-- ✅ 목록 없을 때 -->
+        <tr th:if="${#lists.isEmpty(list)}">
+          <td colspan="7" style="padding: 50px;">
+            <div style="background-color: #f8f8f8; border: 1px solid #ccc; padding: 30px; border-radius: 10px;">
+              아직 등록된 글이 없어요 😢<br>첫 글을 작성해보세요!
+            </div>
+          </td>
+        </tr>
+
+      </tbody>
+
+    </table>
+    <!-- ✅ 페이지네이션: 목록 아래에만 배치 -->
+    <div class="paging" th:if="${total_page >= 1}">
+      <a class="arrow" th:if="${now_page > 1}"
+        th:href="@{/post/list_by_grp(grp=${grp}, now_page=${now_page - 1}, word=${word})}">◀ 이전</a>
+
+      <a th:each="i : ${#numbers.sequence(1, total_page)}"
+        th:href="@{/post/list_by_grp(grp=${grp}, now_page=${i}, word=${word})}" th:text="${i}"
+        th:classappend="${i == now_page} ? 'btn-page current' : 'btn-page'">
+      </a>
+
+      <a class="arrow" th:if="${now_page < total_page}"
+        th:href="@{/post/list_by_grp(grp=${grp}, now_page=${now_page + 1}, word=${word})}">다음 ▶</a>
+    </div>
+  </div>
+
+</html>

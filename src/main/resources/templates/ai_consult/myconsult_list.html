@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org"
+  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+
+<head>
+  <title>내가 받은 상담 목록</title>
+  <th:block layout:fragment="styles">
+    <link rel="stylesheet" href="/css/mypage.css">
+  </th:block>
+</head>
+
+<body>
+  <div layout:fragment="content">
+    <div class="container_main">
+  <div class="mypost-box">
+    <div class="post-wrapper">
+    <div class="title_line">
+      🤖 내가 받은 상담 목록
+      <div class="text-muted" style="font-size: 14px;">
+        총 <span th:text="${total}"></span>개의 상담이 있어요.
+      </div>
+    </div>
+
+
+      <form method="get" action="/users/myconsult_list" class="search-form">
+        <input type="text" name="keyword" placeholder="게시글 제목 또는 댓글 내용 검색" th:value="${keyword}">
+        <select name="sort" onchange="this.form.submit()"  style="width: 90px;">
+          <option value="desc" th:selected="${sort == 'desc'}">최신순</option>
+          <option value="asc" th:selected="${sort == 'asc'}">오래된순</option>
+        </select>
+        <button type="submit" class="navbar-btn">검색</button>
+        <a th:if="${keyword != null and keyword != ''}" href="/users/myconsult_list" class="btn-reset">❌</a>
+      </form>
+
+
+      <div th:if="${list.size() == 0}" class="no-result">
+        😢 관련된 상담이 없어요.
+      </div>
+
+      <ul class="post-list" th:if="${list.size() > 0}">
+        <li th:each="consult  : ${list}">
+          <a class="post-item " th:href="@{'/ai_consult/read?consultno=' + ${consult.consultno}}">
+            <span class="title" th:text="${consult .question}"></span>
+            <span class="date" th:text="${consult .created_at.substring(0, 10)}"></span>
+          </a>
+        </li>
+      </ul>
+
+
+    <div class="paging" th:utext="${paging}"></div>
+  </div>
+
+</div>
+
+
+  </div>
+</body>
+
+</html>

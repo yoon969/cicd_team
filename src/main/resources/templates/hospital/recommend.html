@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>병원 추천 받기</title>
+  <meta name="_csrf" th:content="${_csrf.token}">
+  <meta name="_csrf_header" th:content="${_csrf.headerName}">
+<th:block layout:fragment="styles">
+  <link rel="stylesheet" href="/css/hospital_recommend.css">
+</th:block>
+
+  <script>
+window.onload = () => {
+  const locationInput = document.getElementById("location");
+  const animalInput = document.getElementById("animal");
+  const sendBtn = document.getElementById("send");
+  const saveBtn = document.getElementById("save");
+  const resultDiv = document.getElementById("result");
+  const resultAnimation = document.getElementById("result_animation");
+const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+  let lastResult = [];
+
+  // ⌨️ 지역 입력 후 Enter 누르면 숨숨이 입력으로 포커스 이동
+  locationInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      animalInput.focus();
+    }
+  });
+
+  // 추천 버튼 클릭
+  sendBtn.addEventListener("click", () => {
+    const location = locationInput.value.trim();
+    const animal = animalInput.value.trim();
+
+    if (!location || !animal) {
+      alert("지역과 숨숨이를 모두 입력해주세요!");
+      return;
+    }
+
+    resultDiv.style.display = 'none';
+    resultAnimation.style.display = 'block';
+
+    fetch("/hospital/recommend", {
+      method: "POST",
+      headers: {'Content-Type': 'application/json',
+      [csrfHeader]: csrfToken },
+      body: JSON.stringify({
+        query: location + " 동물병원",
+        animal: animal
+      })
+    })
+    .then(res => res.json())
+    .then(data => {
+      const result = Array.isArray(data) ? data : (data.result || []);
+      lastResult = result;
+
+      if (result.length === 0) {
+        resultDiv.innerHTML = "<p>검색 결과가 없습니다 😢</p>";
+        resultDiv.style.display = 'block';
+        resultAnimation.style.display = 'none';
+        return;
+      }
+
+      let html = "<div class='container'>";
+      result.forEach(item => {
+        html += `
+          <div class="card mt-2 p-2 text-start">
+            <h5>${item.name}</h5>
+            <p><strong>주소:</strong> ${item.address}</p>
+            <p><strong>전화:</strong> ${item.tel}</p>
+            <p><strong>홈페이지:</strong> <a href="${item.homepage}" target="_blank">${item.homepage}</a></p>
+          </div>
+        `;
+      });
+      html += "</div>";
+
+      resultDiv.innerHTML = html;
+      resultDiv.style.display = 'block';
+      resultAnimation.style.display = 'none';
+    })
+    .catch(err => {
+      alert("FastAPI 호출 실패: " + err.message);
+      resultAnimation.style.display = 'none';
+    });
+  });
+};
+</script>
+</head>
+
+<body>
+<div layout:fragment="content" class="recommend-container">
+
+    <h2 class="title_line">🔍 특수동물 병원 추천 받기</h2>
+
+    <!-- ✅ 지역 입력 -->
+    <div class="form-group">
+      <label for="location"><strong>📍 지역</strong></label>
+      <input type="text" id="location" placeholder="예: 종각역" size="15">
+    </div>
+
+    <!-- ✅ 숨숨이 입력 -->
+    <div class="form-group">
+      <label for="animal"><strong>🐾 진료가 필요한 숨숨이</strong></label>
+      <input type="text" id="animal" placeholder="예: 도마뱀" size="15">
+    </div>
+
+    <!-- ✅ 버튼 (오른쪽 정렬) -->
+    <div class="button-wrapper">
+      <button id="send" class="navbar-btn">병원 추천 받기</button>
+    </div>
+    
+    <!-- ✅ 로딩 애니메이션 (중앙 정렬) -->
+    <div id="result_animation" class="center-animation">
+      <img src="/images/progress.gif" style="width: 26px;">
+    </div>
+
+    <!-- ✅ 결과 출력 -->
+    <div id="result" style="margin-top: 20px;"></div>
+
+  </div> <!-- /card -->
+
+
+
+</body>
+
+</html>

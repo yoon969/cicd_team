@@ -1,0 +1,337 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="dev.mvc.post.PostDAOInter">
+
+  <!-- 시퀀스 생성용 -->
+  <select id="getPostSeq" resultType="int">
+    SELECT post_seq.NEXTVAL FROM dual
+  </select>
+
+  <!-- 게시글 등록 -->
+  <insert id="create" parameterType="dev.mvc.post.PostVO">
+    INSERT INTO post (
+      postno, title, content, recom, cnt, replycnt, passwd, word,
+      pdate, file1, file1saved, thumb1, size1, map, youtube,
+      summary, usersno, speciesno, emotion
+    )
+    VALUES (
+      #{postno}, #{title}, #{content}, #{recom}, #{cnt}, #{replycnt}, #{passwd}, #{word},
+      SYSDATE, #{file1}, #{file1saved}, #{thumb1}, #{size1}, #{map}, #{youtube},
+      #{summary}, #{usersno}, #{speciesno}, #{emotion}
+    )
+  </insert>
+  
+  <resultMap id="postResultMap" type="dev.mvc.post.PostVO">
+    <id property="postno" column="postno"/>
+    <result property="usersno" column="usersno"/>
+    <result property="title" column="title"/>
+    <result property="file1" column="file1"/>
+    <result property="file1saved" column="file1saved"/>
+    <result property="thumb1" column="thumb1"/>
+    <result property="size1" column="size1"/>
+    <result property="pdate" column="pdate"/>
+    <result property="nickname" column="nickname"/>
+    <result property="content" column="content" jdbcType="CLOB"/>
+  </resultMap>
+
+  <!-- 게시글 목록 -->
+  <select id="list_all" resultType="dev.mvc.post.PostVO">
+    SELECT 
+      P.postno, 
+      P.usersno, 
+      P.title, 
+      P.file1, 
+      P.file1saved, 
+      P.thumb1, 
+      P.size1, 
+      P.pdate,
+      U.usersname AS nickname, 
+      P.content                  
+    FROM post P
+    LEFT JOIN users U ON P.usersno = U.usersno
+    ORDER BY P.postno DESC
+  </select>
+  <!-- 게시글 상세 -->
+	<select id="read" resultType="dev.mvc.post.PostVO" parameterType="int">
+	  SELECT 
+	    p.postno, p.speciesno, p.title, p.content, p.passwd, p.word,
+	    p.file1saved, p.file1, p.size1, p.cnt, p.pdate, p.youtube, p.map, p.recom,
+	    p.usersno, u.usersname AS nickname
+	  FROM post p
+	  LEFT JOIN users u ON p.usersno = u.usersno
+	  WHERE p.postno = #{postno}
+	</select>
+
+    
+  <!-- 게시글 수정 -->
+   <update id="update" parameterType="dev.mvc.post.PostVO">
+    UPDATE post
+    SET title = #{title},
+        content = #{content},
+        passwd = #{passwd},
+        word = #{word},
+        file1 = #{file1},
+        file1saved = #{file1saved},
+        thumb1 = #{thumb1},
+        size1 = #{size1},
+        map = #{map},
+        youtube = #{youtube},
+        summary = #{summary},
+        emotion = #{emotion},
+        speciesno = #{speciesno, jdbcType=INTEGER}
+    WHERE postno = #{postno}
+  </update>
+
+  <!-- 게시글 삭제 -->
+  <delete id="delete" parameterType="int">
+    DELETE FROM post WHERE postno = #{postno}
+  </delete>
+
+  <!-- 조회수 증가 -->
+  <update id="increaseCnt" parameterType="int">
+    UPDATE post SET cnt = cnt + 1 WHERE postno = #{postno}
+  </update>
+  
+  <select id="list_by_speciesno" resultType="dev.mvc.post.PostVO">
+    SELECT * FROM post
+    WHERE speciesno = #{speciesno}
+    ORDER BY pdate DESC
+  </select>
+  
+  <select id="password_check" parameterType="hashmap" resultType="int">
+    SELECT COUNT(*) 
+    FROM post 
+    WHERE postno = #{postno}
+    AND passwd = #{passwd}
+  </select>
+  
+  <select id="listBySpecies" resultType="dev.mvc.post.PostVO" parameterType="int">
+    SELECT *
+    FROM post
+    WHERE speciesno = #{speciesno}
+    ORDER BY pdate DESC
+  </select>
+  
+  <select id="listBySpeciesList" resultType="dev.mvc.post.PostVO" parameterType="list">
+    SELECT 
+      P.postno, 
+      P.usersno, 
+      P.title, 
+      P.file1, 
+      P.file1saved, 
+      P.thumb1, 
+      P.size1, 
+      P.pdate,
+      P.cnt,
+      P.recom,
+      U.usersname AS nickname,
+      P.content
+    FROM post P
+    LEFT JOIN users U ON P.usersno = U.usersno
+    WHERE P.speciesno IN
+    <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+    ORDER BY P.pdate DESC
+  </select>
+  
+    <!-- 특정 카테고리에 속한 모든 레코드 삭제 -->
+  <delete id="delete_by_speciesno" parameterType="int">
+    DELETE FROM post
+    WHERE speciesno=#{speciesno}
+  </delete>
+  
+    <!-- FK speciesno 컬럼에 대응하는 필수 SQL -->
+  <!-- 특정 카테고리에 속한 레코드 갯수를 리턴 -->
+  <select id="count_by_speciesno" resultType="int" parameterType="int">
+    SELECT COUNT(*) as cnt 
+    FROM post 
+    WHERE speciesno=#{speciesno}
+  </select>
+
+  <update id="updateYoutube" parameterType="dev.mvc.post.PostVO">
+    UPDATE post
+    SET youtube = #{youtube}
+    WHERE postno = #{postno}
+  </update>
+  
+  <update id="updateMap" parameterType="dev.mvc.post.PostVO">
+    UPDATE post SET map = #{map} WHERE postno = #{postno}
+  </update>
+
+  <select id="searchBySpecies" parameterType="map" resultType="dev.mvc.post.PostVO">
+    SELECT * FROM post 
+    WHERE speciesno = #{speciesno}
+      AND (title LIKE '%' || #{word} || '%' OR content LIKE '%' || #{word} || '%')
+    ORDER BY postno DESC
+  </select>
+  
+  <select id="searchByGrpAndWord" parameterType="map" resultType="dev.mvc.post.PostVO">
+    SELECT 
+      P.postno, 
+      P.usersno, 
+      P.title, 
+      P.file1, 
+      P.file1saved, 
+      P.thumb1, 
+      P.size1, 
+      P.pdate,
+      P.cnt,
+      P.recom,
+      U.usersname AS nickname,
+      P.content
+    FROM post P
+    LEFT JOIN users U ON P.usersno = U.usersno
+    WHERE P.speciesno IN (SELECT speciesno FROM species WHERE grp = #{grp})
+      AND (P.title LIKE '%' || #{word} || '%' OR P.content LIKE '%' || #{word} || '%')
+    ORDER BY P.postno DESC
+  </select>
+  
+  <select id="search" parameterType="string" resultType="dev.mvc.post.PostVO">
+    SELECT *
+    FROM post
+    WHERE title LIKE '%' || #{word} || '%'
+       OR content LIKE '%' || #{word} || '%'
+    ORDER BY pdate DESC
+  </select>
+  
+  <select id="searchPaging" resultType="dev.mvc.post.PostVO">
+    SELECT * FROM (
+      SELECT ROWNUM AS rnum, A.* FROM (
+        SELECT * FROM post 
+        WHERE title LIKE '%' || #{word} || '%' 
+           OR content LIKE '%' || #{word} || '%'
+        ORDER BY postno DESC
+      ) A
+      WHERE ROWNUM &lt;= #{offset} + #{limit}
+    )
+    WHERE rnum &gt; #{offset}
+  </select>
+  
+  <select id="countSearch" resultType="int">
+    SELECT COUNT(*) FROM post
+    WHERE title LIKE '%' || #{word} || '%' 
+       OR content LIKE '%' || #{word} || '%'
+  </select>
+  
+  <!-- 추천 수 증가 -->
+  <update id="increaseRecom">
+    UPDATE post
+    SET recom = NVL(recom, 0) + 1
+    WHERE postno = #{postno}
+  </update>
+
+  <!-- 추천 수 감소 -->
+  <update id="decreaseRecom">
+    UPDATE post
+    SET recom = NVL(recom, 0) - 1
+    WHERE postno = #{postno}
+  </update>
+
+  <!-- 추천 수 조회 -->
+  <select id="getRecom" resultType="int">
+    SELECT NVL(recom, 0) FROM post WHERE postno = #{postno}
+  </select>
+  
+  <select id="listPagingByGrp" parameterType="map" resultType="dev.mvc.post.PostVO">
+	  SELECT 
+	    P.postno, 
+	    P.usersno, 
+	    P.title, 
+	    P.file1, 
+	    P.file1saved, 
+	    P.thumb1, 
+	    P.size1, 
+	    P.pdate,
+	    P.cnt,
+	    P.recom,
+	    U.usersname AS nickname,
+	    P.content
+	  FROM post P
+	  LEFT JOIN users U ON P.usersno = U.usersno
+	  WHERE P.speciesno IN (
+	    SELECT speciesno FROM species WHERE grp = #{grp}
+	  )
+	  ORDER BY P.postno DESC
+	  OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
+	</select>
+
+	<select id="countByGrp" parameterType="string" resultType="int">
+	  SELECT COUNT(*) 
+	  FROM post 
+	  WHERE speciesno IN (
+	    SELECT speciesno FROM species WHERE grp = #{grp}
+	  )
+	</select>
+
+	<select id="countSearchByGrp" parameterType="map" resultType="int">
+	  SELECT COUNT(*) 
+	  FROM post P
+	  WHERE P.speciesno IN (SELECT speciesno FROM species WHERE grp = #{grp})
+	    AND (P.title LIKE '%' || #{word} || '%' OR P.content LIKE '%' || #{word} || '%')
+	</select>
+ 
+	<select id="countByUsersno" parameterType="int" resultType="int">
+	  SELECT COUNT(*) FROM post WHERE usersno = #{usersno}
+	</select>
+
+	<select id="listByUsersno" resultType="dev.mvc.post.PostVO" parameterType="int">
+	  SELECT postno, title, content, pdate, usersno
+	  FROM post
+	  WHERE usersno = #{usersno}
+	  ORDER BY postno DESC
+	  FETCH FIRST 3 ROWS ONLY
+	</select>
+
+	<select id="listByUsersnoAll" resultType="dev.mvc.post.PostVO" parameterType="int">
+	  SELECT postno, title, content, pdate, usersno
+	  FROM post
+	  WHERE usersno = #{usersno}
+	  ORDER BY postno DESC
+	</select>
+
+ <select id="listByUsersnoFiltered" resultType="dev.mvc.post.PostVO" parameterType="map">
+  SELECT *
+  FROM post
+  WHERE usersno = #{usersno}
+    <if test="keyword != null and keyword != ''">
+      AND (title LIKE '%' || #{keyword} || '%' OR content LIKE '%' || #{keyword} || '%')
+    </if>
+  ORDER BY postno
+  <choose>
+    <when test="sort == 'asc'">ASC</when>
+    <otherwise>DESC</otherwise>
+  </choose>
+</select>
+
+<select id="listByUsersnoPaging" resultType="dev.mvc.post.PostVO" parameterType="map">
+  SELECT postno, title, content, pdate, usersno
+  FROM post
+  WHERE usersno = #{usersno}
+  <if test="keyword != null and keyword != ''">
+    AND (title LIKE '%' || #{keyword} || '%' OR content LIKE '%' || #{keyword} || '%')
+  </if>
+  ORDER BY postno 
+  <choose>
+    <when test="sort == 'asc'">ASC</when>
+    <otherwise>DESC</otherwise>
+  </choose>
+  OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
+</select>
+
+  <select id="countByUsersnoFiltered" parameterType="map" resultType="int">
+  SELECT COUNT(*) FROM post
+  WHERE usersno = #{usersno}
+  <if test="keyword != null and keyword != ''">
+    AND (title LIKE '%' || #{keyword} || '%' OR content LIKE '%' || #{keyword} || '%')
+  </if>
+</select>
+
+  <select id="getWriter" parameterType="int" resultType="int">
+    SELECT usersno FROM post WHERE postno = #{postno}
+  </select>
+
+</mapper>

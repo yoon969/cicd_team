@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <th:block layout:fragment="styles">
+    <link rel="stylesheet" href="/css/memory_list.css">
+  </th:block>
+  <meta charset="UTF-8">
+  <title>일러스트 목록</title>
+  <script th:inline="javascript">
+    const csrfToken = /*[[${_csrf.token}]]*/ '';
+    const csrfHeader = /*[[${_csrf.headerName}]]*/ '';
+  
+    function sendImageToPhone(button) {
+      const imageUrl = button.getAttribute("data-imgurl");
+  
+      if (!imageUrl) {
+        alert("이미지 경로가 없습니다.");
+        return;
+      }
+  
+      fetch("/memory/send_sms", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+          [csrfHeader]: csrfToken
+        },
+        body: `imageUrl=${encodeURIComponent(imageUrl)}`
+      })
+        .then(response => response.json())
+        .then(data => {
+          console.log("[SMS 응답]", data);
+          if (data.status === "success") {
+            alert("✅ 전송 완료!");
+          } else {
+            alert("❌ 전송 실패: " + data.msg);
+          }
+        })
+        .catch(err => {
+          alert("⚠ 오류 발생: " + err.message);
+        });
+    }
+  </script>
+
+</head>
+
+<body>
+  <div layout:fragment="content" class="memory-list-container">
+    <h2 class="memory-list-title">추억 일러스트 목록</h2>
+
+    <div class="memory-grid">
+  <div class="memory-card" th:each="memory : ${list}">
+    <a th:href="@{'/memory/read?memoryno=' + ${memory.memoryno}}">
+      <img th:src="@{${memory.generated_image_url}}" alt="생성 이미지" class="memory-thumb"/>
+    </a>
+    <div class="memory-meta">
+      <span th:text="${memory.create_at}"></span>
+          <div class="btn-group-horizontal">
+            <button type="button"
+                    class="navbar-btn"
+                    th:attr="data-imgurl=${memory.generated_image_url}"
+                    onclick="sendImageToPhone(this)">
+              전송
+            </button>
+          
+            <form th:action="@{/memory/delete}" method="post"
+                  onsubmit="return confirm('정말 삭제하시겠습니까?');" style="margin: 0;">
+              <input type="hidden" name="memoryno" th:value="${memory.memoryno}">
+              <input type="hidden" name="now_page" th:value="${now_page}">
+              <button type="submit" class="btn-delete">삭제</button>
+            </form>
+          </div>
+    </div>
+  </div>
+</div>
+
+<!-- ✅ 페이징 -->
+<div class="paging" th:utext="${paging}"></div>
+
+  </div>
+</body>
+</html>

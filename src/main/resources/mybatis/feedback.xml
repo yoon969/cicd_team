@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="dev.mvc.feedback.FeedbackDAOInter">
+
+  <insert id="create" parameterType="dev.mvc.feedback.FeedbackVO">
+    INSERT INTO feedback (feedbackno, usersno, content)
+    VALUES (feedback_seq.NEXTVAL, #{usersno}, #{content})
+  </insert>
+
+  <select id="list" resultType="dev.mvc.feedback.FeedbackVO">
+    SELECT * FROM feedback WHERE visible = 'Y' ORDER BY feedbackno DESC
+  </select>
+
+  <delete id="delete" parameterType="int">
+    DELETE FROM feedback WHERE feedbackno = #{feedbackno}
+  </delete>
+
+</mapper>

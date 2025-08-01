@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="dev.mvc.hospital.HospitalDAOInter">
+
+  <!-- 병원 등록 -->
+  <insert id="create" parameterType="dev.mvc.hospital.HospitalVO">
+    INSERT INTO hospital (
+      hospitalno, name, tel, address,
+      homepage, regdate
+    ) VALUES (
+      hospital_seq.NEXTVAL, #{name}, #{tel}, #{address}, 
+      #{homepage}, SYSDATE
+    )
+  </insert>
+
+  <!-- 병원 전체 리스트 -->
+  <select id="list" resultType="dev.mvc.hospital.HospitalVO">
+    SELECT * FROM hospital ORDER BY hospitalno DESC
+  </select>
+
+  <!-- 병원 상세 보기 -->
+  <select id="read" parameterType="int" resultType="dev.mvc.hospital.HospitalVO">
+    SELECT * FROM hospital WHERE hospitalno = #{hospitalno}
+  </select>
+
+  <!-- 병원 수정 -->
+  <update id="update" parameterType="dev.mvc.hospital.HospitalVO">
+    UPDATE hospital
+    SET name = #{name},
+        tel = #{tel},
+        address = #{address},
+        homepage = #{homepage},
+    WHERE hospitalno = #{hospitalno}
+  </update>
+
+  <!-- 병원 삭제 -->
+  <delete id="delete" parameterType="int">
+    DELETE FROM hospital WHERE hospitalno = #{hospitalno}
+  </delete>
+  
+  <select id="isDuplicateAddress" parameterType="string" resultType="int">
+  SELECT COUNT(*) FROM hospital WHERE address = #{address}
+</select>
+
+<select id="list_all_paging" resultType="dev.mvc.hospital.HospitalVO" parameterType="map">
+  SELECT *
+  FROM hospital
+  <where>
+    <if test="word != null and word != ''">
+      (
+        name LIKE '%' || #{word} || '%'
+        OR address LIKE '%' || #{word} || '%'
+        OR tel LIKE '%' || #{word} || '%'
+      )
+    </if>
+  </where>
+  ORDER BY hospitalno DESC
+  OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
+</select>
+
+<select id="count_all" resultType="int" parameterType="map">
+  SELECT COUNT(*)
+  FROM hospital
+  <where>
+    <if test="word != null and word != ''">
+      (
+        name LIKE '%' || #{word} || '%'
+        OR address LIKE '%' || #{word} || '%'
+        OR tel LIKE '%' || #{word} || '%'
+      )
+    </if>
+  </where>
+</select>
+</mapper>

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+
+<html layout:decorate="~{layout}"> <!-- layout.html 상속-->
+
+<!-- ✅ 개별 CSS 삽입 -->
+<th:block layout:fragment="styles">
+  <link rel="stylesheet" th:href="@{/css/calendar_admin.css}">
+</th:block>
+
+<div layout:fragment="content">
+  <div class="title_line">일정</div>
+  <aside class="aside_right">
+    <a th:href="@{|/calendar/create|}">등록</a>    
+    <span class="menu_divide">|</span>
+    <a href="javascript: location.reload();">새로 고침</a>
+  </aside>
+  
+   <!-- 검색 폼 -->
+  <div class="calendar-search-bar">
+    <form name="frm_search" method="get" action="/calendar/list_search"
+      style="display:flex;gap:8px;justify-content:flex-end;align-items:center;">
+      <input type="text" name="word" id="word" th:value="${word}" class="form-control search-input"
+        placeholder="검색어를 입력하세요">
+      <button type="submit" class="btn btn-secondary btn-sm">검색</button>
+      <span th:if="${word != null and word != ''}">
+        <button type="button" class="btn btn-secondary btn-sm" th:onclick="|location.href='@{/calendar/list_search}'|">검색
+          취소</button>
+      </span>
+    </form>
+  </div>
+  
+  <div class="menu_line"></div>
+  
+  <!--/* '/calendar/list_all_com.html' 파일의 list_all_fragment를 가져다 사용 */--> 
+  <div th:replace="~{calendar/list_all_com::list_all_fragment}"></div> 
+  
+  <!-- 페이징 -->
+  <div class="user-paging" th:utext="${paging}"></div>
+  
+</div>
+</html>
+

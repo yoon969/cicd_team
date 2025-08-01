@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="dev.mvc.ai_consult.AiConsultDAOInter">
+
+  <insert id="create" parameterType="dev.mvc.ai_consult.AiConsultVO">
+    <selectKey keyProperty="consultno" resultType="int" order="BEFORE">
+      SELECT ai_consult_seq.NEXTVAL FROM dual
+    </selectKey>
+
+    INSERT INTO ai_consult (
+      consultno, question, answer, symptom_tags, source_type,
+      created_at, summary, emotion, usersno
+    ) VALUES (
+      #{consultno}, #{question}, #{answer}, #{symptom_tags}, #{source_type},
+      SYSDATE, #{summary}, #{emotion}, #{usersno}
+    )
+  </insert>
+
+  <!-- 전체 목록 (관리자용) -->
+  <select id="list_all" resultType="dev.mvc.ai_consult.AiConsultVO">
+    SELECT * FROM ai_consult ORDER BY consultno DESC
+  </select>
+
+  <!-- 특정 사용자 상담 목록 -->
+  <select id="list_by_usersno" parameterType="int" resultType="dev.mvc.ai_consult.AiConsultVO">
+    SELECT * FROM ai_consult
+    WHERE usersno = #{usersno}
+    ORDER BY consultno DESC
+  </select>
+
+  <!-- 상담 상세 조회 -->
+  <select id="read" parameterType="int" resultType="dev.mvc.ai_consult.AiConsultVO">
+    SELECT * FROM ai_consult WHERE consultno = #{consultno}
+  </select>
+
+  <!-- 상담 수정 -->
+  <update id="update" parameterType="dev.mvc.ai_consult.AiConsultVO">
+    UPDATE ai_consult
+    SET answer = #{answer},
+        symptom_tags = #{symptom_tags},
+        source_type = #{source_type},
+        updated_at = SYSDATE
+    WHERE consultno = #{consultno}
+  </update>
+
+  <!-- 상담 삭제 -->
+  <delete id="delete" parameterType="int">
+    DELETE FROM ai_consult WHERE consultno = #{consultno}
+  </delete>
+  
+<select id="countByQuestionAnswer" parameterType="map" resultType="int">
+  SELECT COUNT(*)
+  FROM ai_consult
+  WHERE usersno = #{usersno}
+    AND question = #{question}
+    AND answer = #{answer}
+</select>
+
+<select id="list_by_usersno_paging" resultType="dev.mvc.ai_consult.AiConsultVO" parameterType="map">
+  SELECT consultno, usersno, question, answer, symptom_tags, source_type
+  FROM ai_consult
+  WHERE usersno = #{usersno}
+    AND (
+      question LIKE '%' || #{word} || '%'
+      OR answer LIKE '%' || #{word} || '%'
+      OR symptom_tags LIKE '%' || #{word} || '%'
+    )
+  ORDER BY consultno DESC
+  OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
+</select>
+
+<select id="count_by_usersno" resultType="int" parameterType="map">
+  SELECT COUNT(*)
+  FROM ai_consult
+  WHERE usersno = #{usersno}
+    AND (
+      question LIKE '%' || #{word} || '%'
+      OR answer LIKE '%' || #{word} || '%'
+      OR symptom_tags LIKE '%' || #{word} || '%'
+    )
+</select>
+
+<select id="listRecent" resultType="dev.mvc.ai_consult.AiConsultVO">
+  SELECT *
+  FROM (
+    SELECT consultno, usersno, question, answer, symptom_tags, source_type, summary, emotion
+    FROM ai_consult
+    ORDER BY consultno DESC
+  )
+  WHERE ROWNUM &lt;= 50
+</select>
+
+<!-- consultno 리스트로 상담 여러개 불러오기 -->
+<select id="listByConsultnos" parameterType="list" resultType="dev.mvc.ai_consult.AiConsultVO">
+  SELECT consultno, question, answer, symptom_tags, source_type, summary
+  FROM ai_consult
+  WHERE consultno IN
+  <foreach item="no" collection="list" open="(" separator="," close=")">
+    #{no}
+  </foreach>
+</select>
+
+<select id="count_all" resultType="int" parameterType="map">
+  SELECT COUNT(*)
+  FROM ai_consult
+  <where>
+    <if test="word != null and word != ''">
+      (
+        question LIKE '%' || #{word} || '%'
+        OR answer LIKE '%' || #{word} || '%'
+        OR symptom_tags LIKE '%' || #{word} || '%'
+      )
+    </if>
+  </where>
+</select>
+
+<!-- 전체 상담 목록 (검색 + 페이징) -->
+<select id="list_all_paging" resultType="dev.mvc.ai_consult.AiConsultVO" parameterType="map">
+  SELECT *
+  FROM ai_consult
+  <where>
+    <if test="word != null and word != ''">
+      (
+        question LIKE '%' || #{word} || '%'
+        OR answer LIKE '%' || #{word} || '%'
+        OR symptom_tags LIKE '%' || #{word} || '%'
+      )
+    </if>
+  </where>
+  ORDER BY consultno DESC
+  OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
+</select>
+
+	<select id="countByUsersno" parameterType="int" resultType="int">
+	  SELECT COUNT(*) FROM ai_consult WHERE usersno = #{usersno}
+	</select>
+
+	<select id="listByUsersno" resultType="dev.mvc.ai_consult.AiConsultVO" parameterType="int">
+	  SELECT consultno, usersno, question, answer, summary, emotion, created_at, source_type, symptom_tags
+	  FROM ai_consult
+	  WHERE usersno = #{usersno}
+	  ORDER BY consultno DESC
+	  FETCH FIRST 3 ROWS ONLY
+	</select>
+
+	<select id="listByUsersnoAll" resultType="dev.mvc.ai_consult.AiConsultVO" parameterType="int">
+	  SELECT consultno, usersno, question, answer, summary, emotion, created_at, source_type, symptom_tags
+	  FROM ai_consult
+	  WHERE usersno = #{usersno}
+	  ORDER BY consultno DESC
+	</select>
+	
+	<select id="countByUsersnoFiltered" parameterType="map" resultType="int">
+  SELECT COUNT(*)
+  FROM ai_consult
+  WHERE usersno = #{usersno}
+  <if test="word != null and word != ''">
+    AND (
+      question LIKE '%' || #{word} || '%'
+      OR answer LIKE '%' || #{word} || '%'
+      OR symptom_tags LIKE '%' || #{word} || '%'
+    )
+  </if>
+</select>
+
+<select id="listByUsersnoPaging" resultType="dev.mvc.ai_consult.AiConsultVO" parameterType="map">
+  SELECT consultno, usersno, question, answer, summary, emotion, created_at, source_type, symptom_tags
+  FROM ai_consult
+  WHERE usersno = #{usersno}
+  <if test="word != null and word != ''">
+    AND (
+      question LIKE '%' || #{word} || '%'
+      OR answer LIKE '%' || #{word} || '%'
+      OR symptom_tags LIKE '%' || #{word} || '%'
+    )
+  </if>
+  ORDER BY consultno
+  <choose>
+    <when test="sort == 'asc'">ASC</when>
+    <otherwise>DESC</otherwise>
+  </choose>
+  OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
+</select>
+
+
+</mapper>

@@ -1,0 +1,244 @@
+/* ✅ 전체 wrapper */
+.login-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start; /* 위쪽 정렬로 변경 */
+  background-color: #FCF9F0;
+  padding: 60px 16px 40px 16px; /* 상단 padding 추가 */
+}
+
+/* ✅ 카드형 로그인 박스 */
+.login-card {
+  background-color: white;
+  padding: 32px 32px;
+  border-radius: 20px;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.08);
+  width: 100%;
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.input-group input {
+  width: 100%;
+  padding: 14px 16px;
+  border-radius: 12px;
+  border: 1.5px solid #d4e8d6;
+  font-size: 15px;
+  transition: border-color 0.2s;
+}
+
+.input-group input:focus {
+  border-color: #3D7152;
+  box-shadow: 0 0 0 3px rgba(61, 113, 82, 0.1);
+}
+
+.checkbox-row {
+  display: flex;
+  justify-content: flex-start;
+  gap: 20px;
+  margin-top: 0;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;   /* ✅ 체크박스와 글씨 수직 정렬 */
+  gap: 6px;
+  font-size: 13px;
+  color: #333;
+}
+
+.login-title {
+  font-size: 22px;
+  color: #3D7152;
+  text-align: center;  /* ✅ 가운데 정렬 */
+  margin-top: 0;       /* ✅ 위 여백 제거 */
+  margin-bottom: 4px;  /* ✅ 아래도 약간만 */
+}
+
+.login-sub {
+  font-size: 14px;
+  color: #666;
+  text-align: center;  /* ✅ 가운데 정렬 */
+  margin-top: 0;       /* ✅ 위 여백 제거 */
+  margin-bottom: 16px; /* ✅ 아래는 적당히 유지 */
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px; /* 🔽 원래 16px → 줄임 */
+}
+
+.btn-login {
+  background-color: #3D7152;
+  color: white;
+  padding: 14px;
+  font-size: 15px;
+  border-radius: 12px;
+  border: none;
+  width: 100%;
+  transition: background-color 0.2s;
+}
+
+.sns-login {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.sns-btn {
+  padding: 12px;
+  border-radius: 12px;
+  font-size: 14px;
+  text-align: center;
+  font-weight: 600;
+  color: white;
+}
+
+.sns-btn.google { background-color: #EA4335; }
+.sns-btn.naver { background-color: #03C75A; }
+.sns-btn.kakao { background-color: #FEE500; color: #3D3D3D; }
+
+.login-footer {
+  font-size: 13px;
+  text-align: center;
+  color: #3D7152;
+}
+
+.btn-simple {
+  background: none;
+  border: 1.5px solid #3D7152;
+  padding: 10px 16px;
+  color: #3D7152;
+  border-radius: 12px;
+  font-weight: 600;
+  transition: background-color 0.2s;
+}
+
+.btn-simple:hover {
+  background-color: #F0FDF5;
+}
+/*회원가입 완료*/
+/* ✅ 전체 컨테이너 */
+.welcome-complete-container {
+  max-width: 480px;
+  margin: 80px auto;
+  padding: 48px 36px 38px 36px;
+  background: #ffffff;
+  border-radius: 30px;
+  box-shadow: 0 12px 40px rgba(44, 77, 94, 0.08);
+  text-align: center;
+  position: relative;
+  animation: fadeInUp 0.6s ease;
+}
+
+/* ✅ 축하 이모지 배지 */
+.complete-badge {
+  width: 90px;
+  height: 90px;
+  margin: 0 auto 20px auto;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #d1ffe7 10%, #b2ffd4 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3.4rem;
+  box-shadow: 0 0 0 6px #f1fff6, 0 4px 16px rgba(44, 77, 94, 0.1);
+}
+
+/* ✅ 제목 */
+.welcome-complete-title {
+  font-size: 1.6rem;
+  font-weight: bold;
+  color: #3D7152;
+  margin-bottom: 12px;
+}
+
+/* ✅ 사용자 정보 */
+.welcome-user-info {
+  font-size: 1rem;
+  color: #333;
+  margin-bottom: 14px;
+  line-height: 1.6;
+}
+
+.highlight-id {
+  display: inline-block;
+  margin-top: 6px;
+  font-weight: 600;
+  color: #2F4F4F;
+  background: #F2FFF7;
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-size: 0.95rem;
+}
+
+/* ✅ 설명 텍스트 */
+.welcome-complete-desc {
+  font-size: 0.95rem;
+  color: #555;
+  margin-bottom: 24px;
+  line-height: 1.7;
+}
+
+/* ✅ 버튼 공통 */
+.welcome-main-btn,
+.welcome-login-btn {
+  width: 100%;
+  padding: 13px;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 12px;
+  margin-bottom: 14px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+/* ✅ 메인 버튼 */
+.welcome-main-btn {
+  background-color: #76B985;
+  color: white;
+  border: none;
+}
+
+.welcome-main-btn:hover {
+  background-color: #5ca270;
+}
+
+/* ✅ 로그인 버튼 */
+.welcome-login-btn {
+  background-color: #E6F4EC;
+  color: #3D7152;
+  border: none;
+}
+
+.welcome-login-btn:hover {
+  background-color: #d1e9db;
+}
+
+/* ✅ 간단한 애니메이션 */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.login-warning {
+  background-color: #fff0f0; /* 부드러운 연한 빨간 배경 */
+  color: #d32f2f;            /* 경고 텍스트 색상 */
+  border: 1px solid #f4bcbc; /* 경계선 */
+  padding: 12px 16px;
+  border-radius: 10px;
+  font-size: 14px;
+  margin-top: 4px;
+  text-align: center;
+  box-shadow: 0 4px 8px rgba(211, 47, 47, 0.05);
+  margin-bottom: 4px; /* 🔽 더 밀착 */
+}

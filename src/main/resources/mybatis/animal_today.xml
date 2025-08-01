@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="dev.mvc.animal_today.AnimalTodayDAOInter">
+
+  <!-- 오늘 동물 조회 -->
+  <select id="getTodayAnimal" resultType="dev.mvc.animal_today.AnimalTodayVO">
+    SELECT * FROM animal_today
+    WHERE TO_CHAR(created_at, 'YYYY-MM-DD') = TO_CHAR(SYSDATE, 'YYYY-MM-DD')
+    FETCH FIRST 1 ROWS ONLY
+  </select>
+
+  <!-- 요약 업데이트 -->
+  <update id="updateSummary" parameterType="dev.mvc.animal_today.AnimalTodayVO">
+    UPDATE animal_today
+    SET summary = #{summary}
+    WHERE animalno = #{animalno}
+  </update>
+
+  <!-- 랜덤으로 선택된 종이 DB에 있는지 확인 -->
+  <select id="findByName" parameterType="String" resultType="dev.mvc.animal_today.AnimalTodayVO">
+    SELECT * FROM animal_today WHERE name = #{name, jdbcType=VARCHAR}
+  </select>
+
+  <!-- 새 동물 정보 저장 (image_url 제거) -->
+  <insert id="insert" parameterType="dev.mvc.animal_today.AnimalTodayVO">
+    INSERT INTO animal_today (
+      animalno, name, description, summary, recommendation, created_at
+    ) VALUES (
+      animal_today_seq.NEXTVAL,
+      #{name},
+      #{description},
+      #{summary},
+      #{recommendation, jdbcType=VARCHAR},
+      SYSDATE
+    )
+  </insert>
+
+
+</mapper>

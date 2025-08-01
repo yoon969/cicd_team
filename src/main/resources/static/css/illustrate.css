@@ -1,0 +1,185 @@
+
+/* ✅ 메인 컨테이너 */
+.container_main {
+  max-width: 700px;
+  margin: 40px auto;
+  padding: 30px;
+  background-color: #ffffff;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e2f3ea;
+  text-align: center;
+}
+
+/* 타이틀 */
+h2 {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #2f5d44;
+  margin: 0 0 16px 0;
+}
+
+
+.input-group input[type="file"] {
+  padding: 8px;
+  border: 1px solid #cde0d5;
+  border-radius: 8px;
+  font-size: 0.95rem;
+}
+
+
+/* 로딩 애니메이션 */
+#result_animation {
+  margin-top: 18px;
+}
+
+/* 결과 이미지 */
+#resultImg {
+  margin-top: 30px;
+  max-width: 100%;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  display: none;
+}
+
+/* 다운로드 버튼 */
+#downloadBtn {
+  display: none;
+  margin-top: 20px;
+  background-color: #b0e0c1;
+}
+
+#downloadBtn:hover {
+  background-color: #93cfaa;
+}
+
+#result_animation {
+  margin-top: 20px;
+  display: none; /* ← 이게 중요! 처음에는 안 보이게 */
+}
+
+/* ✅ 타이틀 */
+.title_line {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: #2f5d44;
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+/* ✅ 안내 박스 */
+.guide_box {
+  background-color: #fef9f2;
+  border-radius: 15px;
+  padding: 24px;
+  color: #333;
+  font-size: 1.1rem;
+  line-height: 1.9;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+/* ✅ 알림 박스 */
+.alert-info {
+  background-color: #d6f4ee;
+  color: #27544b;
+  padding: 12px 18px;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+
+/* ✅ 버튼 */
+.btn-illustrate {
+  padding: 10px 20px;
+  background-color: #b8d9c0;
+  color: white;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.btn-illustrate:hover {
+  background-color: #98c5aa;
+}
+
+/* ✅ 버튼 위치 */
+.text-center {
+  text-align: center;
+  margin-top: 30px;
+}
+
+.input-group {
+  display: flex;
+  align-items: center;
+  gap: 10px; /* ← 라벨과 파일박스 간 간격 */
+  margin-bottom: 16px; /* 아래 버튼과 간격 확보 */
+  justify-content: center; /* 수평 가운데 정렬 */
+
+}
+
+/* 사진 업로드 텍스트 스타일 (필요시) */
+.input-group label {
+  white-space: nowrap;
+  font-weight: bold;
+  color: #3D7152;
+  font-size: 14px;
+  margin-right: 0; /* 간격 없애기 */
+}
+
+/* 파일 전체 박스 */
+.file-box {
+  display: flex;
+  align-items: center;
+  border: 1px solid #cde0d5;
+  border-radius: 8px;
+  padding: 4px 10px;
+  background-color: #fefefe;
+  height: 35px;
+}
+
+/* 파일 선택 버튼 */
+.custom-file-label {
+  border: none;
+  background-color: #B8D9C0;
+  color: white !important;
+  padding: 0px 8px;
+  border-radius: 8px;
+  font-weight: bold;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  white-space: nowrap;
+  height: 30px;
+  display: flex;
+  align-items: center;
+}
+
+.custom-file-label:hover {
+  background-color: #3D7152;
+}
+
+/* 숨김 input */
+.custom-file-input {
+  display: none;
+}
+
+/* 파일 이름 표시 */
+#fileName {
+  font-size: 13px;
+  color: #666;
+  margin-left: 10px;
+  white-space: nowrap;
+  max-width: 160px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ✅ 일러스트 생성 버튼 위치 살짝 아래로 */
+.btn-generate {
+  margin-top: 8px;
+}

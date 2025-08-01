@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org">
+<th:block layout:fragment="styles">
+  <link rel="stylesheet" href="/css/users_admin.css">
+</th:block>
+<div layout:fragment="content">
+  <!-- ✅ 흰색 컨테이너 박스 추가 -->
+  <div class="container_box">
+  
+  <div class="title_line">📧 이메일 확인 결과</div>
+
+  <p>가입된 이메일은 다음과 같습니다:</p>
+  <h3 th:text="${email}"></h3>
+
+  <a th:href="@{/users/login}">로그인 하러 가기</a>
+
+</div>
+</html>

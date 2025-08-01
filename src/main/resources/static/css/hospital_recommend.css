@@ -1,0 +1,73 @@
+/* ✅ 전체 병원 추천 컨테이너 */
+.recommend-container {
+  max-width: 50%;
+  margin: 40px auto;
+  padding: 30px 24px;
+  background-color: #ffffff;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); /* 💡 깊은 그림자 */
+  border: 1px solid #e2f3ea; /* ✨ 부드러운 테두리 */
+}
+
+/* ✅ 제목 스타일 */
+.recommend-container h2 {
+  font-size: 24px;
+  color: #3D7152;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 32px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  text-shadow: 1px 1px 1px rgba(160, 200, 180, 0.3); /* 💬 부드러운 입체감 */
+}
+
+/* ✅ 입력 폼 그룹 */
+.form-group {
+  margin-bottom: 20px;
+}
+
+/* ✅ 라벨 스타일 */
+.recommend-container label {
+  display: block;
+  font-weight: 600;
+  color: #2F4F4F;
+  margin-bottom: 6px;
+  font-size: 15px;
+}
+
+/* ✅ 입력창 스타일 */
+.recommend-container input[type="text"] {
+  width: 100%;
+  padding: 10px 14px;
+  font-size: 14px;
+  border: 1.5px solid #cdeee0;
+  border-radius: 10px;
+  background-color: #ffffff;
+  color: #2F4F4F;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 6px rgba(90, 180, 130, 0.1); /* 🎯 살짝 뜬 듯한 입력창 */
+}
+
+/* ✅ 포커스 시 강조 */
+.recommend-container input[type="text"]:focus {
+  border-color: #70cfaf;
+  box-shadow: 0 0 0 3px rgba(144, 238, 205, 0.3); /* 외곽선 강조 */
+  outline: none;
+}
+
+/* ✅ 버튼 래퍼 (기존 스타일 유지) */
+.button-wrapper {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 16px;
+  margin-bottom: 0;
+}
+
+/* ✅ 로딩 거미는 중앙 정렬 */
+.center-animation {
+  display: none;
+  text-align: center;
+  margin-top: 12px;
+}

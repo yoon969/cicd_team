@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="dev.mvc.memory.MemoryDAOInter">
+
+  <!-- 추억 변환 기록 등록 -->
+  <insert id="create" parameterType="dev.mvc.memory.MemoryVO">
+  INSERT INTO memory (memoryno, image_url, generated_image_url, create_at, usersno)
+  VALUES (memory_seq.NEXTVAL, #{image_url}, #{generated_image_url}, SYSDATE, #{usersno})
+</insert>
+
+
+  <select id="list" resultType="dev.mvc.memory.MemoryVO">
+  SELECT memoryno, image_url, generated_image_url, create_at, usersno
+  FROM memory
+  ORDER BY memoryno DESC
+</select>
+
+  <!-- 특정 사용자(userno)의 추억 일러스트 목록 -->
+  <select id="listByUsersno" parameterType="int" resultType="dev.mvc.memory.MemoryVO">
+    SELECT * FROM memory
+    WHERE usersno = #{usersno}
+    ORDER BY memoryno DESC
+  </select>
+
+  <!-- 일러스트 상세 조회 -->
+  <select id="read" resultType="dev.mvc.memory.MemoryVO" parameterType="int">
+  SELECT memoryno, image_url, generated_image_url, create_at, usersno
+  FROM memory
+  WHERE memoryno = #{memoryno}
+</select>
+
+
+  <!-- 일러스트 삭제 -->
+  <delete id="delete" parameterType="int">
+    DELETE FROM memory WHERE memoryno = #{memoryno}
+  </delete>
+
+  <!-- 사용자 탈퇴 시 일괄 삭제 -->
+  <delete id="deleteByUsersno" parameterType="int">
+    DELETE FROM memory WHERE usersno = #{usersno}
+  </delete>
+  
+  <select id="list_by_paging" resultType="dev.mvc.memory.MemoryVO" parameterType="map">
+  SELECT memoryno, image_url, generated_image_url, create_at, usersno
+  FROM memory
+  WHERE usersno = #{usersno}
+  ORDER BY memoryno DESC
+  OFFSET #{start} ROWS FETCH NEXT #{cnt} ROWS ONLY
+</select>
+
+<select id="total" resultType="int">
+  SELECT COUNT(*) FROM memory
+</select>
+
+
+<select id="total_by_usersno" resultType="int" parameterType="int">
+  SELECT COUNT(*) FROM memory
+  WHERE usersno = #{usersno}
+</select>
+
+</mapper>

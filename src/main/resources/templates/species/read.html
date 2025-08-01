@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+
+<html layout:decorate="~{layout}"> <!-- layout.html 상속-->
+<th:block layout:fragment="styles">
+  <link rel="stylesheet" href="/css/species_admin.css">
+</th:block>
+<div layout:fragment="content">
+<div class="container_main">
+  <div class="title_line">종분류 조회</div>
+  <aside class="aside_right">
+    <a href="javascript: location.reload();">새로 고침</a>
+    <span class="menu_divide">|</span>
+    <a th:href="@{|/species/list_search|}">목록</a>
+    <span class="menu_divide">|</span>
+    <a th:href="@{|/species/update/${speciesVO.speciesno}|}">수정</a>
+    <span class="menu_divide">|</span>
+    <a th:href="@{|/species/delete/${speciesVO.speciesno}|}">삭제</a>
+    <span class="menu_divide">|</span>
+    <a th:href="@{|/species/create|}">등록</a>
+  </aside>
+
+  <!--/* /species/list_search_com.html의 list_search_fragment를 include */-->
+
+  <div class="menu_line"></div>
+
+  <div class="container mt-3" style="width: 70%; margin: 5px auto;"> <!--/* mt-3: margin top 16px */-->
+    <ul class="list-group list-group-flush custom-margin">
+      <li class="list-group-item" >
+        종분류 그룹: <span th:text="${speciesVO.grp}" style="margin-right: 20px;"></span>
+        종분류: <span th:text="${speciesVO.sname}"></span>
+      </li>
+      <li class="list-group-item">
+        관련 자료수: <span th:text="${speciesVO.cnt}" style="margin-right: 20px;"></span>
+        출력 순서: <span th:text="${speciesVO.seqno}" style="margin-right: 20px;"></span>
+        출력 모드: <span th:text="${speciesVO.visible}" style="margin-right: 20px;"></span>
+        등록일: <span th:text="${speciesVO.sdate}"></span>
+      </li>
+    </ul>  
+  </div>
+
+  <!--/* list_all_com.html의 list_all_fragment를 include */-->
+  <div th:replace="~{species/list_all_com::list_all_fragment}"></div>
+</div>
+</div>
+</html>
+

@@ -1,0 +1,89 @@
+<div th:fragment="list_all_fragment">
+  
+  <!-- ✅ 제목 -->
+    <div class="title_line">
+      <span th:if="${word != null and word != ''}" th:text="|${word} ${search_cnt} 건|"></span>
+    </div>
+
+    
+<div class="menu_line"></div>
+  <!-- ✅ 검색 폼 -->
+  <div th:replace="~{species/list_search_com::list_search_fragment}"></div>
+  <table class="species-admin-table" aria-label="종분류 목록">
+    <colgroup>
+      <col style="width: 7%;">
+      <col style="width: 18%;">
+      <col style="width: 18%;">
+      <col style="width: 9%;">
+      <col style="width: 15%;">
+      <col style="width: 33%;">
+    </colgroup>
+    <thead>
+      <tr>
+        <th>순서</th>
+        <th>그룹</th>
+        <th>종분류</th>
+        <th>자료수</th>
+        <th>등록일</th>
+        <th>기타</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- 데이터 없을 때 안내 -->
+      <tr th:if="${#lists.isEmpty(list)}">
+        <td colspan="6" style="color:#aaa; text-align:center; padding: 32px 0;">
+          등록된 종분류가 없습니다.
+        </td>
+      </tr>
+      <!-- 데이터 있을 때 출력 -->
+      <tr th:each="speciesVO, status:${list}">
+        <td class="td_bs" th:text="${no - status.index}"></td>
+        <td class="td_bs" style="max-width:90px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+          <a th:href="@{|/species/read/${speciesVO.speciesno}?word=${word}&now_page=${now_page}|}" class="table-link"
+            th:text="${speciesVO.grp}"></a>
+        </td>
+        <td class="td_bs" style="max-width:120px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+          <a th:href="@{|/species/read/${speciesVO.speciesno}?word=${word}&now_page=${now_page}|}" class="table-link"
+            th:text="${speciesVO.sname}"></a>
+        </td>
+        <td class="td_bs" th:text="${speciesVO.cnt}"></td>
+        <td class="td_bs" th:text="${speciesVO.sdate.substring(0, 10)}"></td>
+        <td class="td_bs" style="font-size:1.09em;">
+          <a th:href="@{|/post/list?speciesno=${speciesVO.speciesno}|}">
+            <img src="/species/images/contents.png" class="icon" title="글 목록" alt="글목록">
+          </a>
+          <a th:href="@{|/post/create?grp=${speciesVO.grp}|}">
+            <img src="/species/images/append.png" class="icon" title="글 추가" alt="글추가">
+          </a>
+          <span th:if="${speciesVO.visible == 'Y'}">
+            <a th:href="@{|/species/update_visible_n/${speciesVO.speciesno}?word=${word}&now_page=${now_page}|}">
+              <img src="/species/images/show.png" class="icon" title="출력" alt="출력">
+            </a>
+          </span>
+          <span th:if="${speciesVO.visible == 'N'}">
+            <a th:href="@{|/species/update_visible_y/${speciesVO.speciesno}?word=${word}&now_page=${now_page}|}">
+              <img src="/species/images/hide.png" class="icon" title="숨김" alt="숨김">
+            </a>
+          </span>
+          <span th:text="${speciesVO.seqno}"
+            style="display:inline-block; width:28px; text-align:center; color:#397958;">10</span>
+          <a th:href="@{|/species/update_seqno_forward/${speciesVO.speciesno}?word=${word}&now_page=${now_page}|}">
+            <img src="/species/images/decrease.png" class="icon" title="우선순위 높임" alt="순위↑">
+          </a>
+          <a th:href="@{|/species/update_seqno_backward/${speciesVO.speciesno}?word=${word}&now_page=${now_page}|}">
+            <img src="/species/images/increase.png" class="icon" title="우선순위 낮춤" alt="순위↓">
+          </a>
+          <a th:href="@{|/species/update/${speciesVO.speciesno}?word=${word}&now_page=${now_page}|}">
+            <img src="/species/images/update.png" class="icon" title="수정" alt="수정">
+          </a>
+          <a th:href="@{|/species/delete/${speciesVO.speciesno}?word=${word}&now_page=${now_page}|}">
+            <img src="/species/images/delete.png" class="icon" title="삭제" alt="삭제">
+          </a>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div th:utext="${paging}"></div>
+  
+</div>

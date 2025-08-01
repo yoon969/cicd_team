@@ -1,0 +1,268 @@
+/* ✅ 전체 페이지 정렬 */
+.signup-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: min(12vh, 100px) 16px 60px;
+  background-color: #FCF9F0;
+  flex-direction: column;
+}
+
+.signup-container {
+  margin: 0 auto;
+}
+
+/* ✅ 메인 타이틀 */
+.signup-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: #3D7152;
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+/* ✅ 카드 박스 */
+.signup-section {
+  background-color: #fff;
+  width: 100%;
+  max-width: 680px;
+  border-radius: 16px;
+  padding: 36px 32px;
+  margin-bottom: 28px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+/* ✅ 소제목 */
+.section-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #3D7152;
+  margin-bottom: 20px;
+}
+
+/* ✅ 한 줄 입력 라벨 + 인풋 */
+.form-row {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.form-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+}
+
+/* ✅ input + 버튼 같이 있는 구조 */
+.form-input-wrap {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.form-input {
+  flex: 1;
+  padding: 13px 16px;
+  border: 1.5px solid #c8e0c6;
+  border-radius: 8px;
+  font-size: 15px;
+  background-color: #fff;
+  transition: border-color 0.2s;
+}
+
+.form-input:focus {
+  border-color: #3D7152;
+  box-shadow: 0 0 0 3px rgba(61, 113, 82, 0.1);
+  outline: none;
+}
+
+/* ✅ 중복 확인 / 우편번호 버튼 */
+.btn-sub {
+  background-color: #B8D9C0;
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.btn-sub:hover {
+  background-color: #3D7152;
+}
+
+/* ✅ 메시지 텍스트 */
+.msg {
+  font-size: 13px;
+  padding-left: 4px;
+}
+
+.span_warning {
+  color: #d32f2f;
+}
+
+.span_info {
+  color: #388e3c;
+}
+
+/* ✅ 약관 영역 */
+.terms-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+  color: #333;
+  margin: 10px 0;
+}
+
+.terms-item label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.required {
+  color: red;
+  font-size: 13px;
+}
+
+.optional {
+  color: #999;
+  font-size: 13px;
+}
+
+.details {
+  color: #3D7152;
+  font-size: 13px;
+  text-decoration: none;
+}
+
+.details .arrow {
+  font-size: 12px;
+}
+
+/* ✅ 하단 버튼 */
+.signup-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 24px;
+}
+
+.btn-main {
+  flex: 1;
+  background-color: #3D7152;
+  color: white;
+  font-size: 15px;
+  font-weight: 600;
+  padding: 14px;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+}
+
+.btn-cancel {
+  flex: 1;
+  background: none;
+  border: 1.5px solid #3D7152;
+  color: #3D7152;
+  font-size: 15px;
+  font-weight: 600;
+  padding: 14px;
+  border-radius: 12px;
+  cursor: pointer;
+}
+
+.btn-cancel:hover {
+  background-color: #F3FBF3;
+}
+
+/*비밀번호 변경*/
+.passwd-wrapper {
+  width: 100%;
+  max-width: 600px;
+  margin: 60px auto;
+  padding: 0 20px;
+}
+
+.passwd-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.passwd-title {
+  font-size: 22px;
+  font-weight: bold;
+  color: #3D7152;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.passwd-aside {
+  font-size: 14px;
+  color: #3D7152;
+}
+
+.passwd-aside a {
+  text-decoration: none;
+  color: #3D7152;
+  margin: 0 4px;
+}
+
+.passwd-aside .divider {
+  color: #ccc;
+}
+
+.passwd-card {
+  background-color: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 6px 20px rgba(60, 170, 100, 0.08);
+  padding: 32px;
+}
+
+.passwd-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.passwd-form-group label {
+  font-weight: 600;
+  color: #3D7152;
+  margin-bottom: 6px;
+  display: block;
+}
+
+.passwd-form-group input {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid #cce3d1;
+  border-radius: 10px;
+  font-size: 15px;
+  background-color: #f9fff9;
+}
+
+.passwd-form-group input:focus {
+  border-color: #3D7152;
+  outline: none;
+}
+
+.passwd-msg {
+  font-size: 13px;
+  color: #888;
+  margin-top: 4px;
+}
+
+.passwd-button-group {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 12px;
+}
+

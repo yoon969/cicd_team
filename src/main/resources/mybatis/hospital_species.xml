@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="dev.mvc.hospital_species.HospitalSpeciesDAOInter">
+
+  <!-- 등록 -->
+  <insert id="create" parameterType="dev.mvc.hospital_species.HospitalSpeciesVO">
+    INSERT INTO hospital_species (
+      id, hospitalno, speciesno
+    ) VALUES (
+      #{id}, #{hospitalno}, #{speciesno}
+    )
+  </insert>
+
+  <!-- 병원번호로 등록된 종 조회 -->
+<select id="listByHospitalno" parameterType="int" resultType="dev.mvc.hospital_species.HospitalSpeciesVO">
+  SELECT hs.id,
+         hs.hospitalno,
+         hs.speciesno,
+         s.sname,
+         s.grp
+  FROM hospital_species hs
+    INNER JOIN species s ON hs.speciesno = s.speciesno
+  WHERE hs.hospitalno = #{hospitalno}
+  ORDER BY s.grp ASC, s.sname ASC
+</select>
+
+  <!-- 병원 번호로 일괄 삭제 (병원 삭제 시 등) -->
+  <delete id="deleteByHospitalno" parameterType="int">
+    DELETE FROM hospital_species WHERE hospitalno = #{hospitalno}
+  </delete>
+
+  <!-- 종 번호로 일괄 삭제 (품종 삭제 시 등) -->
+  <delete id="deleteBySpeciesno" parameterType="int">
+    DELETE FROM hospital_species WHERE speciesno = #{speciesno}
+  </delete>
+
+  <!-- 병원-종 중복 확인 -->
+  <select id="checkExist" resultType="int">
+    SELECT COUNT(*) FROM hospital_species
+    WHERE hospitalno = #{hospitalno} AND speciesno = #{speciesno}
+  </select>
+
+</mapper>

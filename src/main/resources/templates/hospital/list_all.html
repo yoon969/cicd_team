@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>전체 병원 목록</title>
+
+  <!-- ✅ 병원 리스트 전용 CSS 파일 불러오기 -->
+  <th:block layout:fragment="styles">
+    <link rel="stylesheet" th:href="@{/css/hospital_list.css}">
+  </th:block>
+</head>
+
+<body>
+<div layout:fragment="content" class="table-container">
+  <div class="table-header">
+    <div class="left-title">
+      <span class="emoji">🏥</span>
+      <span class="title">전체 병원 목록</span>
+    </div>
+
+    <form class="search-form" th:action="@{/hospital/list_all}" method="get">
+      <input type="text" name="word" th:value="${word}" placeholder="병원명을 입력하세요">
+    
+      <!-- 둘 다 button 태그로 통일 -->
+      <button type="submit" class="navbar-btn">검색</button>
+      <a th:href="@{/hospital/list_all}" class="navbar-btn">전체</a>
+    </form>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th class="col-no">번호</th>
+        <th class="col-name">병원명</th>
+        <th class="col-tel">전화번호</th>
+        <th class="col-address">주소</th>
+        <th class="col-homepage">홈페이지</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr th:each="vo : ${list}">
+        <td th:text="${vo.hospitalno}" class="col-no"></td>
+        <td class="col-name">
+          <a th:href="@{/hospital/read(hospitalno=${vo.hospitalno})}" 
+             th:text="${vo.name}"></a>
+        </td>
+        <td th:text="${vo.tel}" class="col-tel"></td>
+        <td th:text="${vo.address}" class="col-address"></td>
+        <td class="col-homepage">
+          <a th:href="${vo.homepage}" th:text="${vo.homepage}" target="_blank"></a>
+        </td>
+      </tr>
+      <tr th:if="${list.size() == 0}">
+        <td colspan="6">등록된 병원 정보가 없습니다.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="paging" th:utext="${paging}"></div>
+</div>
+</body>
+</html>

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org">
+<th:block layout:fragment="styles">
+  <link rel="stylesheet" href="/css/users_admin.css">
+</th:block>
+
+<div layout:fragment="content">
+
+  <!-- ✅ container-main 시작 -->
+  <div class="container_main">
+    <div class="table-header">
+      
+      <!-- 왼쪽 타이틀 -->
+      <div class="left-title">
+        <span class="title">회원관리</span>
+        <span th:if="${word != null and word != ''}" th:text="|${word} ${search_cnt} 건|"></span>
+      </div>
+    
+      <!-- 오른쪽 검색 폼 -->
+        <form name="search-form" method="get" action="/users/list_search" style="display: flex; gap: 6px;">
+          <input type="text" name="word" id="word" th:value="${word}" placeholder="검색어를 입력하세요">
+          
+          <button type="submit" class="navbar-btn">검색</button>
+          
+          <span th:if="${word != null and word != ''}">
+            <button type="button" class="navbar-btn" th:onclick="|location.href='@{/users/list_search}'|">검색 취소</button>
+          </span>
+        </form>
+    </div>
+
+
+    <table class="user-admin-table">
+      <colgroup>
+        <col style='width: 10%;' />
+        <col style='width: 20%;' />
+        <col style='width: 8%;' />
+        <col style='width: 15%;' />
+        <col style='width: 17%;' />
+        <col style='width: 10%;' />
+        <col style='width: 10%;' />
+      </colgroup>
+      <thead>
+        <tr>
+          <th>등급</th>
+          <th>이메일(ID)</th>
+          <th>성명</th>
+          <th>전화번호</th>
+          <th>주소</th>
+          <th>가입일</th>
+          <th>관리</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr th:if="${#lists.isEmpty(list)}">
+          <td colspan="7" style="color:#aaa; text-align:center; padding:32px 0;">등록된 회원이 없습니다.</td>
+        </tr>
+        <tr th:each="usersVO : ${list}">
+          <td class="td-rank">
+            <img th:if="${usersVO.role == 'admin'}" th:src="@{/users/images/admin.png}" class="icon" title="관리자 등급" />
+            <img th:if="${usersVO.role == 'user'}" th:src="@{/users/images/user.png}" class="icon" title="일반회원 등급" />
+            <img th:if="${usersVO.role == 'ghost'}" th:src="@{/users/images/ghost.png}" class="icon" title="탈퇴회원 등급" />
+          
+            <span th:if="${usersVO.role == 'admin'}">관리자</span>
+            <span th:if="${usersVO.role == 'user'}">일반회원</span>
+            <span th:if="${usersVO.role == 'ghost'}">탈퇴회원</span>
+          </td>
+          <td class="td-left ellipsis">
+            <a th:href="@{|./read?usersno=${usersVO.usersno}|}" th:title="${usersVO.email}"
+              th:text="${usersVO.email}"></a>
+          </td>
+          <td class="td-left ellipsis">
+            <a th:href="@{|./read?usersno=${usersVO.usersno}|}" th:title="${usersVO.usersname}"
+              th:text="${usersVO.usersname}"></a>
+          </td>
+          <td th:text="${usersVO.tel ?: '정보 없음'}"
+            th:style="${usersVO.tel == null or usersVO.tel == ''} ? 'color:#bbb;' : ''"></td>
+          <td class="td-left ellipsis">
+            <span th:if="${usersVO.address1 != null and usersVO.address1.length() > 17}" th:title="${usersVO.address1}"
+              th:text="|${usersVO.address1.substring(0, 17)}...|"></span>
+            <span th:if="${usersVO.address1 == null or usersVO.address1.length() <= 17}"
+              th:text="${usersVO.address1 ?: '주소 없음'}"
+              th:style="${usersVO.address1 == null or usersVO.address1 == ''} ? 'color:#bbb;' : ''"></span>
+          </td>
+          <td th:text="${usersVO.created_at.substring(0, 10)}"></td>
+          <td class="td-actions">
+            <a th:href="@{|./read?usersno=${usersVO.usersno}|}" title="회원정보 수정">
+              <img src='/users/images/update.png' class="icon">
+            </a>
+            <a th:href="@{|./delete?usersno=${usersVO.usersno}|}"  title="회원 삭제">
+              <img src='/users/images/delete.png' class="icon">
+            </a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- 페이징 -->
+    <div class="user-paging" th:utext="${paging}"></div>
+
+  </div>
+  <!-- ✅ container-main 끝 -->
+
+</div>
+</html>

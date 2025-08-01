@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org">
+
+<!-- ✅ 스타일 -->
+<th:block layout:fragment="styles">
+  <link rel="stylesheet" href="/css/calendar.css">
+</th:block>
+
+<div layout:fragment="content">
+
+  <!-- ✅ 일정 모달 -->
+  <div id="calendarModal" class="calendar-modal">
+    <div class="modal-content">
+      <span class="close-btn" onclick="closeModal()">&times;</span>
+      <h3 id="modalTitle">제목 없음</h3>
+      <p id="modalDate"></p>
+      <div id="modalType"></div>
+    </div>
+  </div>
+
+  <!-- ✅ 상단 컨트롤 -->
+  <div class="calendar-header">
+    <div class="month-controls" id="month_title" data-current_year="" data-current_month="">
+      <a href="#" onclick="changeMonth(-1)">
+        <img src="/images/arrow-left.png" alt="이전달" class="arrow-icon">
+      </a>
+      <span id="panel_year_month">2025년 7월</span>
+      <a href="#" onclick="changeMonth(1)">
+        <img src="/images/arrow-right.png" alt="다음달" class="arrow-icon">
+      </a>
+      <img src="/images/crocodile.png" class="calendar-icon" onclick="goToToday()" style="cursor: pointer;">
+    </div>
+    <div class="calendar-actions">
+      <a href="/calendar/create" class="add-calendar-btn">➕ 일정 등록하기</a>
+    </div>
+  </div>
+
+  <!-- ✅ 달력 표 -->
+  <table>
+    <thead>
+      <tr>
+        <th class="weekend">일요일</th>
+        <th>월요일</th>
+        <th>화요일</th>
+        <th>수요일</th>
+        <th>목요일</th>
+        <th>금요일</th>
+        <th class="saturday">토요일</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <!-- ✅ 스크립트 -->
+  <script>
+    function openModalByDate(date_calendar) {
+      document.getElementById("modalTitle").textContent = "📅 " + date_calendar + " 일정 목록";
+      document.getElementById("modalDate").innerHTML = "불러오는 중...";
+      document.getElementById("modalType").innerHTML = "";
+
+      document.getElementById("calendarModal").style.display = "flex";
+
+      fetch("/calendar/list_calendar_day?labeldate=" + date_calendar)
+        .then(response => response.json())
+        .then(data => {
+          let result = "";
+          if (data.length === 0) {
+            result = "<p>📭 일정 없음</p>";
+          } else {
+            result = "<ul style='padding-left: 1em;'>";
+            result += data.map(item => `
+              <li>
+                <a href="/calendar/read/${item.calendarno}" style="text-decoration: none; color: #333;">
+                  📌 ${item.title || "제목 없음"}
+                </a>
+                <span class="delete-btn" onclick="deleteCalendar(${item.calendarno})" title="삭제">🗑️</span>
+              </li>
+            `).join("");
+            result += "</ul>";
+          }
+
+          document.getElementById("modalDate").innerHTML = result;
+
+          // ✅ 일정 등록 폼 삽입
+          document.getElementById("modalType").innerHTML = `
+            <div style="margin-top: 12px; display: flex; align-items: center;">
+              <input type="text" id="newScheduleTitle" placeholder="새 일정 제목"
+                     style="flex: 1; padding: 6px; border-radius: 6px; border: 1px solid #ccc; margin-right: 8px;">
+              <button onclick="createSchedule('${date_calendar}')"
+                      style="padding: 6px 10px; border: none; background-color: #3D7152; color: #fff; border-radius: 6px;">
+                등록
+              </button>
+            </div>`;
+        })
+        .catch(error => {
+          console.error("오류 발생:", error);
+          document.getElementById("modalDate").innerText = "❌ 일정 정보를 불러오는 중 오류 발생";
+        });
+    }
+
+    function createSchedule(labeldate) {
+      const titleInput = document.getElementById("newScheduleTitle");
+      const title = titleInput.value.trim();
+
+      if (!title) {
+        alert("제목을 입력해주세요!");
+        return;
+      }
+
+      titleInput.disabled = true;
+
+      fetch("/calendar/create", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          [document.querySelector('meta[name="_csrf_header"]').getAttribute("content")]:
+            document.querySelector('meta[name="_csrf"]').getAttribute("content")
+        },
+        body: JSON.stringify({
+          labeldate: labeldate,
+          title: title,
+          content: title,
+          label: "일정",
+          type: "user",
+          emoji: "📌"
+        })
+      })
+        .then(res => {
+          if (!res.ok) throw new Error("등록 실패");
+          return fetch("/calendar/list_calendar_day?labeldate=" + labeldate);
+        })
+        .then(res => res.json())
+        .then(data => {
+          let result = "<ul style='padding-left: 1em;'>";
+          result += data.map(item => `
+            <li>
+              <a href="/calendar/read/${item.calendarno}" style="text-decoration: none; color: #333;">
+                📌 ${item.title || "제목 없음"}
+              </a>
+              <span class="delete-btn" onclick="deleteCalendar(${item.calendarno})" title="삭제">🗑️</span>
+            </li>
+          `).join("");
+          result += "</ul>";
+
+          document.getElementById("modalDate").innerHTML = result;
+          titleInput.value = "";
+          titleInput.disabled = false;
+        })
+        .catch(err => {
+          console.error("등록 중 오류:", err);
+          alert("등록 중 오류가 발생했습니다.");
+          titleInput.disabled = false;
+        });
+    }
+
+    async function fetchCalendarData(date_calendar, contentDiv) {
+      try {
+        const response = await fetch("/calendar/list_calendar_day?labeldate=" + date_calendar);
+        if (!response.ok) return;
+
+        const data = await response.json();
+        if (data.length > 0) {
+          const emojiSpan = document.createElement("span");
+          emojiSpan.textContent = "📌";
+          emojiSpan.className = "calendar-emoji";
+          emojiSpan.style.fontSize = "20px";
+          emojiSpan.style.cursor = "pointer";
+          emojiSpan.onclick = () => openModalByDate(date_calendar);
+          contentDiv.appendChild(emojiSpan);
+        }
+      } catch (err) {
+        console.error("이모지 불러오기 실패:", err);
+      }
+    }
+
+    window.onload = function () {
+      closeModal();
+      const year = parseInt('[[${year}]]');
+      const month = parseInt('[[${month}]]');
+
+      const monthTitle = document.getElementById('month_title');
+      monthTitle.setAttribute('data-current_year', year);
+      monthTitle.setAttribute('data-current_month', month);
+
+      document.getElementById("panel_year_month").textContent = `${year}년 ${month + 1}월`;
+
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
+      const calendarBody = document.querySelector("tbody");
+      calendarBody.innerHTML = "";
+
+      const firstDay = new Date(year, month, 1).getDay();
+      let row = document.createElement("tr");
+      for (let i = 0; i < firstDay; i++) row.appendChild(document.createElement("td"));
+
+      for (let day = 1; day <= daysInMonth; day++) {
+        const cell = document.createElement("td");
+        const contentDiv = document.createElement("div");
+        contentDiv.style.display = "flex";
+        contentDiv.style.flexDirection = "column";
+        contentDiv.style.alignItems = "center";
+
+        const date_calendar = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+
+        const dateSpan = document.createElement("span");
+        dateSpan.textContent = day;
+        dateSpan.style.fontWeight = "bold";
+        dateSpan.onclick = () => openModalByDate(date_calendar);
+        contentDiv.appendChild(dateSpan);
+
+        // ✅ 일정이 있을 때만 이모지 출력
+        fetchCalendarData(date_calendar, contentDiv);
+
+        cell.appendChild(contentDiv);
+
+        if ((firstDay + day - 1) % 7 === 0) cell.classList.add("weekend");
+        if ((firstDay + day - 1) % 7 === 6) cell.classList.add("saturday");
+        if (year === new Date().getFullYear() && month === new Date().getMonth() && day === new Date().getDate()) {
+          cell.classList.add("today");
+        }
+
+        row.appendChild(cell);
+        if ((firstDay + day - 1) % 7 === 6) {
+          calendarBody.appendChild(row);
+          row = document.createElement("tr");
+        }
+      }
+
+      if (row.children.length > 0) {
+        while (row.children.length < 7) {
+          row.appendChild(document.createElement("td"));
+        }
+        calendarBody.appendChild(row);
+      }
+    };
+
+    function closeModal() {
+      document.getElementById("calendarModal").style.display = "none";
+    }
+
+    window.onclick = function (event) {
+      if (event.target === document.getElementById("calendarModal")) closeModal();
+    }
+
+    function changeMonth(cnt) {
+      const monthTitle = document.getElementById('month_title');
+      let currentYear = parseInt(monthTitle.getAttribute('data-current_year'), 10);
+      let currentMonth = parseInt(monthTitle.getAttribute('data-current_month'), 10);
+
+      currentMonth += cnt;
+      if (currentMonth > 11) { currentMonth = 0; currentYear++; }
+      else if (currentMonth < 0) { currentMonth = 11; currentYear--; }
+
+      location.href = `/calendar/list_calendar?year=${currentYear}&month=${currentMonth + 1}`;
+    }
+
+    function goToToday() {
+      const today = new Date();
+      location.href = `/calendar/list_calendar?year=${today.getFullYear()}&month=${today.getMonth() + 1}`;
+    }
+
+    function deleteCalendar(calendarno) {
+      if (confirm("정말 삭제하시겠어요?")) {
+        fetch(`/calendar/delete_proc?calendarno=${calendarno}`, { method: 'GET' })
+          .then(res => res.text())
+          .then(result => {
+            if (result == "success") {
+              const date = document.getElementById("modalTitle").textContent.replace("📅 ", "").trim();
+              openModalByDate(date);
+              location.reload();
+            } else {
+              alert("❗ 삭제에 실패했습니다.");
+            }
+          })
+          .catch(err => {
+            console.error("삭제 오류:", err);
+            alert("삭제 중 오류 발생");
+          });
+      }
+    }
+  </script>
+</div>
+</html>

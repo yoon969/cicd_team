@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org">
+<head>
+<th:block layout:fragment="styles">
+  <link rel="stylesheet" href="/css/illustrate.css">
+</th:block>
+
+  <meta charset="UTF-8">
+  <title>추억 일러스트 생성기</title>
+<meta name="_csrf" th:content="${_csrf.token}">
+<meta name="_csrf_header" th:content="${_csrf.headerName}">
+  <script>
+      const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+      const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+    
+      // ✅ 파일명 업데이트 이벤트는 여기로 이동
+      document.addEventListener('DOMContentLoaded', () => {
+        document.getElementById('fileInput').addEventListener('change', function () {
+          const fileNameSpan = document.getElementById('fileName');
+          const file = this.files[0];
+          fileNameSpan.textContent = file ? file.name : '선택된 파일 없음';
+        });
+      });
+    
+      function sendImage() {
+        const formData = new FormData();
+        const fileInput = document.getElementById("fileInput");
+        const resultImg = document.getElementById("resultImg");
+        const loading = document.getElementById("result_animation");
+        const sendBtn = document.getElementById("sendSmsBtn");
+      
+        if (!fileInput.files[0]) {
+          alert("📌 사진 파일을 선택해주세요!");
+          return;
+        }
+      
+        formData.append("file", fileInput.files[0]);
+      
+        resultImg.style.display = "none";
+        sendBtn.style.display = "none";
+        loading.style.display = "block";
+      
+        fetch("/memory/illustrate", {
+          method: "POST",
+          headers: {
+            [csrfHeader]: csrfToken
+          },
+          body: formData
+        })
+        .then(res => res.json())
+        .then(data => {
+          console.log("[🎯 응답 데이터]", data);
+          loading.style.display = "none";
+      
+          if (data.redirect) {
+            location.href = data.redirect;
+            return;
+          }
+      
+          if (data.image_url) {
+            resultImg.src = "http://192.168.12.139:9093" + data.image_url;
+            resultImg.style.display = "block";
+      
+            // ✅ 전송 버튼만 보여줌
+            sendBtn.style.display = "inline-block";
+          } else {
+            alert("⚠️ 이미지 생성에 실패했습니다.");
+          }
+        })
+        .catch(err => {
+          loading.style.display = "none";
+          alert("FastAPI 호출 실패: " + err.message);
+        });
+      }
+      
+      // SMS 전송
+      function sendImageToPhone() {
+        const resultImg = document.getElementById("resultImg");
+      
+        if (!resultImg || !resultImg.src) {
+          alert("전송할 이미지가 없습니다.");
+          return;
+        }
+      
+        const imageUrl = resultImg.src.replace("http://localhost:9093", ""); // 예: /upload/abc.jpg
+      
+        fetch("/memory/send_sms", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+            [csrfHeader]: csrfToken // CSRF 보호
+          },
+          body: `imageUrl=${encodeURIComponent(imageUrl)}`
+        })
+          .then(response => response.json())
+          .then(data => {
+            console.log("[SMS 응답]", data); // 실제 응답 확인
+            if (data.status === "success") {
+              alert("전송 완료!");
+            } else {
+              alert("전송 실패: " + data.msg);
+            }
+          })
+          .catch(err => {
+            alert("오류 발생: " + err.message);
+          });
+      }
+
+    </script>
+</head>
+
+<body>
+  <div layout:fragment="content" class="container_main">
+    <h2>🎨 추억 속 사진을 일러스트로 변환해보세요</h2>
+
+    <div class="input-group">
+        <label for="fileInput">📷 사진을 업로드하세요.</label>
+        <div class="file-box">
+          <label for="fileInput" class="custom-file-label">파일 선택</label>
+          <input type="file" id="fileInput" class="custom-file-input" accept="image/*">
+          <span id="fileName">선택된 파일 없음</span>
+        </div>
+      </div>
+
+    <div class="btn-group" style="margin-top: 10px;">
+      <button onclick="sendImage()" class="navbar-btn">✨ 일러스트 생성</button>
+      <button id="sendSmsBtn" class="navbar-btn" onclick="sendImageToPhone()" style="display: none;">전송</button>
+    </div>
+
+    <div id="result_animation">
+      <img src="/images/progress.gif" alt="로딩 중..." style="width: 20px;">
+    </div>
+
+    <img id="resultImg" alt="생성된 일러스트 이미지" />
+
+  </div>
+</body>
+</html>

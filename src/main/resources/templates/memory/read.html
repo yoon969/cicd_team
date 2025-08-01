@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <th:block layout:fragment="styles">
+    <link rel="stylesheet" href="/css/memory_read.css">
+  </th:block>
+  <meta charset="UTF-8">
+  <title>일러스트 상세 보기</title>
+</head>
+
+<body>
+  <div layout:fragment="content" class="memory-container">
+    <h2 class="memory-title">🌟 추억 일러스트 상세</h2>
+
+    <div class="memory-section">
+      <div class="memory-label">📷 업로드한 사진</div>
+      <img th:src="@{${memory.image_url}}" alt="원본 이미지" class="memory-image"/>
+    </div>
+
+    <div class="memory-section">
+      <div class="memory-label">🎨 생성된 일러스트</div>
+      <img th:src="@{${memory.generated_image_url}}" alt="일러스트 이미지" class="memory-image"/>
+    </div>
+
+    <div class="memory-meta">
+      <p>🕒 생성일시: <span th:text="${memory.create_at}"></span></p>
+    </div>
+
+    <a href="/memory/list" class="navbar-btn">목록으로</a>
+  </div>
+</body>
+</html>

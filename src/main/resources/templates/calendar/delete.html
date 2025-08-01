@@ -1,0 +1,38 @@
+<html layout:decorate="~{layout}"> <!-- layout.html 상속-->
+<div layout:fragment="content">
+  
+  <div class="container_box">
+    <div class='title_line' style="font-size: 20px;
+                                       font-weight: 600;
+                                       color: #29794c;
+                                       margin-bottom: 15px;
+                                       letter-spacing: -1.2px;">
+      일정 삭제
+    </div>
+    
+    <!-- ✅ 구분선 -->
+    <div class="menu_line"></div>
+    
+    <ul style="list-style: none; padding-left: 0; margin: 0;">
+      <li>
+        <div style='text-align: center;'>
+          <form name='frm' method='post' action='/calendar/delete'>
+            <input type="hidden" name="calendarno" th:value="${calendarVO.calendarno }">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                
+            <br> 
+            <div>
+              <div class="msg_warning">삭제하시면 복구 할 수 없습니다. <br> 삭제를 진행 하시겠습니까?  </div>
+              <span th:text="${calendarVO.title}"></span><br><br>
+              
+              <button type="submit" class="btn-delete">삭제</button>
+              <button type="button" onclick="history.back();" class="btn btn-secondary btn-sm">취소</button>
+            </div>  
+          </form>
+        </div>
+      </li>
+    </ul>
+  </div>
+
+</div>
+</html>

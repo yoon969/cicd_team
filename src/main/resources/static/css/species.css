@@ -1,0 +1,89 @@
+/* ✅ 종분류 제목 라인 */
+.title_line {
+  font-size: 20px;
+  font-weight: bold;
+  color: #3D7152;
+  margin: 20px 0 10px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* ✅ 우측 상단 링크 (새로고침 등) */
+.aside_right {
+  font-size: 13px;
+  color: #666;
+  text-align: right;
+  margin-bottom: 6px;
+}
+.aside_right a {
+  text-decoration: none;
+  color: #3D7152;
+  font-weight: 500;
+}
+.menu_divide {
+  margin: 0 8px;
+  color: #aaa;
+}
+
+/* ✅ 종분류 검색 바 */
+.species-search-bar {
+  margin-bottom: 16px;
+}
+
+/* ✅ 종분류 등록 폼 (선택) */
+.species-form-bar {
+  margin-bottom: 20px;
+}
+
+/*  종분류 목록 테이블 */
+.species-table {
+  border-collapse: collapse;
+  width: 100%;
+  margin-top: 12px;
+  background-color: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+}
+.species-table th,
+.species-table td {
+  border-bottom: 1px solid #eee;
+  padding: 8px 6px;
+  text-align: center;
+  font-size: 13px;
+  line-height: 1.4;
+}
+.species-table th {
+  background-color: #F0F8F5;
+  color: #3D7152;
+  font-weight: 600;
+}
+.species-table td a {
+  color: #333;
+  text-decoration: none;
+}
+.species-table td a:hover {
+  text-decoration: underline;
+}
+
+/* ✅ 아이콘 (삭제, 수정 등) */
+.icon {
+  width: 20px;
+  height: 20px;
+  margin: 0 4px;
+  cursor: pointer;
+  vertical-align: middle;
+  transition: transform 0.2s;
+}
+.icon:hover {
+  transform: scale(1.15);
+}
+
+/* ✅ 페이지네이션 최소화 */
+.pagination a,
+.pagination span {
+  font-size: 13px;
+  padding: 4px 8px;
+  margin: 0 2px;
+}

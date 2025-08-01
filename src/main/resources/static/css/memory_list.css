@@ -1,0 +1,95 @@
+.memory-list-container {
+  max-width: 80%;
+  max-width: 1080px;
+  margin: 40px auto;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 16px;
+  box-shadow: 0 6px 24px rgba(60, 170, 100, 0.1);
+  text-align: center;
+  font-family: 'Noto Sans KR', sans-serif;
+}
+
+.memory-list-title {
+  font-size: 1.8rem;
+  color: #3D7152;
+  margin-bottom: 24px;
+  font-weight: bold;
+}
+
+.memory-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); /* 4열 */
+  gap: 32px 24px; /* 행, 열 간격 */
+  justify-content: center; /* 가운데 정렬 */
+  padding: 0 24px; /* 좌우 여백 */
+  max-width: 1000px;  /* 그리드 최대 너비 제한 */
+  margin: 0 auto;     /* 가운데 정렬 */
+}
+
+
+.memory-card {
+  width: 220px;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.05);
+  transition: transform 0.2s;
+}
+
+.memory-card:hover {
+  transform: scale(1.03);
+}
+
+.memory-thumb {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+}
+
+.memory-meta {
+  padding: 10px;
+  font-size: 0.9rem;
+  color: #444;
+}
+
+.memory-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);  /* 4열 구성 */
+  gap: 20px;
+}
+
+.btn-group-horizontal {
+  display: flex;
+  justify-content: center;     /* 버튼 가로 중앙 정렬 */
+  align-items: center;         /* 세로 정렬 (높이 맞춤) */
+  gap: 10px;                   /* 버튼 간 간격 */
+  margin-top: 8px;
+}
+
+.btn-group-horizontal form {
+  display: inline;
+}
+
+/* ✅ 화면 너비 1024px 이하: 3열로 */
+@media (max-width: 1024px) {
+  .memory-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* ✅ 화면 너비 768px 이하: 2열로 */
+@media (max-width: 768px) {
+  .memory-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* ✅ 화면 너비 480px 이하: 1열로 */
+@media (max-width: 480px) {
+  .memory-grid {
+    grid-template-columns: 1fr;
+  }
+}
+

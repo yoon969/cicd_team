@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ko" layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <th:block layout:fragment="styles">
+    <link rel="stylesheet" href="/css/post.css">
+  </th:block>
+  <meta charset="UTF-8">
+  <title>지도 설정</title>
+</head>
+
+<body>
+  <div layout:fragment="content">
+    <div class="container_box">
+      <!-- ✅ 제목 상단 라인 -->
+      <div class="title_line">
+        <span th:text="${postVO.title}"></span> &gt; 지도 등록/수정
+      </div>
+
+      <!-- ✅ 우측 상단 메뉴 -->
+      <aside class="aside_right">
+        <a th:href="@{'/post/create?grp=' + ${grp}}">등록</a>
+        <span class="menu_divide">│</span>
+        <a href="javascript:location.reload();">새로고침</a>
+        <span class="menu_divide">│</span>
+        <a th:if="${fromSearch == null or !fromSearch}" th:href="@{/post/list(speciesno=${postVO.speciesno})}">목록</a>
+        <span class="menu_divide">│</span>
+        <a th:href="@{/post/youtube(postno=${postVO.postno})}">유튜브 수정</a>
+        <span class="menu_divide">│</span>
+        <a th:href="@{/post/map(postno=${postVO.postno})}">지도 수정</a>
+      </aside>
+
+      <div class="menu_line"></div>
+
+      <!-- ✅ 본문 컨테이너 -->
+      <div class="fieldset_basic">
+
+        <!-- 도움말 -->
+        <!-- ✅ 기존 도움말 부분 개선 -->
+        <div class="mb-3 map-guide-box">
+          <h5>📌 지도 등록 예시</h5>
+
+          <p>
+            1. 카카오맵 또는 네이버지도에서 위치 검색<br>
+            2. "공유 &gt; 퍼가기 &gt; HTML 복사" 후 아래처럼 붙여넣기
+          </p>
+          <pre><code>&lt;iframe src="https://map.kakao.com/..." width="100%" height="300"&gt;&lt;/iframe&gt;</code></pre>
+
+          🔗 <a href="https://map.kakao.com/" target="_blank">카카오맵 바로가기</a>
+          &nbsp;|&nbsp;
+          🔗 <a href="https://map.naver.com/" target="_blank">네이버지도 바로가기</a>
+        </div>
+
+
+        <!-- 지도 입력 폼 -->
+        <form th:action="@{/post/map}" method="post">
+          <input type="hidden" name="postno" th:value="${postVO.postno}" />
+
+          <div class="mb-3">
+            <label for="map">지도 embed 코드</label>
+            <textarea name="map" id="map" class="post-textarea" rows="10"
+              placeholder='&lt;iframe src="..."&gt;&lt;/iframe&gt;'>[[${postVO.map}]]</textarea>
+          </div>
+
+          <!-- 하단 버튼 -->
+          <div class="youtube-btn-group">
+            <button type="submit" class="btn">저장</button>
+            <a th:href="@{/post/read(postno=${postVO.postno})}" class="btn">취소</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</body>
+
+</html>

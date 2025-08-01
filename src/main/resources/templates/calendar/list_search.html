@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org">
+<th:block layout:fragment="styles">
+  <link rel="stylesheet" href="/css/calendar_admin.css">
+</th:block>
+
+<div layout:fragment="content">
+  <div class="container_main">
+    <!-- ✅ 우측 버튼 -->
+    <aside class="aside_right" style="margin-right:12px;">
+      <a href="javascript:location.reload();">새로 고침</a>
+      <span class="menu_divide">│</span>
+      <a href="/calendar/create">등록</a>
+    </aside>
+    <div class="table-header">
+      <!-- ✅ 제목 + 우측 링크 -->
+      <div class="left-title">
+        <span class="title">📅 캘린더 관리</span>
+        <span th:if="${word != null and word != ''}" th:text="|${word} ${search_cnt} 건|"></span>
+      </div>
+
+      <!-- ✅ 검색 폼 -->
+      <div th:replace="~{calendar/list_search_com::list_search_fragment}"></div>
+    </div>
+    <!-- ✅ 테이블/목록 -->
+    <div th:replace="~{calendar/list_all_com::list_all_fragment}"></div>
+
+  </div> <!-- .container_main 끝 -->
+</div>
+
+</html>

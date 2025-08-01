@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html layout:decorate="~{layout}">
+
+<head>
+  <title>알림 목록</title>
+  <link rel="stylesheet" href="/css/common.css">
+  <link rel="stylesheet" href="/css/alarm.css">
+</head>
+
+<div layout:fragment="content">
+  <div class="container_box">
+
+    <!-- 🔸 상단 제목 -->
+    <div class="title_line">🔔 알림 목록</div>
+
+    <!-- 🔸 오른쪽 상단 버튼 -->
+    <aside class="aside_right">
+      <form method="post" action="/alarm/check_all" style="display:inline;">
+        <input type="hidden" name="_csrf" th:value="${_csrf.token}">
+        <button type="submit" class="navbar-btn">전체 읽음</button>
+      </form>
+      <span class="menu_divide">│</span>
+      <form method="post" action="/alarm/delete_all" style="display:inline;">
+        <input type="hidden" name="_csrf" th:value="${_csrf.token}">
+        <button type="submit" class="btn-delete">전체 삭제</button>
+      </form>
+    </aside>
+    <br>
+    <!-- 🔸 필터 탭 -->
+    <div class="alarm-filter">
+      <a href="/alarm/list" th:classappend="${type} == null ? 'active'">전체</a>
+      <a href="/alarm/list?type=POST_LIKE" th:classappend="${selectedType} == 'POST_LIKE' ? 'active'">게시글 좋아요</a>
+      <a href="/alarm/list?type=POST_REPLY" th:classappend="${selectedType} == 'POST_REPLY' ? 'active'">게시글 댓글</a>
+      <a href="/alarm/list?type=REPLY_LIKE" th:classappend="${selectedType} == 'REPLY_LIKE' ? 'active'">댓글 좋아요</a>
+      <a href="/alarm/list?type=RE_REPLY_LIKE" th:classappend="${selectedType} == 'RE_REPLY_LIKE' ? 'active'">대댓글
+        좋아요</a>
+      <a href="/alarm/list?type=REPLY_REPLY" th:classappend="${selectedType} == 'REPLY_REPLY' ? 'active'">댓글 답글</a>
+      <a href="/alarm/list?type=SCHEDULE" th:classappend="${selectedType} == 'SCHEDULE' ? 'active'">일정</a>
+      <a href="/alarm/list?type=NOTICE" th:classappend="${selectedType} == 'NOTICE' ? 'active'">공지사항</a>
+    </div>
+
+    <div class="menu_line"></div>
+
+    <!-- 🔸 알림 없음 -->
+    <div th:if="${#lists.isEmpty(list)}" class="msg">알림이 없습니다.</div>
+
+    <!-- 🔸 알림 목록 -->
+    <ul th:if="${!#lists.isEmpty(list)}" class="alarm-list">
+      <li th:each="alarm : ${list}" class="alarm-item" th:classappend="${alarm.checked == 'N'} ? 'unread'">
+        <a th:href="@{|/alarm/check/${alarm.alarmno}?url=${alarm.url}|}">
+          <span class="badge-today"
+            th:if="${#dates.format(alarm.rdate, 'yyyy-MM-dd')} == ${#dates.format(#dates.createNow(), 'yyyy-MM-dd')}">오늘</span>
+          <span th:text="${alarm.msg != null ? alarm.msg : alarm.content}">알림 내용</span>
+        </a>
+        <span class="date" th:text="${#dates.format(alarm.rdate, 'yyyy-MM-dd HH:mm')}"></span>
+      </li>
+    </ul>
+
+    <div id="popupModal" class="popup-modal" th:if="${popupMsg != null}">
+      <div class="popup-content">
+        <p th:text="${popupMsg}">팝업 메시지</p>
+        <button onclick="closePopup()" class="btn btn-action">확인</button>
+      </div>
+    </div>
+  </div>
+</div>

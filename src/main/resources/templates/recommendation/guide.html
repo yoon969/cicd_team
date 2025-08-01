@@ -1,0 +1,115 @@
+<!-- ✅ 입양 추천 폼 (adopt_form.html) -->
+<!DOCTYPE html>
+<html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org">
+<head>
+<th:block layout:fragment="styles">
+  <link rel="stylesheet" href="/css/adopt.css">
+</th:block>
+
+  <meta charset="UTF-8">
+  <title>숨숨이 입양 추천</title>
+<meta name="_csrf" th:content="${_csrf.token}">
+<meta name="_csrf_header" th:content="${_csrf.headerName}">
+  <!-- ✅ JS는 window.onload 내부로 이동 -->
+  <script>
+  const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+    window.onload = function () {
+      document.getElementById("submitBtn").addEventListener("click", () => {
+        const form = document.getElementById("adoptForm");
+        const formData = new FormData(form);
+        const jsonData = {};
+        formData.forEach((v, k) => jsonData[k] = v);
+
+        const resultDiv = document.getElementById("result");
+        const progress = document.getElementById("progress");
+
+        resultDiv.style.display = "none";
+        progress.style.display = "block";
+
+        fetch("/recommendation/guide", {
+          method: "POST",
+          headers: {'Content-Type': 'application/json',
+          [csrfHeader]: csrfToken },
+          body: JSON.stringify(jsonData)
+        })
+        .then(res => res.json())
+        .then(data => {
+          console.log("🔥 실제 result 구조:", data.result);
+          progress.style.display = "none";
+          resultDiv.style.display = "block";
+        
+          // ✅ result가 객체면 속성 꺼내서 출력
+          if (data.result && typeof data.result === "object") {
+            resultDiv.innerHTML = `
+              <h4>추천 결과</h4>
+              <p><strong>추천:</strong> ${data.result.추천}</p>
+              <p><strong>설명:</strong> ${data.result.설명}</p>
+              <p><strong>현실성:</strong> ${data.result.현실성}</p>
+              <p><strong>주의사항:</strong> ${data.result.주의사항}</p>
+            `;
+          } else {
+            resultDiv.innerHTML = `<p style='color:red;'>추천 결과를 파싱할 수 없습니다.</p>`;
+          }
+        })
+        .catch(err => {
+          progress.style.display = "none";
+          resultDiv.innerHTML = `<p style='color:red;'>서버 오류: ${err.message}</p>`;
+          resultDiv.style.display = "block";
+        });
+      });
+    };
+  </script>
+</head>
+
+<body>
+<div layout:fragment="content" class="container_main" style="max-width: 600px; margin: 30px auto;">
+  <h2>🎁 숨숨이 입양 추천 설문</h2>
+  <form id="adoptForm">
+    <label for="age">나이:</label>
+    <select name="age" id="age">
+      <option>10대 이하</option>
+      <option>20대</option>
+      <option>30대</option>
+      <option>40대 이상</option>
+    </select><br><br>
+
+    <label for="experience">반려동물 경험:</label>
+    <select name="experience" id="experience">
+      <option>없음</option>
+      <option>있음</option>
+    </select><br><br>
+    
+
+    <label for="personality">선호하는 동물 성격:</label>
+    <select name="personality" id="personality">
+      <option>조용한</option>
+      <option>활동적인</option>
+      <option>사교적인</option>
+      <option>독립적인</option>
+    </select><br><br>
+
+    <label for="environment">거주 환경:</label>
+    <select name="environment" id="environment">
+      <option>원룸</option>
+      <option>아파트</option>
+      <option>단독주택</option>
+      <option>마당 있는 집</option>
+    </select><br><br>
+
+    <label for="condition">요청사항:</label>
+    <textarea name="condition" id="condition" rows="3" cols="40" placeholder="알레르기, 어린 자녀 있음 등"></textarea><br><br>
+
+    <button type="button" id="submitBtn" class="navbar-btn">입양 추천 받기</button>
+  </form>
+
+  <!-- ✅ 로딩 애니메이션 -->
+  <div id="progress" style="margin-top: 20px; display: none;">
+    <img src="/images/progress.gif" style="width: 40px;"> 추천 중입니다...
+  </div>
+
+  <!-- ✅ 결과 출력 -->
+  <div id="result" style="margin-top: 20px;"></div>
+</div>
+</body>
+</html>

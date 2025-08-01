@@ -1,0 +1,58 @@
+<html layout:decorate="~{layout}"> <!-- layout.html 상속-->
+<div layout:fragment="content">
+
+  <div class="container_box">
+  
+  <div class='title_line'>
+    <div th:text="${calendarVO.title}"></div>
+  </div>
+  
+  <aside class="aside_right">
+    <a th:href="|javascript:location.reload();|">새로고침</a>
+    <span class='menu_divide' >│</span>    
+    <a th:href="@{|/calendar/list_calendar|}">일정</a>        
+    <span class='menu_divide' >│</span>    
+    <a th:href="@{|/calendar/list_search|}">목록</a>    
+    <span class='menu_divide' >│</span>
+    <a th:href="@{|/calendar/create|}">등록</a>
+    <span class='menu_divide' >│</span>
+    <a th:href="@{|/calendar/update?calendarno=${calendarVO.calendarno}|}">수정</a>
+    <span class='menu_divide' >│</span>
+    <a th:href="@{|/calendar/delete?calendarno=${calendarVO.calendarno}|}">삭제</a>  
+ </aside> 
+ 
+  <div class='menu_line'></div>
+
+
+  <ul style="list-style: none; padding-left: 0; margin: 0;">
+    <li class="li_none">
+      <div style="width: 100%; word-break: break-all;">
+        <span style="font-size: 1.5em; font-weight: bold;" th:text="${calendarVO.title}"></span>
+        <span style="font-size: 1em;" th:text="${calendarVO.regdate }"></span>
+        <div style="text-align: right;" th:text="|조회수: ${calendarVO.cnt}|"></div>
+        <hr style="margin: 20px 0; border: 1px dashed #ccc;">
+        <div style="white-space: pre-wrap;"><span th:text="${calendarVO.content}"></span></div><br>
+      </div>
+    </li>
+    
+    <li>
+
+      <div style="background-color: #f4f9f4; padding: 15px; border-radius: 10px;">
+        <div style="font-weight: bold; margin-bottom: 8px;">📝 요약된 내용</div>
+        <div th:text="${calendarVO.summary != null ? calendarVO.summary : '요약 정보 없음'}"></div>
+        
+        <div style="font-weight: bold; margin-top: 15px;">💡 감정 분석</div>
+        <div>
+          <span th:if="${calendarVO.emotion == 1}" style="color: green; font-weight: bold;">긍정</span>
+          <span th:if="${calendarVO.emotion == 0}" style="color: red; font-weight: bold;">부정</span>
+          <span th:if="${calendarVO.emotion == null}" style="color: gray;">감정 분석 정보 없음</span>
+        </div>
+      </div>
+    </li>
+    
+  </ul>
+
+</div>
+
+</html>
+

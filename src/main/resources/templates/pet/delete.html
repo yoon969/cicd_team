@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org">
+<th:block layout:fragment="styles">
+  <link rel="stylesheet" href="/css/pet.css">
+</th:block>
+<div layout:fragment="content" class="container_main">
+
+  <div class="pet-create-card">
+    <div class="pet-create-title">❌ 반려동물 삭제 확인</div>
+    <form method="post" th:object="${petVO}" th:action="@{/pet/delete}">
+      <input type="hidden" th:field="*{petno}" />
+      <input type="hidden" th:field="*{usersno}" />
+
+      <p><strong th:text="|[${petVO.name}]|"></strong> 반려동물을 정말 삭제하시겠습니까?</p>
+
+      <div class="pet-create-btns">
+        <button type="submit" class="pet-btn-main" style="background-color:#e57373;">삭제</button>
+        <a th:href="@{/users/mypage}" class="pet-btn-sub">취소</a>
+      </div>
+    </form>
+  </div>
+</div>
+</html>

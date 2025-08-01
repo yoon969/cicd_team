@@ -1,0 +1,94 @@
+
+
+/* ✅ 메인 테이블 컨테이너 */
+.table-container {
+  width: 90%;
+  margin: 40px auto 80px auto;
+  background: #fff;
+  border-radius: 20px;
+  padding: 36px 28px;
+  box-shadow: 0 10px 28px rgba(60, 170, 100, 0.08);
+  box-sizing: border-box;
+}
+
+.left-title .emoji {
+  font-size: 1.5rem;
+}
+
+
+/* ✅ 열 너비 */
+.col-no       { width: 6%; }
+.col-name     { width: 20%; }
+.col-tel      { width: 15%; }
+.col-address  { width: 30%; }
+.col-homepage { width: 29%; }
+
+/* ✅ 병원 상세 정보 */
+.detail-container {
+  width: 60%;
+  margin: 40px auto;
+  padding: 30px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  background-color: #fefefe;
+  font-family: 'Noto Sans KR', sans-serif;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+}
+
+.detail-title {
+  font-size: 24px;
+  font-weight: bold;
+  color: #2e7d32;
+  margin-bottom: 20px;
+}
+
+.info-row {
+  margin-bottom: 12px;
+  font-size: 16px;
+}
+
+.info-label {
+  display: inline-block;
+  width: 120px;
+  font-weight: bold;
+  color: #555;
+}
+
+.info-value {
+  display: inline-block;
+  color: #333;
+}
+
+.btn-box {
+  margin-top: 30px;
+  text-align: right;
+}
+
+/* ✅ 반응형 */
+@media (max-width: 900px) {
+  .table-container {
+    width: 95vw;
+    padding: 14px 5vw;
+  }
+
+  .table-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .search-form {
+    width: 100%;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .search-form input[type="text"] {
+    width: 100%;
+  }
+
+  table th, table td {
+    font-size: 0.94rem;
+    padding: 8px 4px;
+  }
+}

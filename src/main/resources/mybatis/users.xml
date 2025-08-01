@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="dev.mvc.users.UsersDAOInter">
+
+  <!-- 시퀀스 조회 -->
+  <select id="getUsersSeq" resultType="int">
+    SELECT users_seq.NEXTVAL FROM dual
+  </select>
+
+    <insert id="create" parameterType="dev.mvc.users.UsersVO">
+    INSERT INTO users (
+      usersno, email, passwd, usersname,
+      tel, zipcode, address1, address2,
+      created_at, role
+    ) VALUES (
+      users_seq.NEXTVAL,
+      #{email,    jdbcType=VARCHAR},
+      #{passwd,   jdbcType=VARCHAR},
+      #{usersname,jdbcType=VARCHAR},
+      #{tel,      jdbcType=VARCHAR},
+      #{zipcode,  jdbcType=VARCHAR},
+      #{address1, jdbcType=VARCHAR},
+      #{address2, jdbcType=VARCHAR},
+      SYSDATE,
+      #{role,     jdbcType=VARCHAR}
+    )
+  </insert>
+
+  <!-- 전체 회원 목록 -->
+  <select id="list" resultType="dev.mvc.users.UsersVO">
+    SELECT * FROM users ORDER BY usersno DESC
+  </select>
+
+  <!-- 회원 상세 조회 -->
+  <select id="read" parameterType="int" resultType="dev.mvc.users.UsersVO">
+    SELECT * FROM users WHERE usersno = #{usersno}
+  </select>
+
+  <!-- 이메일로 회원 조회 (중복 확인용 등) -->
+  <select id="readByEmail" parameterType="String" resultType="dev.mvc.users.UsersVO">
+    SELECT * FROM users WHERE email = #{email}
+  </select>
+
+  <!-- 로그인 처리 -->
+  <select id="login" resultType="int" parameterType="map">
+    SELECT COUNT(usersno)as cnt
+    FROM users
+    WHERE email = #{email} AND passwd = #{passwd}
+  </select>
+
+  <!-- 회원 수정 -->
+  <update id="update" parameterType="dev.mvc.users.UsersVO">
+    UPDATE users
+    SET usersname = #{usersname},
+        tel = #{tel},
+        zipcode = #{zipcode},
+        address1 = #{address1},
+        address2 = #{address2}
+    WHERE usersno = #{usersno}
+  </update>
+
+  <!-- 회원 삭제 -->
+  <delete id="delete" parameterType="int">
+    DELETE FROM users WHERE usersno = #{usersno}
+  </delete>
+  
+  <select id="checkID" parameterType="String" resultType="int">
+    SELECT COUNT(*) 
+    FROM users 
+    WHERE email = #{email}
+    AND role != 'ghost'
+  </select>
+ 
+  <!-- 닉네임 존재 여부 (1 또는 0) -->
+  <select id="checkName" parameterType="String" resultType="int">
+    SELECT 
+      CASE WHEN EXISTS(
+        SELECT 1 
+          FROM users 
+         WHERE usersname = #{usersname}
+      ) THEN 1 ELSE 0 END 
+    FROM DUAL
+  </select>
+  
+  <select id="findByEmailTel" parameterType="map" resultType="dev.mvc.users.UsersVO">
+    SELECT *
+    FROM users
+    WHERE email = #{email}
+      AND tel = #{tel}
+  </select>
+  
+  <!-- 비밀번호 재설정 (비밀번호 찾기용) 로그인 X 상태에서 사용됨 -->
+  <update id="updatePasswd" parameterType="dev.mvc.users.UsersVO">
+    UPDATE users SET passwd = #{passwd} WHERE usersno = #{usersno}
+  </update>
+  
+  <!-- 로그인 사용자용 비밀번호 변경, 본인 확인된 상태에서 변경 -->
+  <update id="passwd_update" parameterType="map">
+    UPDATE users SET passwd = #{passwd} WHERE usersno = #{usersno}
+  </update>
+  
+  <select id="count" resultType="int">
+    SELECT COUNT(*) FROM users
+  </select>
+  <!-- 페이징만 구현 -->
+  <select id="listPaging" resultType="dev.mvc.users.UsersVO" parameterType="map">
+    SELECT * FROM (
+      SELECT inner_table.*, ROWNUM AS rnum
+        FROM (
+          SELECT * FROM users
+          ORDER BY usersno DESC
+        ) inner_table
+      WHERE ROWNUM &lt;= #{end}
+    )
+    WHERE rnum &gt; #{start}
+  </select>
+  
+  <!-- 페이징 + 검색 구현 -->
+  <select id="list_search_paging" resultType="dev.mvc.users.UsersVO" parameterType="Map">
+    SELECT usersno, email, passwd, usersname, tel, zipcode, address1, address2, created_at, role, r
+    FROM (
+      SELECT usersno, email, passwd, usersname, tel, zipcode, address1, address2, created_at, role, ROWNUM AS r
+      FROM (
+        SELECT usersno, email, passwd, usersname, tel, zipcode, address1, address2, created_at, role
+        FROM users
+        <if test="word != null and word != ''">
+          WHERE UPPER(email) LIKE '%' || UPPER(#{word}) || '%'
+             OR UPPER(usersname) LIKE '%' || UPPER(#{word}) || '%'
+        </if>
+        ORDER BY usersno DESC
+      )
+    )
+    WHERE r <![CDATA[ >= ]]> #{start_num} AND r <![CDATA[ <= ]]> #{end_num}
+  </select>
+  
+  <!-- 검색 결과 개수 -->
+  <select id="list_search_count" resultType="Integer" parameterType="String">
+    SELECT COUNT(*) AS cnt
+    FROM users
+    <if test="word != null and word != ''">
+      WHERE (UPPER(email) LIKE '%' || UPPER(#{word}) || '%')
+         OR (UPPER(usersname) LIKE '%' || UPPER(#{word}) || '%')
+    </if>
+  </select>
+  
+  <!-- 전화번호로 정보 조회 -->
+  <select id="findByTel" resultType="dev.mvc.users.UsersVO">
+    SELECT * FROM users WHERE tel = #{tel}
+  </select>
+  
+  <!-- 탈퇴 처리 -->
+  <update id="withdraw" parameterType="int">
+    UPDATE users
+    SET role = 'ghost',
+        usersname = '탈퇴한 회원'
+    WHERE usersno = #{usersno}
+  </update>
+  
+  <!-- 현재 패스워드 확인 -->
+  <select id="passwd_check" parameterType="map" resultType="int">
+    SELECT COUNT(*) FROM users 
+    WHERE usersno = #{usersno} 
+      AND passwd = #{passwd}
+  </select>
+	 
+	 <select id="readByUsersno" resultType="dev.mvc.users.UsersVO" parameterType="int">
+	  SELECT usersno, email, passwd, usersname, tel, zipcode, address1, address2,
+	         TO_CHAR(created_at, 'YYYY-MM-DD HH24:MI:SS') AS created_at,
+	         role
+	  FROM users
+	  WHERE usersno = #{usersno}
+	</select>
+
+  <select id="findByEmail" resultType="dev.mvc.users.UsersVO">
+    SELECT * FROM users WHERE email = #{email}
+  </select>
+  
+  <select id="getPhone" parameterType="int" resultType="String">
+    SELECT tel  FROM users WHERE usersno = #{usersno}
+  </select>
+
+</mapper>

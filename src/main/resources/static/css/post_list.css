@@ -1,0 +1,51 @@
+.eye-count,
+.comment-count {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+tbody tr:hover td {
+  font-weight: 600;
+  color: #1F7C3E;
+}
+
+.current-page a {
+  background-color: #3D7152;
+  color: #fff !important;
+  padding: 6px 12px;
+  border-radius: 6px;
+}
+
+/* ✅ 전체 래퍼: 검색창 + 버튼 */
+.search-species-wrapper {
+  margin-bottom: 25px;
+}
+
+/* ✅ 중분류 버튼: 아래 충분히 떨어뜨리기 */
+.sub-speciesno-nav a {
+  margin: 6px;
+  padding: 6px 12px;
+  font-size: 15px;
+  font-weight: bold;
+  background: none;
+  color: #3D7152;
+  border: none;
+  border-bottom: 3px solid transparent;
+  transition: border-bottom 0.3s, color 0.3s;
+}
+
+.sub-speciesno-nav a:hover {
+  border-bottom: 3px solid #3D7152;
+  background-color: #E4F2EB; 
+  color: #245B39;
+}
+
+/* ✅ 검색창 영역 조금 아래에 배치 */
+.search-form {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-bottom: 6px;  /* ⬅ 이 간격은 줄여도 돼 */
+}
+

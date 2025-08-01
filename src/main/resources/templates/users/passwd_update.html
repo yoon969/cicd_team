@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+
+<html layout:decorate="~{layout}"> <!-- layout.html 상속-->
+<th:block layout:fragment="styles">
+  <link rel="stylesheet" href="/css/signup.css">
+</th:block>
+
+<div layout:fragment="content">
+  <script>
+  const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+  const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+
+    window.onload = () => {
+      document.getElementById('btn_send').addEventListener('click', send);
+
+      document.querySelector('#current_passwd').addEventListener('keypress', (event) => {
+        // document.getElementById('passwd').addEventListener('keypress', (event) => {
+        if (event.key === 'Enter') {
+          document.getElementById('passwd').focus();
+        }
+      });
+
+      document.querySelector('#passwd').addEventListener('keypress', (event) => {
+        // document.getElementById('passwd').addEventListener('keypress', (event) => {
+        if (event.key === 'Enter') {
+          document.getElementById('passwd2').focus();
+        }
+      });
+
+      document.querySelector('#passwd2').addEventListener('keypress', (event) => {
+        // document.getElementById('passwd').addEventListener('keypress', (event) => {
+        if (event.key === 'Enter') {
+          document.getElementById('btn_send').focus();
+        }
+      });
+
+    }
+
+     function send() {
+      let url = './passwd_check';
+      let passwd = document.getElementById("current_passwd").value;
+    
+      fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          [csrfHeader]: csrfToken
+        },
+        body: JSON.stringify({ current_passwd: passwd })
+      })
+        .then(response => response.json())
+        .then(rdata => {
+          if (rdata.cnt == 0) {
+            current_passwd_msg.innerHTML = '❌ 현재 패스워드가 일치하지 않습니다.';
+            current_passwd_msg.classList.add('span_warning');
+            current_passwd.focus();
+            return;
+          }
+    
+          current_passwd_msg.innerHTML = ''; // 기존 메시지 제거
+    
+          let passwd = document.getElementById('passwd');
+          let passwd2 = document.getElementById('passwd2');
+          let passwd2_msg = document.getElementById('passwd2_msg');
+    
+          if (passwd.value !== passwd2.value) {
+            passwd2_msg.innerHTML = '❌ 입력된 패스워드가 일치하지 않습니다.';
+            passwd2_msg.classList.add('span_warning');
+            passwd.focus();
+            return;
+          }
+    
+          // ✅ 폼 방식으로 전송
+          document.getElementById('frm').submit();
+        })
+        .catch(error => {
+          console.error('비밀번호 확인 오류:', error);
+          const msgBox = document.getElementById('passwd_error_msg');
+          msgBox.innerHTML = '⚠️ 서버 오류가 발생했습니다.';
+          msgBox.classList.add('span_warning');
+        });
+    
+      current_passwd_msg.innerHTML = "<img src='/images/progress.gif' style='width: 5%;'>";
+    }
+
+
+  </script>
+
+  <div class="passwd-wrapper">
+
+    <!-- ✅ 제목 -->
+    <div class="passwd-header">
+      <h2 class="passwd-title">🔒 패스워드 변경</h2>
+    </div>
+
+    <!-- ✅ 메인 폼 -->
+    <div class="passwd-card">
+      <form id="frm" name="frm" th:object="${usersVO}" method="post" action="/users/passwd_update_proc"
+        class="passwd-form">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+        <input type="hidden" name="usersno" th:value="${usersVO.usersno}">
+
+        <div class="passwd-form-group">
+          <label for="current_passwd">현재 패스워드*</label>
+          <input type="password" id="current_passwd" name="current_passwd" placeholder="현재 패스워드" required />
+          <div id="current_passwd_msg" class="passwd-msg"></div>
+        </div>
+
+        <div class="passwd-form-group">
+          <label for="passwd">새로운 패스워드*</label>
+          <input type="password" id="passwd" name="passwd" placeholder="새로운 패스워드" required />
+        </div>
+
+        <div class="passwd-form-group">
+          <label for="passwd2">새로운 패스워드 확인*</label>
+          <input type="password" id="passwd2" name="passwd2" placeholder="패스워드 확인" required />
+          <div id="passwd2_msg" class="passwd-msg"></div>
+        </div>
+
+        <div class="passwd-button-group">
+          <button type="button" id="btn_send" class="btn btn-filled">저장</button>
+          <button type="button" onclick="history.back();" class="btn btn-outline">취소</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+
+</html>

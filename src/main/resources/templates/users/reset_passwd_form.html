@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org">
+<th:block layout:fragment="styles">
+  <link rel="stylesheet" href="/css/users_admin.css">
+</th:block>
+
+<div layout:fragment="content">
+  <div class="container_box">
+    <div class="title_line">🔒 비밀번호 재설정</div>
+
+    <!-- ✅ onsubmit에서 JS 함수 호출 -->
+    <form th:action="@{/users/reset_passwd}" method="post" class="form" onsubmit="return validatePasswords();">
+      <label for="new_passwd">새 비밀번호</label><br>
+      <input type="password" id="new_passwd" name="new_passwd" required><br><br>
+
+      <label for="confirm_passwd">새 비밀번호 확인</label><br>
+      <input type="password" id="confirm_passwd" name="confirm_passwd" required><br><br>
+
+      <button type="submit">비밀번호 변경</button>
+    </form>
+
+    <p th:text="${msg}" style="color: red;"></p>
+  </div>
+
+  <!-- ✅ JavaScript: 비밀번호 일치 확인 -->
+  <script>
+    function validatePasswords() {
+      const pw1 = document.getElementById("new_passwd").value;
+      const pw2 = document.getElementById("confirm_passwd").value;
+
+      if (pw1 !== pw2) {
+        alert("비밀번호가 일치하지 않습니다.");
+        return false; // 제출 막음
+      }
+      return true; // 제출 허용
+    }
+  </script>
+</div>
+</html>

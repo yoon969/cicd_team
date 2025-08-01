@@ -1,0 +1,156 @@
+.navbar {
+  background-color: #FCF9F0;
+  border-bottom: 1px solid #eee1cc;
+  font-family: 'Noto Sans KR', sans-serif;
+}
+
+.navbar-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 16px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.navbar-logo img {
+  height: 52px;
+}
+
+.navbar-user {
+  display: flex;
+  gap: 12px;
+}
+
+/* ✅ navbar-btn 버튼 형태일 때도 동일한 스타일 적용 */
+button.navbar-btn {
+  border: none;
+  background-color: #B8D9C0;
+  color: white !important;
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-weight: bold;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  box-shadow: 0 1.5px 6px rgba(90, 180, 140, 0.2);
+}
+
+button.navbar-btn:hover {
+  background-color: #3D7152;
+}
+
+
+.navbar-btn {
+  background-color: #B8D9C0;
+  color: white !important;
+  padding: 6px 14px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 13px;
+  transition: background-color 0.2s;
+  white-space: nowrap; /* ✅ 텍스트 줄바꿈 방지 */
+}
+
+
+.navbar-btn:hover {
+  background-color: #3D7152;
+}
+
+.navbar-menu {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  padding: 12px 0;
+  background-color: #FCF9F0;
+  margin: 0;
+  list-style: none;
+  font-weight: 600;
+}
+
+.menu-item {
+  position: relative;
+}
+
+.menu-item > a {
+  color: #3D7152;
+  text-decoration: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+}
+
+.menu-item > a:hover {
+  background-color: #E6F6EC;
+  color: #2F5F45;
+}
+
+/* 드롭다운 */
+.dropdown {
+  display: none;
+  position: absolute;
+  top: 100%;
+  margin-top: 8px;
+  background-color: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+  padding: 10px 0;
+  min-width: 180px;
+  z-index: 999;
+}
+
+.dropdown li {
+  list-style: none;
+}
+
+.dropdown a {
+  display: block;
+  padding: 10px 16px;
+  font-size: 14px;
+  color: #444;
+  text-decoration: none;
+}
+
+.dropdown a:hover {
+  background-color: #F0F8F0;
+  color: #2C6E4F;
+}
+
+.menu-item:hover .dropdown {
+  display: block;
+}
+
+.alarm-wrapper {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.alarm-icon {
+  font-size: 24px;
+  cursor: pointer;
+  pointer-events: auto; /* ✅ 클릭 가능하게 */
+  position: relative;
+  z-index: 2; /* 🔔을 앞에 표시 */
+}
+
+.alarm-dot {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  font-size: 10px;
+  color: red;
+  pointer-events: none; /* ✅ 이게 중요! 점이 클릭을 막지 않도록 */
+  z-index: 1;
+}
+
+.alarm-icon .badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background-color: red;
+  color: white;
+  font-size: 11px;
+  padding: 2px 6px;
+  border-radius: 50%;
+}

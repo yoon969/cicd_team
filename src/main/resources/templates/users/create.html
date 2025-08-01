@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org"
+  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+
+<head>
+  <title>회원가입</title>
+  <link rel="stylesheet" th:href="@{/css/signup.css}">
+  <meta name="_csrf" th:content="${_csrf.token}"/>
+  <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+</head>
+
+<body>
+  <div layout:fragment="content">
+
+    <script>
+      window.onload = () => {
+        // 1) Enter 키로 포커스 이동
+        document.querySelector('#email').addEventListener('keypress', (event) => {
+          if (event.key === 'Enter') {
+            event.preventDefault();
+            document.getElementById('btn_checkEmail').focus();
+          }
+        });
+        document.querySelector('#passwd').addEventListener('keypress', (event) => {
+          if (event.key === 'Enter') {
+            event.preventDefault();
+            document.getElementById('passwd2').focus();
+          }
+        });
+        document.querySelector('#passwd2').addEventListener('keypress', (event) => {
+          if (event.key === 'Enter') {
+            event.preventDefault();
+            document.getElementById('usersname').focus();
+          }
+        });
+        document.querySelector('#usersname').addEventListener('keypress', (event) => {
+          if (event.key === 'Enter') {
+            event.preventDefault();
+            document.getElementById('tel').focus();
+          }
+        });
+        document.querySelector('#tel').addEventListener('keypress', (event) => {
+          if (event.key === 'Enter') {
+            event.preventDefault();
+            document.getElementById('btn_DaumPostcode').focus();
+          }
+        });
+        document.querySelector('#address2').addEventListener('keypress', (event) => {
+          if (event.key === 'Enter') {
+            event.preventDefault();
+            document.getElementById('btn_send').focus();
+          }
+        });
+
+        // 2) 중복확인 버튼 클릭 핸들러 바인딩
+        const btn = document.getElementById('btn_checkEmail');
+        console.log('btn_checkEmail 요소:', btn);
+
+        if (btn) {
+          btn.addEventListener('click', () => {
+            console.log('🔔 버튼 클릭 감지, checkEmail 호출');
+            checkEmail();
+          });
+        }
+
+      }
+
+      // 중복 아이디 검사
+      function checkEmail() {
+        console.log('🔔 checkEmail() 시작');
+
+        const emailEl = document.getElementById('email');
+        const msgEl = document.getElementById('email_msg');
+        const email = emailEl.value.trim();
+
+        if (email.length < 3) {
+          msgEl.textContent = 'ID(이메일)는 최소 3자 이상 입력해주세요.';
+          msgEl.className = 'msg span_warning';
+          emailEl.focus();
+          return false;
+        }
+
+        msgEl.innerHTML = "<img src='/images/progress.gif' style='width:5%'>";
+
+        // 상대경로로 요청하면 context-path 문제를 피할 수 있습니다
+        // checkEmail() 내부에서 URL을 이렇게 바꿔 보세요.
+        const url = `/users/checkEmail?email=${encodeURIComponent(email)}`;
+
+        console.log('▶ fetch 요청 URL:', url);
+
+        fetch(`/users/checkEmail?email=${encodeURIComponent(email)}`)
+          .then(res => {
+            console.log('🔔 fetch 응답 status:', res.status);
+            if (!res.ok) throw new Error('네트워크 응답 오류 ' + res.status);
+            return res.json();
+          })
+          .then(data => {
+            console.log('🔔 서버 JSON 데이터:', data);
+            if (data.cnt > 0) {
+              msgEl.textContent = '이미 사용중인 ID(이메일)입니다.';
+              msgEl.className = 'msg span_warning';
+              emailEl.focus();
+            } else {
+              msgEl.textContent = '사용 가능한 ID(이메일)입니다.';
+              msgEl.className = 'msg span_info';
+              document.getElementById('passwd').focus();
+            }
+          })
+          .catch(err => {
+            console.error('❌ checkEmail 오류:', err);
+            msgEl.textContent = '서버 통신 오류가 발생했습니다.';
+            msgEl.className = 'msg span_warning';
+          });
+      }
+      const nameBtn = document.getElementById('btn_checkName');
+      if (nameBtn) {
+        nameBtn.addEventListener('click', () => {
+          console.log('🔔 버튼 클릭 감지, checkName 호출');
+          checkName();
+        });
+      }
+
+      // 새로 추가: 닉네임 중복 검사
+      function checkName() {
+        console.log('🔔 checkName() 시작');
+
+        const nameEl = document.getElementById('usersname');
+        const msgEl = document.getElementById('usersname_msg');
+        const name = nameEl.value.trim();
+
+        if (name.length < 2) {
+          msgEl.textContent = '닉네임은 최소 2자 이상 입력해주세요.';
+          msgEl.className = 'msg span_warning';
+          nameEl.focus();
+          return false;
+        }
+
+        msgEl.innerHTML = "<img src='/images/progress.gif' style='width:5%'>";
+
+        fetch(`/users/checkName?usersname=${encodeURIComponent(name)}`)
+          .then(res => {
+            if (!res.ok) throw new Error('네트워크 오류 ' + res.status);
+            return res.json();
+          })
+          .then(data => {
+            if (data.cnt > 0) {
+              msgEl.textContent = '이미 사용중인 닉네임입니다.';
+              msgEl.className = 'msg span_warning';
+              nameEl.focus();
+            } else {
+              msgEl.textContent = '사용 가능한 닉네임입니다.';
+              msgEl.className = 'msg span_info';
+              document.getElementById('tel').focus();
+            }
+          })
+          .catch(err => {
+            console.error(err);
+            msgEl.textContent = '서버 통신 오류가 발생했습니다.';
+            msgEl.className = 'msg span_warning';
+          });
+      }
+
+      // 회원가입 처리
+      function send() {
+        const passwd = document.getElementById('passwd');
+        const passwd2 = document.getElementById('passwd2');
+        const passwd2_msg = document.getElementById('passwd2_msg');
+
+        // 불일치하면
+        if (passwd.value !== passwd2.value) {
+          passwd2_msg.textContent = '패스워드가 일치하지 않습니다.';
+          passwd2_msg.className = 'msg span_warning';
+          passwd.focus();
+          return false;   // ← 여기서 빠져나오면서 메시지가 남아야 함
+        }
+
+        // 모두 통과하면
+        document.getElementById('frm').submit();
+
+
+
+        // 2) 필수 약관 동의 검사
+        const termsChk = document.querySelector('input[name="terms"]');
+        const privacyChk = document.querySelector('input[name="privacy"]');
+
+        if (!termsChk.checked || !privacyChk.checked) {
+          alert('필수 약관에 모두 동의하셔야 가입이 가능합니다.');
+          (!termsChk.checked ? termsChk : privacyChk).focus();
+          return false;
+        }
+
+        // 3) 모두 통과하면 폼 제출 허용
+        return true;
+      }
+    </script>
+
+    <script>
+      window.addEventListener('DOMContentLoaded', () => {
+        const agreeAll = document.getElementById('agree_all');
+        // 하위 체크박스들 선택
+        const childCheckboxes = document.querySelectorAll(
+          'input[name="terms"], input[name="privacy"], input[name="marketing"]'
+        );
+
+        // 1) 마스터 토글 → 하위 일괄 토글
+        agreeAll.addEventListener('change', () => {
+          childCheckboxes.forEach(cb => {
+            cb.checked = agreeAll.checked;
+          });
+        });
+
+        // 2) 만약 사용자가 개별 체크박스를 건드릴 때
+        //    모두 체크되면 마스터도 체크, 하나라도 해제되면 마스터 해제
+        childCheckboxes.forEach(cb => {
+          cb.addEventListener('change', () => {
+            const allChecked = Array.from(childCheckboxes).every(c => c.checked);
+            agreeAll.checked = allChecked;
+          });
+        });
+      });
+    </script>
+
+ <div class="signup-page">
+    <div class="signup-section">
+  <h1 class="signup-title">회원가입</h1>
+
+  <form name="frm" id="frm" th:object="${usersVO}" method="post" action="/users/create" onsubmit="return send()">
+    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
+    <div class="signup-container">
+
+      <!-- ✅ 로그인 정보 -->
+      <h2 class="section-title">로그인 정보</h2>
+      <div class="form-row">
+        <label for="email">아이디*</label>
+        <div class="form-input-wrap">
+          <input type="text" name="email" id="email" required placeholder="아이디*" class="form-input" autofocus>
+          <button type="button" id="btn_checkEmail" class="btn-sub">중복확인</button>
+        </div>
+        <span id="email_msg" class="msg"></span>
+      </div>
+
+      <div class="form-row">
+        <label for="passwd">패스워드*</label>
+        <input type="password" name="passwd" id="passwd" required placeholder="패스워드*" class="form-input">
+      </div>
+
+      <div class="form-row">
+        <label for="passwd2">패스워드 확인*</label>
+        <input type="password" name="passwd2" id="passwd2" required placeholder="패스워드 확인*" class="form-input">
+        <span id="passwd2_msg" class="msg"></span>
+      </div>
+
+      <!-- ✅ 회원 정보 -->
+      <h2 class="section-title">회원 정보</h2>
+
+      <div class="form-row">
+        <label for="usersname">이름(닉네임)*</label>
+        <div class="form-input-wrap">
+          <input type="text" name="usersname" id="usersname" required placeholder="이름(닉네임)*" class="form-input">
+          <button type="button" id="btn_checkName" onclick="checkName()" class="btn-sub">중복확인</button>
+        </div>
+        <span id="usersname_msg" class="msg"></span>
+      </div>
+
+      <div class="form-row">
+        <label for="tel">전화번호*</label>
+        <input type="text" name="tel" id="tel" required placeholder="전화번호*" class="form-input">
+      </div>
+
+      <div class="form-row">
+        <label for="zipcode">우편번호</label>
+        <div class="form-input-wrap">
+          <input type="text" name="zipcode" id="zipcode" placeholder="우편번호" class="form-input">
+          <button type="button" id="btn_DaumPostcode" onclick="DaumPostcode()" class="btn-sub">우편번호 찾기</button>
+        </div>
+      </div>
+      
+      <div>
+        <div id="wrap" style="display:none;border:1px solid;width:500px;height:300px;margin:5px 0;position:relative">
+        <img src="//t1.daumcdn.net/postcode/resource/images/close.png" id="btnFoldWrap" style="cursor:pointer;position:absolute;right:0px;top:-1px;z-index:1" onclick="foldDaumPostcode()" alt="접기 버튼">
+      </div>
+      
+      <div class="form-row">
+        <label for="address1">주소</label>
+        <input type="text" name="address1" id="address1" placeholder="주소" class="form-input">
+      </div>
+
+      <div class="form-row">
+        <label for="address2">상세 주소</label>
+        <input type="text" name="address2" id="address2" placeholder="상세 주소" class="form-input">
+      </div>
+
+      <!-- ✅ 약관 동의 -->
+      <h2 class="section-title">가입 약관 동의</h2>
+      <div class="terms-item">
+        <label><input type="checkbox" id="agree_all"> 모든 약관에 동의합니다.</label>
+      </div>
+      <div class="terms-item">
+        <label><input type="checkbox" name="terms" required> 가비아 이용 약관에 동의합니다. <span class="required">(필수)</span></label>
+        <a href="#" class="details">상세보기 <span class="arrow">▾</span></a>
+      </div>
+      <div class="terms-item">
+        <label><input type="checkbox" name="privacy" required> 개인정보 수집 및 이용에 동의합니다. <span class="required">(필수)</span></label>
+        <a href="#" class="details">상세보기 <span class="arrow">▾</span></a>
+      </div>
+      <div class="terms-item">
+        <label><input type="checkbox" name="marketing"> 마케팅 활용 수신에 동의합니다. <span class="optional">(선택)</span></label>
+        <a href="#" class="details">상세보기 <span class="arrow">▾</span></a>
+      </div>
+
+      <!-- ✅ 버튼 -->
+      <div class="signup-actions">
+        <button type="submit" id="btn_send" class="btn-main">가입하기</button>
+        <button type="button" onclick="history.back();" class="btn-cancel">취소</button>
+      </div>
+</div>
+          <!-- ------------------------------ DAUM 우편번호 API 시작 ------------------------------ -->
+          <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+          <script>
+            // 우편번호 찾기 찾기 화면을 넣을 element
+            var element_wrap = document.getElementById('wrap');
+
+            function foldDaumPostcode() {
+              // iframe을 넣은 element를 안보이게 한다.
+              element_wrap.style.display = 'none';
+            }
+
+            function DaumPostcode() {
+              // 현재 scroll 위치를 저장해놓는다.
+              var currentScroll = Math.max(document.body.scrollTop, document.documentElement.scrollTop);
+              new daum.Postcode({
+                oncomplete: function (data) {
+                  // 검색결과 항목을 클릭했을때 실행할 코드를 작성하는 부분.
+
+                  // 각 주소의 노출 규칙에 따라 주소를 조합한다.
+                  // 내려오는 변수가 값이 없는 경우엔 공백('')값을 가지므로, 이를 참고하여 분기 한다.
+                  var addr = ''; // 주소 변수
+                  var extraAddr = ''; // 참고항목 변수
+
+                  //사용자가 선택한 주소 타입에 따라 해당 주소 값을 가져온다.
+                  if (data.userSelectedType === 'R') { // 사용자가 도로명 주소를 선택했을 경우
+                    addr = data.roadAddress;
+                  } else { // 사용자가 지번 주소를 선택했을 경우(J)
+                    addr = data.jibunAddress;
+                  }
+
+                  /*
+                  // 사용자가 선택한 주소가 도로명 타입일때 참고항목을 조합한다.
+                  if(data.userSelectedType === 'R'){
+                      // 법정동명이 있을 경우 추가한다. (법정리는 제외)
+                      // 법정동의 경우 마지막 문자가 "동/로/가"로 끝난다.
+                      if(data.bname !== '' && /[동|로|가]$/g.test(data.bname)){
+                          extraAddr += data.bname;
+                      }
+                      // 건물명이 있고, 공동주택일 경우 추가한다.
+                      if(data.buildingName !== '' && data.apartment === 'Y'){
+                          extraAddr += (extraAddr !== '' ? ', ' + data.buildingName : data.buildingName);
+                      }
+                      // 표시할 참고항목이 있을 경우, 괄호까지 추가한 최종 문자열을 만든다.
+                      if(extraAddr !== ''){
+                          extraAddr = ' (' + extraAddr + ')';
+                      }
+                      // 조합된 참고항목을 해당 필드에 넣는다.
+                      document.getElementById("sample3_extraAddress").value = extraAddr;
+                  
+                  } else {
+                      document.getElementById("sample3_extraAddress").value = '';
+                  }
+                  */
+
+                  // 우편번호와 주소 정보를 해당 필드에 넣는다.
+                  document.getElementById('zipcode').value = data.zonecode; // 우편번호
+                  document.getElementById("address1").value = addr;  // 주소
+
+                  document.getElementById("address2").innerHTML = ""; // 상세 주소 지우기
+                  // 커서를 상세주소 필드로 이동한다.
+                  document.getElementById("address2").focus();  // 상세 주소로 포커스 이동
+
+                  // iframe을 넣은 element를 안보이게 한다.
+                  // (autoClose:false 기능을 이용한다면, 아래 코드를 제거해야 화면에서 사라지지 않는다.)
+                  element_wrap.style.display = 'none';
+
+                  // 우편번호 찾기 화면이 보이기 이전으로 scroll 위치를 되돌린다.
+                  document.body.scrollTop = currentScroll;
+                },
+                // 우편번호 찾기 화면 크기가 조정되었을때 실행할 코드를 작성하는 부분. iframe을 넣은 element의 높이값을 조정한다.
+                onresize: function (size) {
+                  element_wrap.style.height = size.height + 'px';
+                },
+                width: '100%',
+                height: '100%'
+              }).embed(element_wrap);
+
+              // iframe을 넣은 element를 보이게 한다.
+              element_wrap.style.display = 'block';
+            }
+          </script>
+
+        </div>
+
+      </form>
+    </div>
+
+  </div>
+</body>
+
+</html>

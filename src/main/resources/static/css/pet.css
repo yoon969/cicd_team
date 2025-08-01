@@ -1,0 +1,164 @@
+/* ------------------------------ */
+/* ✅ 메인 컨테이너 & 카드 레이아웃 */
+/* ------------------------------ */
+.container_main {
+  display: flex;
+  justify-content: center;
+  padding: 40px 20px;
+}
+
+.pet-create-card {
+  width: 100%;
+  max-width: 560px;
+  background-color: #ffffff;
+  border-radius: 16px;
+  padding: 32px;
+  box-shadow: 0 8px 36px rgba(60, 170, 100, 0.08);
+}
+
+/* ------------------------------ */
+/* ✅ 제목 스타일 */
+/* ------------------------------ */
+.pet-create-title {
+  font-size: 24px;
+  font-weight: bold;
+  text-align: center;
+  color: #3D7152;
+  margin-bottom: 24px;
+}
+
+/* ------------------------------ */
+/* ✅ 필수 표시 별표 */
+/* ------------------------------ */
+.required {
+  color: #FF5E5E;
+  margin-right: 4px;
+}
+
+/* ------------------------------ */
+/* ✅ 폼 그룹 및 필드 라벨 */
+/* ------------------------------ */
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  font-weight: 600;
+  display: block;
+  margin-bottom: 8px;
+  color: #3D7152;
+}
+
+/* ------------------------------ */
+/* ✅ 입력 및 출력 필드 */
+/* ------------------------------ */
+.form-control {
+  width: 100%;
+  padding: 12px;
+  font-size: 15px;
+  border: 1px solid #DDEEDB;
+  border-radius: 10px;
+  background-color: #FAFEF9;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease;
+}
+
+.form-control:focus {
+  outline: none;
+  border-color: #76B985;
+}
+
+/* ------------------------------ */
+/* ✅ 에러 메시지 */
+/* ------------------------------ */
+.input-error {
+  margin-top: 6px;
+  font-size: 13px;
+  color: #E74C3C;
+}
+
+/* ------------------------------ */
+/* ✅ 버튼 그룹 공통 */
+/* ------------------------------ */
+.pet-create-btns {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 28px;
+}
+
+/* ------------------------------ */
+/* ✅ 기본 버튼 (등록/수정 등) */
+/* ------------------------------ */
+.pet-btn-main {
+  flex: 1;
+  padding: 12px 0;
+  background-color: #76B985;
+  color: #ffffff;
+  font-weight: bold;
+  font-size: 15px;
+  text-align: center;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.pet-btn-main:hover {
+  background-color: #5ca270;
+}
+
+/* ------------------------------ */
+/* ✅ 서브 버튼 (마이페이지, 취소 등) */
+/* ------------------------------ */
+.pet-btn-sub {
+  flex: 1;
+  padding: 12px 0;
+  background-color: #E6F4EC;
+  color: #3D7152;
+  font-weight: bold;
+  font-size: 15px;
+  text-align: center;
+  text-decoration: none;
+  border-radius: 10px;
+  transition: background-color 0.2s;
+}
+
+.pet-btn-sub:hover {
+  background-color: #d1e9db;
+}
+
+/* ------------------------------ */
+/* ✅ 삭제 전용 메시지 스타일 */
+/* ------------------------------ */
+.pet-delete-msg {
+  font-size: 16px;
+  margin-bottom: 24px;
+  color: #444;
+}
+
+.pet-delete-msg strong {
+  font-size: 18px;
+  color: #B71C1C;
+}
+
+/* ------------------------------ */
+/* ✅ 삭제 버튼 전용 스타일 */
+/* ------------------------------ */
+.pet-delete-btn {
+  background-color: #E57373;
+}
+
+.pet-delete-btn:hover {
+  background-color: #d32f2f;
+}
+
+/* ✅ 취소 버튼 전용 스타일 */
+.pet-cancel-btn {
+  background-color: #F0F0F0;
+  color: #555;
+}
+
+.pet-cancel-btn:hover {
+  background-color: #dcdcdc;
+}

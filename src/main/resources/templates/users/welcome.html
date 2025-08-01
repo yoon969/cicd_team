@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org">
+<th:block layout:fragment="styles">
+  <link rel="stylesheet" href="/css/welcome.css">
+</th:block>
+<div layout:fragment="content">
+
+  <div class="welcome-complete-container">
+    <div class="complete-badge">
+      <span class="confetti">🎉</span>
+    </div>
+    <h2 class="welcome-complete-title">
+      회원가입이 완료되었습니다!
+    </h2>
+    <div class="welcome-user-info">
+      <span th:text="${usersname}">홍길동</span>님, 숨숨이들 가족이 되신 걸 진심으로 환영합니다.
+      <br>
+      <span class="highlight-id">아이디: <span th:text="${userid}">yhy0914</span></span>
+    </div>
+    <div class="welcome-complete-desc">
+      이제 다양한 케어, 커뮤니티, 입양 추천 서비스를 마음껏 이용해보세요!
+    </div>
+    <button class="welcome-main-btn" onclick="location.href='/'">메인으로 가기</button>
+    <button class="welcome-login-btn" onclick="location.href='/users/login'">로그인 바로가기</button>
+  </div>
+
+
+</div>
+
+</html>

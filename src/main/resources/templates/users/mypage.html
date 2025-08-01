@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org">
+
+<th:block layout:fragment="styles">
+  <link rel="stylesheet" href="/css/mypage.css">
+</th:block>
+
+<div layout:fragment="content" class="container_main">
+  <div class="mypage-box">
+    <h2 class="mypage-title">🌿 마이페이지</h2>
+
+    <!-- 🙋 내 정보 -->
+    <div class="section">
+      <h3>🙋 내 정보</h3>
+
+      <div class="user-info-grid">
+        <div class="info-item">
+          <div class="value" th:text="${usersVO.usersname}"></div>
+        </div>
+        <div class="info-item">
+          <div class="value" th:text="${usersVO.email}"></div>
+        </div>
+        <div class="info-item">
+          <div class="value" th:text="${usersVO.created_at}"></div>
+        </div>
+      </div>
+
+      <div style="margin-top: 16px;">
+        <a th:href="@{/users/passwd_update}" class="navbar-btn">비밀번호 변경</a>
+      </div>
+      <div style="margin-top: 14px;">
+        <a th:href="@{/alarm/list}" class="navbar-btn">알림 확인</a>
+      </div>
+
+    </div>
+
+
+
+    <!-- 🐾 반려동물 목록 -->
+      <div class="section">
+        <h3>🐾 내 반려동물 목록</h3>
+        <div style="text-align: right; margin-bottom: 12px;">
+          <a th:href="@{/pet/create}" class="navbar-btn">+ 반려동물 등록</a>
+        </div>
+      
+        <!-- ✅ 카드형 목록으로 변경 -->
+        <div class="pet-grid">
+          <div class="pet-card" th:each="pet : ${petList}">
+          
+               <!-- ✅ 확장자 검사 후 이미지 출력 -->
+              <div th:if="${pet.file1.endsWith('jpg') or pet.file1.endsWith('png') or pet.file1.endsWith('gif') or pet.file1.endsWith('jpeg')}">
+                <img th:src="@{|/pet/storage/${pet.thumb1}|}" alt="반려동물 이미지" class="pet-thumb" />
+              </div>
+              <!-- ❌ 이미지 없을 때 대체 이미지 -->
+              <div th:if="${!(pet.file1.endsWith('jpg') or pet.file1.endsWith('png') or pet.file1.endsWith('gif') or pet.file1.endsWith('jpeg'))}">
+                <img th:src="@{/images/default_pet.jpg}" alt="기본 이미지" class="pet-thumb" />
+              </div>
+
+            
+              <span>
+                <strong th:text="${pet.name}">이름</strong> |
+                <span th:text="${pet.gender == 'M' ? '수컷' : '암컷'}">성별</span>
+              </span>
+              <div style="font-size: 14px; color: #777;" th:text="'생일: ' + ${pet.birthday}"></div>
+              <div style="font-size: 14px; color: #777;" th:text="'종: ' + ${pet.sname} + ' / ' + ${pet.grp}"></div>
+      
+              <div class="btn-group-horizontal">
+                <a th:href="@{'/pet/read?petno=' + ${pet.petno}}" class="navbar-btn">상세</a>
+                <a th:href="@{'/pet/delete?petno=' + ${pet.petno}}"
+                   onclick="return confirm('삭제할까요?')" class="btn-delete">삭제</a>
+              </div>
+            </div>
+        </div>
+      </div>
+
+    <!-- 썸네일 사진 안보이는 버전
+    <div class="section">
+      <h3>🐾 내 반려동물 목록</h3>
+      <div style="text-align: right; margin-bottom: 12px;">
+        <a th:href="@{/pet/create}" class="navbar-btn">+ 반려동물 등록</a>
+      </div>
+
+      <div class="pet-card">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>이름</th>
+              <th>종</th>
+              <th>분류</th>
+              <th>성별</th>
+              <th>생일</th>
+              <th>설명</th>
+              <th>관리</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr th:each="pet : ${petList}">
+              <td th:text="${pet.name}"></td>
+              <td th:text="${pet.sname}"></td>
+              <td th:text="${pet.grp}"></td>
+              <td th:text="${pet.gender == 'M' ? '수컷' : '암컷'}"></td>
+              <td th:text="${pet.birthday}"></td>
+              <td th:text="${pet.description}"></td>
+              <td>
+                <div class="btn-group">
+                  <a th:href="@{'/pet/read?petno=' + ${pet.petno}}" class="navbar-btn">상세</a>
+                  <a th:href="@{'/pet/update?petno=' + ${pet.petno}}" class="navbar-btn">수정</a>
+                  <a th:href="@{'/pet/delete?petno=' + ${pet.petno}}" onclick="return confirm('삭제할까요?')"
+                    class="btn-delete">삭제</a>
+                </div>
+              </td>
+
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    -->
+
+
+    <!-- 🧾 내가 작성한 내역 -->
+    <div class="section">
+      <h3>🧾 내가 작성한 내역</h3>
+
+      <!-- 📄 내가 쓴 글 -->
+      <div class="subsection">
+        <div class="title-row">
+          <h4>📄 내가 쓴 글</h4>
+          <a th:href="@{/users/mypost_list}" class="btn-more">더보기</a>
+        </div>
+        <div th:if="${#lists.isEmpty(myPosts)}" class="text-muted">아직 작성한 글이 없습니다.</div>
+        <ul th:each="post : ${myPosts}">
+          <li>
+            <a th:href="@{'/post/read?postno=' + ${post.postno}}" th:text="${post.title}"></a>
+            <span th:text="${post.pdate}"></span>
+          </li>
+        </ul>
+      </div>
+
+      <!-- 💬 내가 쓴 댓글 -->
+      <div class="subsection">
+        <div class="title-row">
+          <h4>💬 내가 쓴 댓글</h4>
+          <a th:href="@{/users/myreply_list}" class="btn-more">더보기</a>
+        </div>
+        <div th:if="${#lists.isEmpty(myReplies)}" class="text-muted">아직 작성한 댓글이 없습니다.</div>
+        <ul th:each="reply : ${myReplies}">
+          <li>
+            <span th:text="${reply.content}"></span>
+            <span th:text="${reply.rdate.substring(0, 10)}"></span>
+          </li>
+        </ul>
+      </div>
+
+      <!-- 🤖 AI 상담 기록 -->
+      <div class="subsection">
+        <div class="title-row">
+          <h4>🤖 AI 상담 기록</h4>
+          <a th:href="@{/users/myconsult_list}" class="btn-more">더보기</a>
+        </div>
+        <div th:if="${#lists.isEmpty(myConsults)}" class="text-muted">아직 상담 기록이 없습니다.</div>
+        <ul th:each="consult : ${myConsults}">
+          <li>
+            <a th:href="@{'/ai_consult/read?consultno=' + ${consult.consultno}}">
+              <span th:text="${consult.question}"></span>
+            </a>
+            <span th:text="${consult.created_at.substring(0, 10)}"></span>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 📅 케어 캘린더/알림 -->
+    <div class="section">
+      <h3>📅 케어 캘린더</h3>
+      <ul class="mypage-calendar-link">
+        <li><a th:href="@{/calendar/list_calendar(usersno=${usersVO.usersno})}">나의 케어 캘린더 보기</a></li>
+      </ul>
+    </div>
+
+    <!-- 🔒 탈퇴 -->
+    <div class="section">
+      <h3>😢 탈퇴</h3>
+      <form id="withdraw" th:action="@{/users/withdraw}" method="post" style="display:inline;">
+        <a href="#" onclick="withdrawUser()" style="color: #d44;">회원 탈퇴</a>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    function withdrawUser() {
+      if (confirm("정말 탈퇴하시겠습니까? 탈퇴 후에는 복구할 수 없습니다.")) {
+        document.getElementById("withdraw").submit();
+      }
+    }
+  </script>
+</div>
+
+</html>

@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="dev.mvc.species.SpeciesDAOInter"> <!-- SB가 자동으로 구현하여 연동하는 interface -->
+
+  <insert id="create" parameterType="dev.mvc.species.SpeciesVO">
+    INSERT INTO species(speciesno, grp, sname, cnt, seqno, visible, sdate)
+    VALUES(SPECIES_SEQ.nextval, #{grp}, #{sname}, 0, #{seqno}, #{visible}, SYSDATE)
+  </insert>
+
+  <!-- 레코드 갯수만큼 SpeciesVO class 객체가 생성됨 -> ArrayList<SpeciesVO> 생성됨 -->
+  <select id="list_all" resultType="dev.mvc.species.SpeciesVO">
+    SELECT speciesno, grp, sname, cnt, seqno, visible, sdate
+    FROM species
+    ORDER BY seqno ASC
+  </select>
+  
+  <!-- 하나의 SpeciesVO class 객체가 생성됨 -->
+  <select id="read" resultType="dev.mvc.species.SpeciesVO" parameterType="Integer">
+    SELECT speciesno, grp, sname, cnt, seqno, visible, sdate
+    FROM species
+    WHERE speciesno=#{speciesno}
+  </select>
+  
+  <update id="update" parameterType="dev.mvc.species.SpeciesVO">
+    UPDATE species 
+    SET grp=#{grp}, sname=#{sname}, cnt=#{cnt}, seqno=#{seqno}, visible=#{visible}, sdate=SYSDATE 
+    WHERE speciesno=#{speciesno}
+  </update>
+  
+  <delete id="delete" parameterType="Integer">
+    DELETE FROM species WHERE speciesno=#{speciesno}
+  </delete>
+  
+  <!-- 우선 순위 높임, 10 등 -> 1 등 -->
+  <update id="update_seqno_forward" parameterType="Integer">
+    UPDATE species SET seqno=seqno-1 WHERE speciesno=#{speciesno}
+  </update>
+
+  <!-- 우선 순위 낮춤, 1 등 -> 10 등 -->
+  <update id="update_seqno_backward" parameterType="Integer">
+    UPDATE species SET seqno=seqno+1 WHERE speciesno=#{speciesno}
+  </update>
+
+  <!-- 카테고리 공개 설정 -->
+  <update id="update_visible_y" parameterType="Integer">
+    UPDATE species SET visible='Y' WHERE speciesno=#{speciesno}
+  </update>
+  
+  <!-- 카테고리 비공개 설정 -->
+  <update id="update_visible_n" parameterType="Integer">
+    UPDATE species SET visible='N' WHERE speciesno=#{speciesno}
+  </update>
+  
+  <!-- 공개된 대분류만 출력 -->
+  <select id="list_all_grp_y" resultType="dev.mvc.species.SpeciesVO">
+    SELECT speciesno, grp, sname, cnt, seqno, visible, sdate 
+    FROM species 
+    WHERE sname='--' AND visible='Y' 
+    ORDER BY seqno ASC
+  </select>
+  
+  <!-- 카테고리 그룹 목록 -->
+  <select id="grpset" resultType="String">
+    SELECT grp 
+    FROM species 
+    WHERE sname = '--'
+    ORDER BY seqno ASC
+  </select>
+
+  <!-- 검색
+        SQL -> SpeciesVO 객체 레코드 수 만큼 생성 -> ArrayList<speciesVO> 객체가 생성되어 SpeciesDAOInter로 리턴  -->
+  <select id="list_search" resultType="dev.mvc.species.SpeciesVO" parameterType="String">
+    SELECT speciesno, grp, sname, cnt, seqno, visible, sdate
+    FROM species
+    <if test="word != null and word != ''"> <!-- 검색 상태라면 WHERE 생성 -->
+      WHERE (UPPER(grp) LIKE '%' || UPPER(#{word}) || '%') OR (UPPER(sname) LIKE '%' || UPPER(#{word}) || '%')
+    </if> 
+    ORDER BY seqno ASC
+  </select>
+
+  <!-- 검색 갯수 -->
+  <select id="list_search_count" resultType="Integer" parameterType="String">
+    SELECT COUNT(*) as cnt
+    FROM species
+    <if test="word != null and word != ''"> <!-- 검색 상태라면 WHERE 생성 -->
+      WHERE (UPPER(grp) LIKE '%' || UPPER(#{word}) || '%') OR (UPPER(sname) LIKE '%' || UPPER(#{word}) || '%')
+    </if> 
+    ORDER BY seqno ASC
+  </select>
+
+  <!-- 검색
+        SQL -> SpeciesVO 객체 레코드 수 만큼 생성 -> ArrayList<speciesVO> 객체가 생성되어 SpeciesDAOInter로 리턴  -->
+  <select id="list_search_paging" resultType="dev.mvc.species.SpeciesVO" parameterType="Map">
+    SELECT speciesno, grp, sname, cnt, seqno, visible, sdate, r
+    FROM (
+        SELECT speciesno, grp, sname, cnt, seqno, visible, sdate, rownum as r
+        FROM (
+            SELECT speciesno, grp, sname, cnt, seqno, visible, sdate
+            FROM species
+            <if test="word != null and word != ''"> <!-- 검색 상태라면 WHERE 생성 -->
+              WHERE (UPPER(grp) LIKE '%' || UPPER(#{word}) || '%') OR (UPPER(sname) LIKE '%' || UPPER(#{word}) || '%')
+            </if> 
+            ORDER BY seqno ASC
+        )
+    )
+    WHERE r &gt;= #{start_num} AND r &lt;= #{end_num}  <!-- WHERE r >= 7 AND r <= 9 -->
+  </select>
+  
+  <!-- 우선 순위 높임, 10 등 -> 1 등 -->
+  <update id="update_cnt_by_speciesno" parameterType="Map">
+    UPDATE species SET cnt = cnt - #{cnt} WHERE grp=#{grp} and sname='--'
+  </update>
+  
+    <select id="listByGrp" parameterType="string" resultType="dev.mvc.species.SpeciesVO">
+      SELECT *
+      FROM species
+      WHERE grp = #{grp}
+      ORDER BY seqno ASC
+    </select>
+    
+    <!-- 특정 그룹의 중분류만 출력 (게시글 검색용) -->
+    <select id="list_all_name_y" resultType="dev.mvc.species.SpeciesVO" parameterType="String">
+      SELECT speciesno, grp, sname, cnt, seqno, visible, sdate
+      FROM species 
+      WHERE grp = #{grp}
+        AND sname != '--'
+        AND visible = 'Y'
+      ORDER BY seqno ASC
+    </select>
+    
+    <select id="list_by_grp_y" resultType="dev.mvc.species.SpeciesVO" parameterType="String">
+      SELECT *
+      FROM species
+      WHERE visible = 'Y' AND grp = #{grp}
+      ORDER BY sname ASC
+    </select>
+    
+    <select id="list_all_y" resultType="dev.mvc.species.SpeciesVO">
+      SELECT speciesno, grp, sname, cnt, seqno, visible, sdate
+      FROM species
+      WHERE sname != '--'
+        AND visible = 'Y'
+      ORDER BY grp ASC, seqno ASC
+    </select>
+
+
+</mapper>
+
+
+
+
+

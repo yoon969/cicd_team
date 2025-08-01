@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org">
+<th:block layout:fragment="styles">
+  <link rel="stylesheet" href="/css/species.css">
+</th:block>
+<div layout:fragment="content">
+  <div class="title_line">종분류</div>
+  <aside class="aside_right">
+    <a href="javascript:location.reload();">새로 고침</a>
+  </aside>
+  <div class="menu_line"></div>
+
+  <div class="flex_div_center admin-species-form-wrap">
+    <form name="frm" method="post" action="/species/create" th:object="${speciesVO}" autocomplete="off"
+      style="width:100%;display:flex;gap:12px;align-items:flex-end;">
+      <div class="form-group" style="flex:2;">
+        <label for="grp" class="form-label">그룹</label>
+        <input type="text" id="grp" name="grp" class="form-control" th:field="*{grp}" maxlength="30"
+          placeholder="예: 파충류" autocomplete="off" />
+      </div>
+      <div class="form-group" style="flex:3;">
+        <label for="sname" class="form-label">종분류</label>
+        <input type="text" id="sname" name="sname" class="form-control" th:field="*{sname}" maxlength="40"
+          placeholder="예: 도마뱀" autocomplete="off" />
+      </div>
+      <div class="form-group" style="flex:1;">
+        <label for="seqno" class="form-label">출력순서</label>
+        <input type="number" id="seqno" name="seqno" class="form-control" th:field="*{seqno}" min="1" max="1000000"
+          placeholder="순서" autocomplete="off" />
+      </div>
+      <div class="form-group" style="flex:1;">
+        <label for="visible" class="form-label">출력여부</label>
+        <select id="visible" name="visible" class="form-control" th:field="*{visible}">
+          <option value="">출력 선택</option>
+          <option value="Y">Y</option>
+          <option value="N">N</option>
+        </select>
+      </div>
+      <div style="flex:1;display:flex;gap:6px;">
+        <button type="submit" class="btn btn-secondary btn-sm">등록</button>
+        <button type="reset" class="btn btn-secondary btn-sm">취소</button>
+      </div>
+    </form>
+  </div>
+
+  <div th:replace="~{species/list_all_com::list_all_fragment}"></div>
+</div>
+
+</html>

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="dev.mvc.replylike.ReplyLikeDAOInter">
+
+  <!-- 좋아요 수 -->
+  <!-- 댓글 목록 + 좋아요 수 -->
+  <select id="listWithLike" parameterType="map" resultType="map">
+  SELECT 
+    r.replyno,
+    r.content,
+    TO_CHAR(r.rdate, 'YYYY-MM-DD HH24:MI:SS') AS rdate,
+    u.usersname,
+    -- 좋아요 개수
+    (SELECT COUNT(*) FROM reply_like rl WHERE rl.replyno = r.replyno) AS likecnt,
+    -- 이 사용자가 좋아요 눌렀는지 여부 (0 or 1)
+    CASE 
+      WHEN EXISTS (
+        SELECT 1 FROM reply_like rl 
+        WHERE rl.replyno = r.replyno AND rl.usersno = #{usersno}
+      ) THEN 1
+      ELSE 0
+    END AS liked
+  FROM reply r
+    JOIN users u ON r.usersno = u.usersno
+  WHERE r.postno = #{postno}
+  ORDER BY r.replyno ASC
+</select>
+
+
+  <!-- 사용자가 눌렀는지 확인 -->
+  <select id="checkLiked" parameterType="map" resultType="int">
+    SELECT COUNT(*) FROM reply_like
+    WHERE replyno = #{replyno} AND usersno = #{usersno}
+  </select>
+
+  <!-- 좋아요 등록 -->
+  <insert id="create" parameterType="dev.mvc.replylike.ReplyLikeVO">
+    INSERT INTO reply_like(replylikeno, replyno, usersno)
+    VALUES (reply_like_seq.NEXTVAL, #{replyno}, #{usersno})
+  </insert>
+
+  <!-- 좋아요 취소 -->
+  <delete id="deleteByReplyno" parameterType="int">
+    DELETE FROM reply_like WHERE replyno = #{replyno}
+  </delete>
+
+  <select id="countByReplyno" parameterType="int" resultType="int">
+    SELECT COUNT(*) FROM reply_like WHERE replyno = #{replyno}
+  </select>
+
+  <delete id="delete" parameterType="map">
+    DELETE FROM reply_like
+    WHERE replyno = #{replyno} AND usersno = #{usersno}
+  </delete>
+  
+
+	<delete id="deleteByPostno" parameterType="int">
+	  DELETE FROM reply_like
+	  WHERE replyno IN (
+	    SELECT replyno FROM reply WHERE postno = #{postno}
+	  )
+	</delete>
+
+</mapper>

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org"
+  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+
+<head>
+  <title>내가 쓴 글 전체 목록</title>
+  <th:block layout:fragment="styles">
+    <link rel="stylesheet" href="/css/mypage.css">
+  </th:block>
+</head>
+
+<body>
+  <div layout:fragment="content">
+    <div class="container_main">
+      <div class="title_line">
+        📄 내가 쓴 글 전체 목록
+        <span class="text-muted" style="font-size: 14px;">
+          총 <span th:text="${list.size()}"></span>개의 글이 있어요.
+        </span>
+      </div>
+
+      <!-- ✅ 검색 및 정렬 폼 -->
+      <div class="post-wrapper"> <!-- ✅ post-wrapper 안에 포함시키기 -->
+        <form method="get" action="/users/mypost_list" class="search-form">
+          <input type="text" name="keyword" placeholder="제목 또는 내용 검색" th:value="${keyword}">
+
+          <select name="sort" onchange="this.form.submit()">
+            <option value="desc" th:selected="${sort == 'desc'}">최신순</option>
+            <option value="asc" th:selected="${sort == 'asc'}">오래된순</option>
+          </select>
+
+          <button type="submit">검색</button>
+
+          <!-- ✅ 검색어가 있을 경우에만 검색 취소 버튼 표시 -->
+          <a th:if="${keyword != null and keyword != ''}" href="/users/mypost_list" class="btn-reset"
+            style="text-decoration: none;">❌</a>
+        </form>
+
+      </div>
+
+
+
+
+      <div class="post-wrapper">
+        <ul class="post-list">
+          <li th:each="post : ${list}">
+            <a class="post-item" th:href="@{/post/read(postno=${post.postno})}">
+              <span class="title" th:text="${post.title}">글 제목</span>
+              <span class="date" th:text="${#dates.format(post.pdate, 'yyyy-MM-dd')}">날짜</span>
+            </a>
+          </li>
+        </ul>
+
+        <div class="back-btn-wrap">
+          <a href="/users/mypage" class="btn-back">← 마이페이지로 돌아가기</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+
+</html>

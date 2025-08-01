@@ -1,0 +1,37 @@
+/* 뉴스 카드 레이아웃 */
+.news-list-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.news-card {
+  background-color: #fff;
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  transition: transform 0.2s;
+}
+
+.news-card:hover {
+  transform: translateY(-4px);
+}
+
+.news-category {
+  font-size: 12px;
+  font-weight: bold;
+  color: #6ca087;
+  margin-bottom: 4px;
+}
+
+.news-title {
+  font-size: 16px;
+  margin-bottom: 8px;
+}
+
+.news-summary {
+  font-size: 14px;
+  color: #444;
+  margin-bottom: 12px;
+}

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>AI 상담 내역</title>
+<th:block layout:fragment="styles">
+  <link rel="stylesheet" th:href="@{/css/ai_consult_list.css}">
+</th:block>
+</head>
+
+<body>
+<div layout:fragment="content" class="table-container">
+<div class="table-header">
+  <div class="left-title">
+    <span class="emoji">📝</span>
+    <span class="title">AI 상담 내역</span>
+  </div>
+
+  <form class="search-form" th:action="@{/ai_consult/list}" method="get">
+    <input type="text" name="word" th:value="${word}" placeholder="질문 키워드를 입력하세요">
+    <input type="submit" value="검색" class="navbar-btn">
+    <a th:href="@{/ai_consult/list}" class="navbar-btn">전체</a>
+  </form>
+</div>
+
+  <!-- 📋 상담 목록 테이블 -->
+  <table>
+    <thead>
+      <!-- 🔠 테이블 헤더 -->
+      <tr>
+        <th class="col-no">번호</th>
+        <th class="col-question">질문</th>
+        <th class="col-answer">답변</th>
+        <th class="col-tags">증상 키워드</th>
+        <th class="col-source">출처</th>
+        <th class="col-delete">삭제</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr th:each="vo : ${list}">
+        <td th:text="${vo.consultno}" class="col-no"></td>
+        <td class="col-question">
+          <a th:href="@{|/ai_consult/read?consultno=${vo.consultno}|}" th:text="${vo.question}"></a>
+        </td>
+        <td th:text="${vo.answer}" class="col-answer"></td>
+        <td th:text="${vo.symptom_tags}" class="col-tags"></td>
+        <td th:text="${vo.source_type}" class="col-source"></td>
+        <td class="col-delete">
+          <a th:href="@{|/ai_consult/delete?consultno=${vo.consultno}|}" 
+             onclick="return confirm('정말 삭제할까요?')" 
+             style="color: #e74c3c; font-weight: bold; text-decoration: none;">
+            삭제
+          </a>
+        </td>
+      </tr>
+      <tr th:if="${list.size() == 0}">
+        <td colspan="6">검색된 상담 내역이 없습니다.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- ⬅️ 페이징 -->
+  <div class="paging" th:utext="${paging}"></div>
+</div>
+</body>
+</html>

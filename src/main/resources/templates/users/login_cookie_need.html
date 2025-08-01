@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" layout:decorate="~{layout}"
+  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+
+<!-- ✅ 로그인 전용 CSS 삽입 -->
+<th:block layout:fragment="styles">
+  <link rel="stylesheet" href="/css/login.css">
+</th:block>
+
+<div layout:fragment="content">
+
+  <script>
+    window.onload = () => {
+      document.querySelector('#email').addEventListener('keypress', (event) => {
+        if (event.key === 'Enter') document.getElementById('passwd').focus();
+      });
+
+      document.querySelector('#passwd').addEventListener('keypress', (event) => {
+        if (event.key === 'Enter') document.getElementById('btn_send').click();
+      });
+    }
+
+    function send() {
+      let email = document.getElementById('email');
+      let email_msg = document.getElementById('email_msg');
+
+      if (email.value.trim().length == 0) {
+        email_msg.innerHTML = 'ID 입력은 필수 입니다. ID(이메일)는 3자이상 권장합니다.';
+        email_msg.classList.add('span_warning');
+        email.focus();
+        return false;
+      }
+
+      const passwd = document.getElementById('passwd');
+      const passwd_msg = document.getElementById('passwd_msg');
+
+      if (passwd.value.trim().length === 0) {
+        passwd_msg.innerText = '비밀번호 입력은 필수입니다.';
+        passwd.focus();
+        return false;
+      }
+
+      document.getElementById('frm').submit();
+    }
+  </script>
+
+  <!-- ✅ 로그인 전체 레이아웃 -->
+  <div class="login-wrapper">
+    <div class="login-card">
+    <div class="login-warning">
+      정상적인 접근이 아닙니다. 로그인이 필요합니다.
+    </div>
+      <!-- 제목 -->
+      <h2 class="login-title">로그인</h2>
+      <p class="login-sub">맞춤형 정보 제공을 위해 로그인이 필요합니다.</p>
+
+      <!-- 로그인 폼 -->
+      <form name="frm" id="frm" method="post" action="/users/login" class="login-form" th:object="${usersVO}">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
+        <input type="text" name="email" id="email" th:value="${ck_email}" placeholder="아이디(이메일)" class="form-input"
+          autocomplete="username" required>
+
+        <input type="password" name="passwd" id="passwd" th:value="${ck_passwd}" placeholder="비밀번호" class="form-input"
+          autocomplete="current-password" required>
+
+        <div class="checkbox-row">
+          <label class="checkbox-label">
+            <input type="checkbox" name="email_save" value="Y">
+            <span>아이디 저장</span>
+          </label>
+          <label class="checkbox-label">
+            <input type="checkbox" name="passwd_save" value="Y">
+            <span>비밀번호 저장</span>
+          </label>
+        </div>
+
+        <span id="email_msg" class="msg"></span>
+        <span id="passwd_msg" class="msg"></span>
+
+        <button type="button" id="btn_send" onclick="send();" class="btn-login">로그인</button>
+      </form>
+
+      <!-- SNS 로그인 -->
+      <div class="sns-login">
+        <a th:href="@{/oauth2/authorization/google}" class="sns-btn google">구글 로그인</a>
+        <a th:href="@{/oauth2/authorization/naver}" class="sns-btn naver">네이버 로그인</a>
+        <a th:href="@{/oauth2/authorization/kakao}" class="sns-btn kakao">카카오 로그인</a>
+      </div>
+
+      <!-- 하단 링크 -->
+      <div class="login-footer">
+        <a th:href="@{/users/find_email}">아이디 찾기</a> |
+        <a th:href="@{/users/find_passwd}">비밀번호 찾기</a> |
+        <a th:href="@{/users/create}">회원 가입</a>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+</html>

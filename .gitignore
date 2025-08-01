@@ -1,0 +1,46 @@
+build/
+!gradle/wrapper/gradle-wrapper.jar
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+### STS ###
+.bin
+.lock
+.erd
+.apt_generated
+.factorypath
+.springBeans
+.sts4-cache
+bin/
+!**/src/main/**/bin/
+!**/src/test/**/bin/
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+out/
+!**/src/main/**/out/
+!**/src/test/**/out/
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+### VS Code ###
+.vscode/
+fastapi_team/teamfastapi/chroma_db_langchain/
+__pycache__/
+*.pyc
+
+# React 앱 관련
+/susumi-react/feedback/node_modules/
+/susumi-react/feedback/dist/
+/susumi-react/feedback/.vite/
+
+# Gradle 캐시 (추가)
+.gradle/

@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="ko" layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org"
+  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+
+<head>
+  <meta charset="UTF-8">
+  <title>숨숨이들</title>
+  <link rel="stylesheet" href="/css/post.css">
+  <meta name="_csrf" th:content="${_csrf.token}">
+  <meta name="_csrf_header" th:content="${_csrf.headerName}">
+</head>
+
+<body th:attr="data-usersno=${usersno != null ? usersno : -1}" th:attrappend="data-postno=${postVO.postno},
+                     data-hartcnt=${hartCnt},
+                     data-recom=${postVO.recom},
+                     data-postwriter=${postVO.usersno}">
+
+  <div layout:fragment="content">
+
+    <script th:inline="javascript">
+      const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+      const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+      const postno = document.body.dataset.postno;
+      const usersno = document.body.dataset.usersno;
+      const hartCnt = document.body.dataset.hartcnt;
+      const recom = document.body.dataset.recom ?? 0;
+      const isAdmin = /*[[${session.role == 'admin'}]]*/ false;
+
+      let openedReplyForms = new Set();     // 답글 입력창 열린 parentno 저장
+      let expandedReplies = new Set();      // 답글 트리 펼쳐진 parentno 저장
+      let editingReplyno = null;            // 수정 중인 댓글 번호
+
+
+      // ✅ 댓글 목록 렌더링
+      // ✅ 댓글 목록 렌더링 (대댓글 계층 포함)
+      function renderReplyList(replies) {
+        const container = document.getElementById('replyBox');
+        container.innerHTML = '';
+
+        if (!replies || replies.length === 0) {
+          container.innerHTML = `<div class="reply-empty">💬 등록된 댓글이 없습니다</div>`;
+          return;
+        }
+
+        const replyMap = {};
+        replies.forEach(reply => {
+          replyMap[reply.replyno] = { ...reply, children: [] };
+        });
+
+        const roots = [];
+        replies.forEach(reply => {
+          if (reply.parentno && replyMap[reply.parentno]) {
+            replyMap[reply.parentno].children.push(replyMap[reply.replyno]);
+          } else {
+            roots.push(replyMap[reply.replyno]);
+          }
+        });
+
+        roots.forEach(reply => {
+          renderReplyTree(reply, container);
+        });
+
+        hljs.highlightAll();
+      }
+
+      // ✅ 댓글 1개 + 자식 대댓글들 재귀 렌더링
+      function renderReplyTree(reply, container, isChild = false) {
+        const replyno = reply.replyno;
+        const writerNo = parseInt(usersno);
+        const replyWriterNo = parseInt(reply.usersno);
+        const postWriterNo = parseInt(document.body.dataset.postwriter);  // 게시글 작성자 번호
+        const isPostWriter = replyWriterNo === postWriterNo;               // 댓글 쓴 사람이 게시글 작성자인가
+        const usersname = isPostWriter ? '작성자' : (reply.usersname ?? '익명');
+
+        const profileInitial = usersname.charAt(0).toUpperCase();
+        const rdate = reply.rdate ?? '';
+        const liked = reply.liked ?? 0;
+        const likeCount = reply.likeCount ?? 0;
+        const isMine = writerNo === replyWriterNo || reply.isMine || isAdmin;
+
+        let contentRaw = reply.content ?? '';
+        const parentWriter = reply.parentWriter;
+
+        // ✅ 멘션 붙이기 (대댓글일 때만)
+        if (isChild && parentWriter) {
+          contentRaw = `<span class="mention"></span> ${contentRaw}`;
+        }
+
+        const contentWithHighlight = contentRaw.includes("```")
+          ? convertToCodeBlock(contentRaw)
+          : `<p>${contentRaw.replace(/\n/g, '<br>')}</p>`;
+
+        const likeImg = liked === 1
+          ? '/post/images/hart_on_50.png'
+          : '/post/images/hart_off_50.png';
+
+        // ✅ 댓글 전체 wrapper
+        const div = document.createElement('div');
+        div.className = isChild ? 'reply-item reply-child' : 'reply';
+
+        // ✅ 상단 (작성자, 시간 등)
+        div.innerHTML = `
+    <div class="reply-top">
+      <div class="profile-circle">${profileInitial}</div>
+      <div class="author-info">
+        <span class="author-name ${isPostWriter ? 'writer-badge' : ''}">${usersname}</span>
+        <span class="reply-time">${rdate}</span>
+      </div>
+    </div>
+  `;
+
+        // ✅ 댓글 본문 (멘션 포함)
+        const replyContentDiv = document.createElement("div");
+        replyContentDiv.className = "reply-content";
+        replyContentDiv.id = `reply_content_${replyno}`;
+        replyContentDiv.innerHTML = contentWithHighlight;
+        div.appendChild(replyContentDiv);
+
+        // ✅ 푸터 (좋아요, 수정, 삭제)
+        const replyFooterDiv = document.createElement("div");
+        replyFooterDiv.className = "reply-footer";
+        replyFooterDiv.innerHTML = `
+    <span class="btn-like" data-replyno="${replyno}">
+      <img src="${likeImg}" style="width: 20px;" title="좋아요">
+    </span>
+    <span id="reply_like_count__${replyno}" class="reply-like-count">${likeCount}</span>
+    ${!isChild ? `<button onclick="toggleReplyForm(${replyno}, this)">답글</button>` : ''}
+    ${isMine ? `
+      <button onclick="showEditForm(${replyno}, \`${reply.content.replace(/`/g, '\\`')}\`)">수정</button>
+      <button onclick="deleteReply(${replyno})" class="reply-delete-btn">삭제</button>
+    ` : ''}
+  `;
+        div.appendChild(replyFooterDiv);
+        // ✅ 답글 입력창을 위한 DIV (미리 생성)
+        const replyFormDiv = document.createElement("div");
+        replyFormDiv.id = `replyForm_${replyno}`;
+        replyFormDiv.className = "reply-form";
+        replyFormDiv.style.display = "none";  // 기본 숨김
+        div.appendChild(replyFormDiv);
+
+        // ✅ 최종 댓글 추가
+        container.appendChild(div);
+
+        // ✅ 자식 댓글 렌더링
+        if (reply.children && reply.children.length > 0 && !isChild) {
+          // ✅ 자식 댓글을 묶을 wrapper
+          const childrenWrapper = document.createElement("div");
+          childrenWrapper.id = `childReplies_${replyno}`;
+          childrenWrapper.style.display = "none";
+          childrenWrapper.className = "child-reply-wrapper";  // 필요 시 스타일링용
+
+          // ✅ 토글 버튼
+          const toggleBtn = document.createElement("button");
+          toggleBtn.innerText = `답글 ${reply.children.length}개 ▾`;
+          toggleBtn.className = "reply-toggle-btn";
+          toggleBtn.dataset.opened = "false";
+
+          toggleBtn.dataset.replyno = reply.replyno;
+
+          let rendered = false;
+
+          toggleBtn.onclick = () => {
+            const isVisible = toggleBtn.dataset.opened === "true";
+
+            if (!rendered) {
+              reply.children.forEach(child => {
+                renderReplyTree(child, childrenWrapper, true);
+              });
+              rendered = true;
+            }
+
+            toggleBtn.dataset.opened = (!isVisible).toString();
+            childrenWrapper.style.display = isVisible ? "none" : "block";
+
+            if (isVisible) {
+              expandedReplies.delete(reply.replyno);
+            } else {
+              expandedReplies.add(reply.replyno);
+            }
+
+            toggleBtn.innerText = isVisible
+              ? `답글 ${reply.children.length}개 ▾`
+              : `답글 ${reply.children.length}개 ▴`;
+          };
+
+
+          // ✅ 부모 댓글 요소(div)에만 붙이기
+          div.appendChild(toggleBtn);
+          div.appendChild(childrenWrapper);
+        }
+
+
+      }
+
+      function toggleChildReplies(replyno, button) {
+        const target = document.getElementById(`childReplies_${replyno}`);
+        if (!target) return;
+
+        const isVisible = target.style.display === "block";
+        target.style.display = isVisible ? "none" : "block";
+
+        const count = target.children.length;
+        button.innerText = isVisible ? `답글 ${count}개 ▾` : `답글 ${count}개 ▴`;
+      }
+
+      function showReplyForm(parentno) {
+        const formDiv = document.getElementById(`replyForm_${parentno}`);
+        if (!formDiv) return;
+
+        formDiv.innerHTML = `
+          <textarea id="replyChildContent_${parentno}" class="reply-textarea" placeholder="답글 입력 후 Enter를 누르세요 (Shift + Enter 줄바꿈)"></textarea>
+        `;
+
+        formDiv.style.display = "block";
+      }
+
+      function toggleReplyForm(parentno, button) {
+        const formDiv = document.getElementById(`replyForm_${parentno}`);
+        if (!formDiv) return;
+
+        const isOpen = formDiv.style.display === "block";
+        if (isOpen) {
+          formDiv.style.display = "none";
+          formDiv.innerHTML = '';
+          openedReplyForms.delete(parentno);
+          if (button) button.innerText = "답글";
+        } else {
+          formDiv.innerHTML = `
+      <textarea id="replyChildContent_${parentno}" class="reply-textarea" placeholder="답글을 입력하세요"></textarea>
+    `;
+          formDiv.style.display = "block";
+          openedReplyForms.add(parentno);
+          if (button) button.innerText = "닫기";
+        }
+      }
+
+      function submitReplyChild(parentno) {
+        const contentElem = document.getElementById(`replyChildContent_${parentno}`);
+        if (!contentElem) return;
+
+        const content = contentElem.value.trim();
+        if (!content) return alert("답글을 입력하세요");
+
+        fetch("/reply/create_ajax", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            [csrfHeader]: csrfToken
+          },
+          body: JSON.stringify({
+            postno: postno,
+            content: content,
+            parentno: parentno
+          })
+        })
+          .then(res => res.json())
+          .then(data => {
+            if (data.status === "success") {
+              expandedReplies.add(parseInt(parentno));
+              loadReplyList(); // 댓글 다시 불러오기
+            } else {
+              alert("등록 실패");
+            }
+          })
+          .catch(err => {
+            console.error("대댓글 등록 오류:", err);
+            alert("서버 오류 발생");
+          });
+      }
+
+      // ✅ 댓글 삭제
+      function deleteReply(replyno) {
+        if (!confirm("정말 삭제하시겠습니까?")) return;
+
+        fetch("/reply/delete", {
+          method: "POST",
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            [csrfHeader]: csrfToken
+          },
+          body: new URLSearchParams({
+            replyno: replyno,
+            postno: postno
+          })
+        })
+          .then(res => res.text())
+          .then(data => {
+            if (data === "1") {
+              alert("댓글이 삭제되었습니다.");
+              loadReplyList(); // 새로고침
+            } else if (data === "-1") {
+              alert("삭제 권한이 없습니다.");
+            } else {
+              alert("댓글 삭제 실패!");
+            }
+          })
+          .catch(err => {
+            console.error("삭제 중 오류 발생:", err);
+            alert("서버 오류");
+          });
+      }
+
+      // 🚨[⋯ 버튼 클릭 시 메뉴 열기/닫기]
+      function toggleMenu(button) {
+        const dropdown = button.nextElementSibling;
+        if (!dropdown || !dropdown.classList.contains("menu-dropdown")) {
+          console.warn("❗ 드롭다운 요소가 없어요.");
+          return;
+        }
+
+        document.querySelectorAll(".menu-dropdown").forEach(el => {
+          if (el !== dropdown) el.style.display = "none";
+        });
+
+        dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
+      }
+
+      function showEditForm(replyno, oldContent) {
+        editingReplyno = replyno;
+        const contentDiv = document.getElementById(`reply_content_${replyno}`);
+        const replyFooter = contentDiv?.nextElementSibling;
+
+        // ✅ 기존 수정/삭제 버튼 숨기기
+        if (replyFooter) {
+          replyFooter.style.display = "none";
+        }
+        contentDiv.innerHTML = `
+    <textarea id="edit_input_${replyno}" class="reply-textarea">${oldContent}</textarea>
+    <div style="margin-top: 6px;">
+      <button onclick="submitEdit(${replyno})" class="btn btn-filled">수정 완료</button>
+      <button onclick="cancelEdit(${replyno})" class="btn btn-outline">취소</button>
+    </div>
+  `;
+      }
+
+      function submitEdit(replyno) {
+        const textarea = document.querySelector(`#edit_input_${replyno}`);
+        const content = textarea.value.trim();  // ✅ textarea 값 추출
+
+        if (!content) {
+          alert("댓글 내용을 입력해주세요.");
+          return;
+        }
+
+        fetch("/reply/update", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            [csrfHeader]: csrfToken
+          },
+          body: JSON.stringify({ replyno, content })
+        })
+          .then(response => response.text())
+          .then(data => {
+            if (data === "success") {
+              alert("댓글 수정 성공!");
+              editingReplyno = null;
+              loadReplyList();
+            } else {
+              alert("댓글 수정 실패!");
+            }
+          });
+      }
+
+
+      // ✅ 댓글 등록
+      function addReply() {
+        const content = document.getElementById('replyContent').value.trim();
+        if (!content) return alert("댓글을 입력하세요");
+
+        fetch("/reply/create_ajax", {
+          method: "POST",
+          headers: {
+            'Content-Type': 'application/json',
+            [csrfHeader]: csrfToken
+          },
+          body: JSON.stringify({ postno: postno, content: content })
+        })
+          .then(res => res.json())
+          .then(data => {
+            if (data.status === "success") {
+              loadReplyList();
+              document.getElementById('replyContent').value = '';
+            } else {
+              alert("등록 실패: " + (data.msg || "서버 오류"));
+            }
+          })
+          .catch(err => {
+            console.error("Ajax 오류:", err);
+            alert("서버 통신 오류");
+          });
+      }
+
+      // ✅ 댓글 불러오기
+      function loadReplyList() {
+        fetch(`/reply/list_json/${postno}`)
+          .then(res => res.json())
+          .then(data => {
+            renderReplyList(data);
+
+            // ✅ 열려있던 답글 입력창 다시 열기
+            openedReplyForms.forEach(parentno => {
+              toggleReplyForm(parseInt(parentno));
+            });
+
+            // ✅ 펼쳐진 대댓글 트리 다시 열기
+            expandedReplies.forEach(parentno => {
+              const toggleBtn = document.querySelector(
+                `.reply-toggle-btn[data-replyno="${parentno}"]`
+              );
+              if (toggleBtn && toggleBtn.dataset.opened === "false") {
+                toggleBtn.click(); // 트리 열기
+              }
+            });
+
+            // ✅ 수정 중 댓글 복원
+            if (editingReplyno) {
+              const content = data.find(r => r.replyno === editingReplyno)?.content ?? '';
+              showEditForm(editingReplyno, content);
+            }
+          })
+          .catch(err => {
+            console.error("댓글 목록 불러오기 실패:", err);
+          });
+      }
+
+      // ✅ 좋아요 토글
+      let isProcessing = false;
+      function toggleLike(replyno) {
+        if (isProcessing) return;
+        isProcessing = true;
+
+        if (!usersno || usersno === 'null' || isNaN(parseInt(usersno))) {
+          alert("로그인 후 이용해주세요!");
+          isProcessing = false;
+          return;
+        }
+
+        fetch("/replylike/toggle", {
+          method: "POST",
+          headers: {
+            'Content-Type': 'application/json',
+            [csrfHeader]: csrfToken
+          },
+          body: JSON.stringify({ replyno: replyno, usersno: parseInt(usersno) })
+        })
+          .then(res => res.json())
+          .then(data => {
+            const imgSrc = data.status === "liked"
+              ? "/post/images/hart_on_50.png"
+              : "/post/images/hart_off_50.png";
+
+            const likePanel = document.querySelector(`.btn-like[data-replyno='${replyno}']`);
+            const likeCount = document.getElementById(`reply_like_count__${replyno}`);
+
+            if (likePanel && likeCount) {
+              likePanel.innerHTML = `<img src="${imgSrc}" style="width: 20px;" title="좋아요">`;
+              likeCount.innerText = data.likeCount !== undefined && data.likeCount !== null ? data.likeCount : 0;
+            }
+
+            isProcessing = false;
+          })
+          .catch(err => {
+            console.error("댓글 좋아요 토글 오류:", err);
+            isProcessing = false;
+          });
+      }
+
+      // ✅ 좋아요 이벤트 위임
+      document.addEventListener("click", function (e) {
+        const btn = e.target.closest(".btn-like");
+        if (!btn) return;
+        const replyno = btn.dataset.replyno;
+        toggleLike(replyno);
+      });
+
+      // ✅ 코드블럭 변환 함수
+      function convertToCodeBlock(text) {
+        const regex = /```(\w*)\n([\s\S]*?)```/g;
+        return text.replace(regex, (match, lang, code) => {
+          return `<pre><code class="language-${lang}">${escapeHTML(code)}</code></pre>`;
+        });
+      }
+
+      function escapeHTML(str) {
+        return str.replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;");
+      }
+
+      function renderPostLikeButton() {
+        const hartPanel = document.getElementById('hart_panel');
+        if (!hartPanel) return;
+
+        const liked = reply.liked ?? reply.LIKED ?? false;
+        const imageSrc = isLiked
+          ? '/post/images/hart_on_50.png'
+          : '/post/images/hart_off_50.png';
+
+        hartPanel.innerHTML = `
+    <span id="btn_post_like" style="cursor: pointer;">
+      <img src="${imageSrc}" style="width: 24px;" title="좋아요">
+    </span>
+  `;
+      }
+
+      function togglePostLike() {
+        if (!usersno || usersno === 'null' || isNaN(parseInt(usersno))) {
+          alert("로그인 후 이용해주세요!");
+          return;
+        }
+
+        fetch("/post/good", {
+          method: "POST",
+          headers: {
+            'Content-Type': 'application/json',
+            [csrfHeader]: csrfToken
+          },
+          body: JSON.stringify({ postno: parseInt(postno), usersno: parseInt(usersno) })
+        })
+          .then(res => res.json())
+          .then(data => {
+            const imgSrc = data.hartCnt === 1
+              ? "/post/images/hart_on_50.png"
+              : "/post/images/hart_off_50.png";
+
+            // 좋아요 하트 이미지
+            const likeImage = document.getElementById("postlike_img");
+            if (likeImage) {
+              likeImage.src = imgSrc;
+            }
+
+            // 추천 수만 업데이트 (recom_count만 갱신)
+            const recomCountSpan = document.getElementById("recom_count");
+            if (recomCountSpan) {
+              recomCountSpan.innerText = data.recom ?? 0;
+            }
+
+            // 데이터셋도 갱신
+            document.body.dataset.hartcnt = data.hartCnt;
+          })
+
+          .catch(err => {
+            console.error("게시글 좋아요 토글 오류:", err);
+            alert("서버 오류로 좋아요 처리를 실패했습니다.");
+          });
+      }
+
+      // ✅ 최초 실행
+      window.onload = function () {
+        loadReplyList();
+
+        // 본 댓글 등록 (Enter → 등록)
+        const replyContent = document.getElementById("replyContent");
+        if (replyContent) {
+          replyContent.addEventListener("keydown", function (event) {
+            if (event.key === "Enter" && !event.shiftKey) {
+              event.preventDefault();
+              addReply();
+            }
+          });
+        }
+
+        // ✅ 대댓글(답글) 등록 (Enter → 등록, Shift+Enter 줄바꿈)
+        document.addEventListener("keydown", function (e) {
+          const target = e.target;
+          if (target.classList.contains("reply-textarea") && target.id.startsWith("replyChildContent_")) {
+            if (e.key === "Enter" && !e.shiftKey) {
+              e.preventDefault();
+              const parentno = target.id.split("_")[1];
+              submitReplyChild(parentno);
+            }
+          }
+        });
+      };
+
+      function cancelEdit(replyno) {
+        editingReplyno = null;
+        loadReplyList(); // 원래 댓글 목록 다시 불러오기
+      }
+
+    </script>
+
+    <fieldset class="fieldset_basic">
+      <div class="container_read">
+        <!-- ✅ 헤더 상단 통합 -->
+        <div class="header-top">
+          <div class="title_line">
+            <span th:text="${speciesVO.grp}">대분류</span>
+            &gt;
+            <span th:text="${speciesVO.sname}">중분류</span>
+          </div>
+
+          <aside class="aside_right">
+            <a href="javascript:location.reload();">새로고침</a>
+            <span class='menu_divide'>│</span>
+            <a th:if="${fromSearch}" th:href="@{|/post/search?word=${word}&now_page=${nowPage}|}">검색 결과로</a>
+            <a th:if="${!fromSearch}" th:href="@{/post/list(speciesno=${postVO.speciesno})}">목록</a>
+
+            <th:block th:if="${usersno != null and (session.role == 'admin' or usersno == postVO.usersno)}">
+              <span class='menu_divide'>│</span>
+              <a th:href="@{/post/update(postno=${postVO.postno})}">수정</a>
+              <span class='menu_divide'>│</span>
+              <a th:href="@{/post/delete(postno=${postVO.postno})}">삭제</a>
+            </th:block>
+          </aside>
+        </div>
+
+
+        <ul class="li_none">
+          <!-- ✅ 제목 + 작성자 -->
+          <div class="post-header">
+            <h2 th:text="${postVO.title}">제목</h2>
+            <p><b>작성자:</b> <span th:text="${postVO.nickname}">작성자</span></p>
+          </div>
+
+          <!-- ✅ 본문 내용 -->
+          <div th:if="${postVO.content != null and postVO.content.trim().length() > 0}">
+            <div id="postContent" th:text="${postVO.content}">내용</div>
+          </div>
+          <div th:if="${postVO.content == null or postVO.content.trim().length() == 0}"
+            style="text-align:center; color:gray;">
+            📄 작성한 본문이 없습니다
+          </div>
+
+          <!-- ✅ 이미지 -->
+          <div th:if="${postVO.file1saved != null and postVO.file1saved != ''}">
+            <img th:src="@{/contents/storage/{file}(file=${postVO.file1saved})}" alt="첨부 이미지" class="img-wrapper">
+          </div>
+          <div th:if="${postVO.file1saved == null or postVO.file1saved == ''}" style="text-align:center; color:gray;">
+            📷 업로드된 이미지가 없습니다
+          </div>
+
+            <!-- ✅ 유튜브 -->
+            <li th:if="${postVO.youtube != null and postVO.youtube.length() > 0}">
+              <div class="youtube-wrapper" th:utext="${postVO.youtube}"></div>
+            </li>
+            <li th:if="${postVO.youtube == null or postVO.youtube.length() == 0}">
+              <div style="text-align:center; color:gray;">📹 업로드한 영상이 없습니다</div>
+            </li>
+  
+            <!-- ✅ 지도 -->
+            <li th:if="${postVO.map != null and postVO.map.length() > 0}">
+              <div class="map-wrapper" th:utext="${postVO.map}"></div>
+            </li>
+            <li th:if="${postVO.map == null or postVO.map.length() == 0}">
+              <div style="text-align:center; color:gray;">🗺️ 업로드한 지도가 없습니다</div>
+            </li>
+
+          <!-- ✅ 다운로드 + 좋아요 -->
+          <div style="display:flex; align-items:center; gap: 15px;">
+            <a class="download-btn"
+              th:href="@{|/download?dir=contents/storage&filename=${postVO.file1saved}&downname=${postVO.file1}|}">
+              <img src="/post/images/download.png" alt="다운로드">
+              <span th:text="${postVO.file1}">다운로드</span>
+            </a>
+
+            <!-- 좋아요 하트 + 추천 수 -->
+            <div class="recom-box">
+              <span id="postlike_img_wrapper" style="cursor: pointer;" onclick="togglePostLike()">
+                <img id="postlike_img"
+                  th:src="@{${hartCnt > 0} ? '/post/images/hart_on_50.png' : '/post/images/hart_off_50.png'}"
+                  style="width: 22px;" alt="좋아요">
+              </span>
+              <span class="btn-postlike" onclick="togglePostLike()" style="cursor: pointer;">
+                (<span id="recom_count" th:text="${postVO.recom}">0</span>)
+              </span>
+            </div>
+
+          </div>
+
+
+          <!-- ✅ 키워드 -->
+          <div>
+            <span id="keywordBox" th:text="${#strings.arrayJoin(keywords, ', ')}">없음</span>
+          </div>
+
+          <!-- ✅ 댓글 영역 -->
+          <div class="reply-section">
+            <h3 class="reply-title">💬 댓글</h3>
+
+            <div class="reply-input-box">
+              <textarea id="replyContent" class="reply-textarea" placeholder="댓글을 입력하세요"></textarea>
+            </div>
+
+
+            <div id="replyBox" class="reply-box">
+              <!-- JS로 댓글 동적 출력 -->
+            </div>
+          </div>
+        </ul>
+      </div>
+    </fieldset>
+  </div>
+</body>
+
+</html>

@@ -1,0 +1,94 @@
+<html layout:decorate="~{layout}">
+
+<head>
+  <th:block layout:fragment="styles">
+    <link rel="stylesheet" href="/css/post.css">
+  </th:block>
+</head>
+
+<body>
+  <div layout:fragment="content">
+    <div class="container_box">
+      <!-- ✅ 타이틀 + 메뉴 같은 줄 배치 -->
+      <div class="title_line">
+        <span th:text="${speciesVO.grp}" class="title_line_text"></span>
+        > <span th:text="${speciesVO.sname}" class="title_line_text"></span>
+        > 게시물 수정
+      </div>
+
+      <aside class="aside_right">
+
+        <a href="javascript:location.reload();">새로고침</a>
+        <span class="menu_divide">│</span>
+        <a th:href="@{/post/list(speciesno=${postVO.speciesno})}">목록</a>
+        <span class="menu_divide">│</span>
+        <a th:href="@{/post/youtube(postno=${postVO.postno})}">유튜브 수정</a>
+        <span class="menu_divide">│</span>
+        <a th:href="@{/post/map(postno=${postVO.postno})}">지도 수정</a>
+      </aside>
+
+
+      <div class="menu_line"></div>
+
+      <!-- ✅ 파일 업로드 위해 enctype 추가 -->
+      <form method="post" th:object="${postVO}" th:action="@{/post/update}" enctype="multipart/form-data">
+        <input type="hidden" name="postno" th:value="*{postno}">
+        <!-- ✅ speciesno 숨겨서 보내기 (필수!) -->
+        <input type="hidden" name="speciesno" th:value="*{speciesno}">
+
+        <!-- 기존 정보 유지용 -->
+        <input type="hidden" name="file1" th:value="*{file1}">
+        <input type="hidden" name="file1saved" th:value="*{file1saved}">
+        <input type="hidden" name="thumb1" th:value="*{thumb1}">
+        <input type="hidden" name="size1" th:value="*{size1}">
+        <input type="hidden" name="map" th:value="*{map}">
+        <input type="hidden" name="youtube" th:value="*{youtube}">
+        <input type="hidden" name="summary" th:value="*{summary}">
+        <input type="hidden" name="emotion" th:value="*{emotion}">
+
+        <!-- ✅ 제목 -->
+        <div class="form-group">
+          <label>제목</label>
+          <input type="text" th:field="*{title}" required class="post-input" style="width: 100%;">
+        </div>
+
+        <!-- ✅ 내용 -->
+        <div class="form-group">
+          <label>내용</label>
+          <textarea th:field="*{content}" rows="12" required class="post-textarea" style="width: 100%;"></textarea>
+        </div>
+
+        <!-- ✅ 기존 파일 표시 -->
+        <div th:if="${file1saved} != null" class="form-group">
+          <label>파일</label><br>
+          <img th:src="@{|/contents/storage/*{file1saved}|}" style="max-width: 300px; height: auto;"><br>
+          <small th:text="'파일명: ' + *{file1original}"></small>
+        </div>
+
+        <!-- ✅ 새 파일 업로드 -->
+        <div class="form-group">
+          <label>파일 수정</label>
+          <input type="file" name="file1MF" class="post-input" style="width: 100%;">
+        </div>
+
+        <!-- ✅ 숨겨진 키워드 필드 -->
+        <input type="hidden" name="word" id="word">
+
+        <!-- ✅ 비밀번호 -->
+        <div class="form-group">
+          <label>비밀번호</label>
+          <input type="password" name="passwd" placeholder="수정 시 입력" required class="post-input" style="width: 50%;">
+        </div>
+
+        <!-- ✅ 버튼 영역 -->
+        <div class="form-group button-group">
+          <button type="submit" class="navbar-btn">저장</button>
+          <button type="button" th:onclick="|location.href='@{/post/read(postno=${postVO.postno})}'|"
+            class=" btn-delete">취소</button>
+        </div>
+
+    </div>
+  </div>
+</body>
+
+</html>

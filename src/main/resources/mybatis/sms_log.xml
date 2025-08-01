@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="dev.mvc.sms_log.SmsLogDAOInter">
+
+    <insert id="create" parameterType="dev.mvc.sms_log.SmsLogVO">
+      INSERT INTO sms_log (
+        log_id,
+        recipient,
+        message,
+        send_time,
+        status,
+        response_msg,
+        retry_count
+      )
+      VALUES (
+        sms_log_seq.nextval,
+        #{recipient},
+        #{message},
+        DEFAULT,
+        #{status},
+        #{responseMsg},
+        #{retryCount}
+      )
+    </insert>
+
+  <select id="list" resultType="dev.mvc.sms_log.SmsLogVO">
+    SELECT * FROM sms_log ORDER BY log_id DESC
+  </select>
+
+  <select id="read" parameterType="int" resultType="dev.mvc.sms_log.SmsLogVO">
+    SELECT * FROM sms_log WHERE log_id = #{logId}
+  </select>
+
+  <update id="update" parameterType="dev.mvc.sms_log.SmsLogVO">
+    UPDATE sms_log
+    SET recipient=#{recipient}, message=#{message}, status=#{status}, response_msg=#{responseMsg}
+    WHERE log_id=#{logId}
+  </update>
+
+  <delete id="delete" parameterType="int">
+    DELETE FROM sms_log WHERE log_id = #{logId}
+  </delete>
+
+</mapper>

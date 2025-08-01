@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>알림</title>
+  <style>
+    .message-box {
+      max-width: 600px;
+      margin: 80px auto;
+      padding: 30px 40px;
+      border: 1px solid #ddd;
+      border-radius: 12px;
+      background-color: #fffefc;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+      text-align: center;
+    }
+
+    .message-title {
+      font-size: 22px;
+      font-weight: bold;
+      color: #D2691E;
+      margin-bottom: 20px;
+    }
+
+    .message-text {
+      font-size: 16px;
+      margin-bottom: 30px;
+      color: #333;
+    }
+
+    .btn-back {
+      background-color: #6c757d;
+      color: white;
+      padding: 8px 16px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .btn-back:hover {
+      background-color: #5a6268;
+    }
+  </style>
+</head>
+
+<body>
+<div layout:fragment="content">
+  <div class="message-box">
+    <div class="message-title">🚫 접근 권한 없음</div>
+    <div class="message-text">
+      이 기능은 <strong>관리자만</strong> 사용할 수 있습니다.
+    </div>
+    <button onclick="location.href='/'" class="btn-back">메인 페이지로</button>
+  </div>
+</div>
+</body>
+</html>

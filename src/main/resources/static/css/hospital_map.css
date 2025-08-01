@@ -1,0 +1,76 @@
+
+/* ✅ 메인 전체 감싸는 컨테이너 */
+.container_main {
+  width: 80%;
+  max-width: 1080px;
+  margin: 30px auto;  /* ⬅️ 하단 여백 추가 */
+  background-color: #fff;
+  border-radius: 20px;
+  padding: 36px 28px;
+  box-shadow: 0 10px 28px rgba(60, 170, 100, 0.08);
+}
+
+/* ✅ 지도 타이틀 */
+.title_line {
+  font-size: 1.6rem;
+  font-weight: bold;
+  color: #29794c;
+  margin-bottom: 24px;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  text-shadow: 1px 1px 1px rgba(160, 200, 180, 0.3);
+}
+
+/* ✅ 지도 감싸는 박스 */
+.map-wrapper {
+  background-color: #ffffff;
+  border-radius: 18px;
+  padding: 18px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+  display: flex;
+  justify-content: center;
+}
+
+/* ✅ 실제 지도 박스 */
+#map {
+  width: 100%;
+  max-width: 700px;
+  height: 480px;
+  border-radius: 14px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  margin: 0 auto; /* ⬅️ 지도 중앙 정렬 */
+}
+
+/* ✅ 오버레이 스타일 */
+.custom-overlay {
+  background: white;
+  border-radius: 14px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  padding: 10px 15px;
+  font-size: 14px;
+  line-height: 1.5;
+  width: 260px;
+  color: #2f4f3f;
+}
+
+.custom-overlay .title {
+  font-weight: bold;
+  font-size: 16px;
+  margin-bottom: 6px;
+  color: #145c35;
+}
+
+.custom-overlay a {
+  display: inline-block;
+  margin-top: 6px;
+  color: #2e7d57;
+  text-decoration: none;
+}
+
+.custom-overlay a:hover {
+  text-decoration: underline;
+  color: #1a5c3d;
+}

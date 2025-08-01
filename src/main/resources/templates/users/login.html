@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org"
+  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+
+<!-- ✅ 개별 CSS 삽입 -->
+<th:block layout:fragment="styles">
+  <link rel="stylesheet" href="/css/login.css">
+</th:block>
+
+<!-- ✅ 본문 영역 -->
+<div layout:fragment="content">
+
+  <!-- ✅ CSRF 설정 -->
+  <meta name="_csrf" th:content="${_csrf.token}">
+  <meta name="_csrf_header" th:content="${_csrf.headerName}">
+
+  <div class="login-wrapper">
+    <div class="login-card">
+
+      <h2 class="login-title">로그인</h2>
+      <p class="login-sub">맞춤형 정보 제공을 위해 로그인이 필요합니다.</p>
+
+      <form name="frm" id="frm" th:object="${usersVO}" method="post" action="/users/login" class="login-form">
+        <div class="input-group">
+          <input type="text" name="email" id="email" th:value="${ck_email}" autocomplete="username"
+            placeholder="아이디(이메일)" required>
+        </div>
+        <div class="input-group">
+          <input type="password" name="passwd" id="passwd" th:value="${ck_passwd}" autocomplete="current-password"
+            placeholder="비밀번호" required>
+        </div>
+
+        <div class="checkbox-row">
+          <label><input type="checkbox" name="email_save" id="email_save" value="Y"
+              th:checked="${ck_email_save == 'Y'}"> 아이디 저장</label>
+          <label><input type="checkbox" name="passwd_save" id="passwd_save" value="Y"
+              th:checked="${ck_passwd_save == 'Y'}"> 비밀번호 저장</label>
+        </div>
+
+        <span id="email_msg" class="msg"></span>
+        <span id="passwd_msg" class="msg"></span>
+
+        <button type="button" id="btn_send" onclick="send();" class="btn-login">로그인</button>
+      </form>
+
+      <div class="sns-login">
+        <a href="/oauth2/authorization/google" class="sns-btn google">구글 로그인</a>
+        <a href="/oauth2/authorization/naver" class="sns-btn naver">네이버 로그인</a>
+        <a href="/oauth2/authorization/kakao" class="sns-btn kakao">카카오 로그인</a>
+      </div>
+
+      <div class="login-footer">
+        <a href="#">아이디 찾기</a> |
+        <a href="#">비밀번호 찾기</a> |
+        <a href="/users/create">회원 가입</a>
+      </div>
+
+      <button class="btn-simple">로그인 없이 둘러보기</button>
+    </div>
+  </div>
+
+  <!-- ✅ 자바스크립트 -->
+  <script>
+    window.onload = () => {
+      document.querySelector('#email').addEventListener('keypress', (event) => {
+        if (event.key === 'Enter') {
+          document.getElementById('passwd').focus();
+        }
+      });
+
+      document.querySelector('#passwd').addEventListener('keypress', (event) => {
+        if (event.key === 'Enter') {
+          document.getElementById('btn_send').focus();
+        }
+      });
+    }
+
+    function send() {
+      let email = document.getElementById('email');
+      let passwd = document.getElementById('passwd');
+      let email_msg = document.getElementById('email_msg');
+      let passwd_msg = document.getElementById('passwd_msg');
+
+      if (email.value.trim().length === 0) {
+        email_msg.innerHTML = 'ID 입력은 필수 입니다. ID(이메일)는 3자 이상 권장합니다.';
+        email_msg.classList.add('span_warning');
+        email.focus();
+        return false;
+      }
+
+      if (passwd.value.trim().length === 0) {
+        passwd_msg.innerHTML = '패스워드 입력은 필수 입니다. 패스워드는 8자 이상 권장합니다.';
+        passwd_msg.classList.add('span_warning');
+        passwd.focus();
+        return false;
+      }
+
+      document.getElementById('frm').submit();
+    }
+  </script>
+
+</div>
+
+</html>

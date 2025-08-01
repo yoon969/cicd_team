@@ -1,0 +1,13 @@
+<div th:fragment="list_search_fragment"> <!-- <div th:replace=... -->
+    <!-- ✅ 검색 폼 -->
+    <div class="species-search-bar">
+      <form name="search-form" method="get" action="/species/list_search">
+        <input type="text" name="word" id="word" th:value="${word}"
+          placeholder="검색어를 입력하세요">
+        <button type="submit" class="navbar-btn">검색</button>
+        <span th:if="${word != null and word != ''}">
+          <button type="button" class="navbar-btn" th:onclick="|location.href='@{/species/list_search}'|">검색 취소</button>
+        </span>
+      </form>
+    </div>
+</div>

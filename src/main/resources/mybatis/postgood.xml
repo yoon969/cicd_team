@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="dev.mvc.postgood.PostgoodDAOInter">
+
+  <!-- 등록 -->
+  <insert id="create" parameterType="dev.mvc.postgood.PostgoodVO">
+    INSERT INTO postgood(postgoodno, rdate, postno, usersno)
+    VALUES (postgood_seq.nextval, sysdate, #{postno}, #{usersno})
+  </insert>
+
+  <!-- 전체 목록 -->
+  <select id="list_all" resultType="dev.mvc.postgood.PostgoodVO">
+    SELECT postgoodno, rdate, postno, usersno
+    FROM postgood
+    ORDER BY postgoodno DESC
+  </select>
+
+  <!-- 단건 조회 -->
+  <select id="read" resultType="dev.mvc.postgood.PostgoodVO" parameterType="int">
+    SELECT postgoodno, rdate, postno, usersno
+    FROM postgood
+    WHERE postgoodno = #{postgoodno}
+  </select>
+
+  <!-- postno + usersno 기준으로 삭제 (추천 취소용) -->
+  <delete id="deleteByPostnoUsersno" parameterType="map">
+    DELETE FROM postgood
+    WHERE postno = #{postno} AND usersno = #{usersno}
+  </delete>
+
+  <!-- 특정 글에 대해 특정 사용자가 추천했는지 확인 -->
+  <select id="hartCnt" resultType="int" parameterType="HashMap">
+    SELECT COUNT(*) as cnt
+    FROM postgood
+    WHERE postno = #{postno} AND usersno = #{usersno}
+  </select>
+
+  <!-- postno, usersno로 조회 -->
+  <select id="readByPostnoUsersno" resultType="dev.mvc.postgood.PostgoodVO" parameterType="HashMap">
+    SELECT postgoodno, rdate, postno, usersno
+    FROM postgood
+    WHERE postno = #{postno} AND usersno = #{usersno}
+  </select>
+
+  <!-- 전체 목록 (post + postgood + users join) -->
+  <select id="list_all_join" resultType="dev.mvc.postgood.PostPostgoodUsersVO">
+    SELECT g.postgoodno, g.rdate, g.postno,
+           p.title as post_title,
+           g.usersno, u.id, u.name
+    FROM post p
+    JOIN postgood g ON p.postno = g.postno
+    JOIN users u ON g.usersno = u.usersno
+    ORDER BY g.postgoodno DESC
+  </select>
+
+  <delete id="deleteByPostno" parameterType="int">
+    DELETE FROM postgood WHERE postno = #{postno}
+  </delete>
+
+</mapper>

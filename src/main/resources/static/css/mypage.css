@@ -1,0 +1,513 @@
+/* ✅ 전체 마이페이지 컨테이너 */
+.container_main {
+  max-width: 920px;
+  margin: 40px auto;
+  padding: 16px;
+  background-color: #FCF9F0;
+}
+
+/* ✅ 마이페이지 박스 */
+.mypage-box {
+  background-color: #fff;
+  padding: 40px;
+  border-radius: 20px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.04);
+}
+
+/* ✅ 마이페이지 타이틀 */
+.mypage-title {
+  font-size: 26px;
+  color: #3D7152;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+/* ✅ 섹션 */
+.section {
+  margin-bottom: 50px;
+  padding: 30px;
+  background-color: #FAFAFA;
+  border-radius: 16px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+}
+
+/* ✅ 섹션 제목 */
+.section h3 {
+  font-size: 20px;
+  font-weight: 600;
+  color: #3D7152;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* ✅ 내부 ul 기본 */
+.section ul,
+.subsection ul {
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
+}
+
+/* ✅ 정보/리스트 li */
+.section ul li,
+.subsection ul li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding: 8px 0;
+  border-bottom: 1px dashed #e0e0e0;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* ✅ 제목 + 더보기 정렬 */
+.title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+/* ✅ 더보기 버튼 */
+.btn-more {
+  font-size: 13px;
+  color: #3D7152;
+  text-decoration: underline;
+  margin-left: auto;
+  cursor: pointer;
+}
+
+/* ✅ 테이블 */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.table th,
+.table td {
+  padding: 12px 14px;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+  font-size: 14px;
+  vertical-align: middle;
+}
+
+.table th {
+  background-color: #F0F8F0;
+  color: #3D7152;
+  font-weight: 600;
+}
+
+/* ✅ 버튼 크기 통일 */
+.btn-xs {
+  padding: 6px 10px;
+  font-size: 13px;
+  border-radius: 8px;
+  margin-right: 4px;
+  line-height: 1;
+}
+
+.btn-danger {
+  background-color: #f8b4b4;
+  color: #fff;
+}
+
+.btn-danger:hover {
+  background-color: #e66;
+}
+
+/* ✅ 캘린더/알림 링크 */
+.mypage-calendar-link li {
+  margin-bottom: 10px;
+}
+
+.mypage-calendar-link li a {
+  color: #3D7152;
+  text-decoration: none;
+  font-size: 15px;
+}
+
+.mypage-calendar-link li a:hover {
+  text-decoration: underline;
+}
+
+/* ✅ 탈퇴 문구 */
+.withdraw-text {
+  color: #d44;
+  font-weight: bold;
+  font-size: 15px;
+  text-align: center;
+  padding-top: 10px;
+}
+
+/* ✅ 사용자 정보 리스트 */
+.user-info-list {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  row-gap: 8px;
+  font-size: 14px;
+  line-height: 1.6;
+  padding: 8px 0;
+  border-bottom: 1px dashed #e0e0e0;
+}
+
+.user-info-list:last-child {
+  border-bottom: none;
+}
+
+/* ✅ 비밀번호 변경 버튼 개선 */
+.btn-filled {
+  padding: 10px 18px;
+  border-radius: 12px;
+  background-color: #3D7152;
+  color: #fff;
+  font-weight: 600;
+  font-size: 14px;
+  text-decoration: none;
+  transition: background-color 0.2s ease;
+  display: inline-block;
+}
+
+.btn-filled:hover {
+  background-color: #2F5F45;
+}
+
+/* ✅ 반려동물 박스 테이블 감싸는 카드 */
+.pet-card {
+  background-color: #F8FBF9;
+  padding: 20px;
+  border-radius: 16px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03);
+}
+
+.pet-card:hover {
+  transform: scale(1.03);
+}
+
+/* 펫 그리드 */
+.pet-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);  /* 4열 구성 */
+  gap: 20px;
+}
+
+.pet-thumb {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;  /* 이미지가 잘리지 않게 채움 */
+  border-radius: 10px;
+  background-color: #f1f1f1; /* 없을 때 배경색 */
+}
+
+.btn-group-horizontal {
+  display: flex;
+  justify-content: center;     /* 버튼 가로 중앙 정렬 */
+  align-items: center;         /* 세로 정렬 (높이 맞춤) */
+  gap: 10px;                   /* 버튼 간 간격 */
+  margin-top: 8px;
+}
+
+.btn-group-horizontal form {
+  display: inline;
+}
+
+/* ✅ 반려동물 테이블 내부 */
+.table th,
+.table td {
+  padding: 12px 14px;
+  font-size: 14px;
+  text-align: center;
+}
+
+.table th {
+  background-color: #E7F6EB;
+  color: #3D7152;
+}
+
+/* 내가 쓴 글 목록 */
+
+/* ✅ 게시글 전체 컨테이너 */
+.post-wrapper {
+  width: 100%;           /* 부모인 .mypost-box 기준 */
+  margin: 0;             /* 여백 제거 */
+  padding: 0;
+}
+
+/* ✅ 게시글 리스트 */
+.post-list {
+  list-style: none;
+  padding: 0 16px;
+  margin: 20px auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items:center;
+}
+
+/* ✅ 게시글 아이템 */
+.post-list li {
+  width: 100%;
+  background-color: #ffffff;
+  border: 1px solid #cdeee0;
+  border-radius: 12px;
+  padding: 10px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: background-color 0.2s;
+  font-size: 14px; /* ✅ 전체 폰트 크기 줄임 */
+}
+
+.post-list li:hover {
+  background-color: #e7fff2;
+}
+
+.post-list li:hover::after {
+  content: "→";
+  margin-left: 8px;
+  color: #6ec49c;
+  font-weight: bold;
+}
+
+.post-list li a {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  text-decoration: none;
+  color: #2F4F4F;
+}
+
+/* ✅ 제목 */
+.post-list li .title {
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 14px; /* ✅ 제목도 약간 줄임 */
+}
+
+/* ✅ 날짜 */
+.post-list li .date {
+  font-size: 12px; /* ✅ 날짜는 더 작게 */
+  color: #999;
+  margin-left: 12px;
+  white-space: nowrap;
+}
+
+/* ✅ 돌아가기 버튼 */
+.back-btn-wrap {
+  text-align: center;
+  margin-top: 32px;
+}
+
+.btn-back {
+  background-color: #D7F5DC;
+  color: #2F4F4F;
+  border: none;
+  padding: 8px 20px;
+  border-radius: 10px;
+  text-decoration: none;
+  font-size: 13px;  /* ✅ 버튼 글씨도 약간 작게 */
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.btn-back:hover {
+  background-color: #BCE9C9;
+}
+
+.no-post-message {
+  text-align: center;
+  color: #999;
+  font-size: 14px;
+  margin-top: 40px;
+}
+
+@media (max-width: 480px) {
+  .post-wrapper {
+    padding: 0 20px;
+  }
+
+  .post-list li {
+    padding: 8px 12px;
+    font-size: 13px;
+  }
+
+  .post-list li .title {
+    font-size: 13px;
+  }
+
+  .post-list li .date {
+    font-size: 11px;
+  }
+}
+
+/* ✅ 검색 + 정렬 폼 컨테이너 */
+.search-form {
+  display: flex;
+  flex-direction: row;      /* ✅ 가로 정렬 */
+  justify-content: flex-start;
+  align-items: center;
+  gap: 10px;                /* 🔄 간격 */
+  flex-wrap: nowrap;        /* 줄바꿈 방지 */
+}
+
+/* ✅ 검색창 */
+.search-form input[type="text"] {
+  flex: 1;
+  min-width: 220px;
+  padding: 8px 12px;
+  border: 1px solid #cdeee0;
+  border-radius: 10px;
+  font-size: 14px;
+  background-color: #fff;
+}
+
+/* ✅ 정렬 드롭다운 */
+.search-form select {
+  padding: 8px 10px;
+  border: 1px solid #cdeee0;
+  border-radius: 10px;
+  background-color: #fff;
+  font-size: 14px;
+  color: #2F4F4F;
+}
+
+/* ✅ 검색 버튼 */
+
+
+.search-container {
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+
+.search-form button:hover {
+  background-color: #BCE9C9;
+}
+
+.btn-reset {
+  display: inline-block;
+  background-color: #F8D7DA;
+  color: #842029;
+  border: none;
+  padding: 0 12px;
+  border-radius: 8px;
+  font-size: 16px;
+  height: 38px;
+  line-height: 38px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.btn-reset:hover {
+  background-color: #f1b0b7;
+}
+
+.sort-buttons .btn {
+  margin-right: 8px;
+  margin-top: 4px;
+}
+
+.search-bar .btn {
+  padding: 8px 14px;
+  border-radius: 8px;
+}
+
+.no-result {
+  text-align: center;
+  font-size: 16px;
+  margin: 32px 0;
+  color: #888;
+}
+
+/* ✅ 흰색 박스 스타일 */
+.mypost-box {
+  background-color: #fff;
+  border-radius: 16px;
+  padding: 32px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.04);
+  width: 80%;   
+  margin: 0 auto;
+  align-items: flex-start;    /* ✅ 내부 요소를 왼쪽 정렬 */
+}
+
+.paging {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;  /* ✅ 간격 줄임 */
+  margin: 24px 0;
+  font-size: 15px;
+}
+
+.paging .btn-page {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 6px;
+  background-color: transparent;
+  color: #333;
+  font-weight: 500;
+  text-decoration: none;
+  cursor: pointer;
+  transition: 0.2s;
+  line-height: 1.5;
+  vertical-align: middle;
+}
+
+.paging .btn-page:hover {
+  background-color: #e0f2e9;
+  color: #3D7152;
+}
+
+.paging .btn-page.current {
+  background-color: transparent;
+  color: #3D7152;
+  font-weight: bold;
+  cursor: default;
+}
+
+/* ✅ 화살표 스타일 개선 */
+.paging .arrow {
+  font-size: 16px;
+  color: #3D7152;
+  cursor: pointer;
+  user-select: none;
+  line-height: 1.5;
+  vertical-align: middle;
+  padding: 2px 6px;
+  transition: color 0.2s;
+}
+.paging .arrow:hover {
+  color: #265a3d;
+}
+
+
+
+.title_line {
+  display: flex;
+  justify-content: flex-start;  /* 왼쪽 정렬 */
+  align-items: center;
+  gap: 12px;                     /* 사이 간격 조절 */
+  width: 100%;
+  font-size: 20px;
+  font-weight: bold;
+  color: #3D7152;
+  margin-bottom: 12px;
+}
+
+.title_line .text-muted {
+  font-size: 14px;
+  font-weight: normal;
+  color: #999;
+}
+
+

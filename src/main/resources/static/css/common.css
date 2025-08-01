@@ -1,0 +1,603 @@
+/* ✅ 공통 기본 설정 */
+body {
+  background-color: #FCF9F0;
+  font-family: 'Noto Sans KR', sans-serif;
+  margin: 0;
+  color: #2F4F4F;
+}
+
+/* ✅ 공통 컨테이너: container_main */
+.container_main {
+  width: 90%;
+  margin: 40px auto 80px auto;
+  background: #fff;
+  border-radius: 20px;
+  padding: 36px 28px;
+  box-shadow: 0 10px 28px rgba(60, 170, 100, 0.08);
+  box-sizing: border-box;
+}
+
+.container_main2 {
+  width: 90%;
+  max-width: 1080px;
+  margin: 40px auto 80px auto;
+  background: #fff;
+  border-radius: 20px;
+  padding: 36px 28px;
+  box-shadow: 0 10px 28px rgba(60, 170, 100, 0.08);
+  box-sizing: border-box;
+}
+
+/* 모든 a 태그 밑줄 제거 */
+a {
+  text-decoration: none;
+}
+
+.title {
+  font-size: 22px;
+  font-weight: bold;
+  color: #3D7152;
+  text-align: center;
+}
+
+/* ✅ 제목 스타일 */
+/* ✅ 제목 wrapper */
+.title_wrap {
+  width: 60%;
+  max-width: 740px;
+  margin: 12px auto 6px auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* ✅ 제목 라인 */
+/* ✅ 제목 줄 아이콘 + 텍스트 간격 조정 */
+.title_line {
+  font-size: 22px;
+  font-weight: bold;
+  text-align: center;
+  color: #3D7152;
+  margin-bottom: 24px;
+}
+
+/* ✅ 아이콘 여백 */
+.title_icon {
+  font-size: 18px;
+  margin-right: 2px;
+}
+
+/* ✅ 오른쪽 버튼 */
+.aside_right {
+  font-size: 13px;
+  color: #3D7152;
+}
+.aside_right a {
+  text-decoration: none;
+  color: #3D7152;
+  margin: 0 4px;
+}
+.menu_divide {
+  color: #ccc;
+  margin: 0 4px;
+}
+
+.title_line span {
+  flex: 1;
+  text-align: center;
+}
+
+.title_line.text-center {
+  text-align: center;
+  justify-content: center !important;
+}
+
+/* ✅ 어사이드 */
+.aside_right {
+  font-size: 13px;
+  color: #666;
+  text-align: right;
+  margin: 0 auto 4px auto;
+  width: 100%;
+}
+
+/* ✅ 공통 인풋 크기 */
+.form-control-sm {
+  font-size: 14px;
+}
+
+.menu_divide {
+  color: #ccc;
+}
+
+/* ✅ 구분선 */
+.menu_line {
+  width: 100%;
+  margin: 10px auto;
+  border-bottom: 1px solid #d5ecd2;
+}
+
+
+.text-muted {
+  color: #888;
+  font-size: 14px;
+}
+
+
+input[type="submit"].navbar-btn {
+  border: none !important;         /* 기본 테두리 제거 */
+  outline: none !important;        /* 포커스 테두리 제거 */
+  box-shadow: none !important;     /* 그림자 제거 */
+  appearance: none;                /* 브라우저 기본 버튼 스타일 제거 */
+}
+
+
+
+/* ✅ 버튼 (기본 + 외곽선) */
+/* ✅ 종 버튼 (btn-outline) */
+/* 공통 기본 버튼 */
+.btn {
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 10px;
+  padding: 10px 18px;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s ease;
+}
+
+/* 버튼 채워진 스타일 */
+.btn.btn-filled {
+  background-color: #3D7152;
+  color: #ffffff !important; /* ← 핵심 */
+}
+
+/* hover 시 */
+.btn.btn-filled:hover {
+  background-color: #2F5F45;
+  color: #fff !important;
+}
+
+.btn-outline {
+  border: 2px solid #3D7152;
+  color: #3D7152;
+  background-color: #ffffff;
+}
+
+.btn-outline:hover {
+  background-color: #3D7152;
+  color: #ffffff;
+}
+
+
+.btn:hover {
+  background-color: #2F5F45;
+}
+
+/* ✅ 카드 박스/컨테이너 */
+.card, .box {
+  background-color: #fff;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+/* ✅ 검색 폼 */
+.search-form {
+  width:auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  flex-direction: row;      /* ✅ 가로 정렬 */
+  flex-wrap: nowrap;        /* 줄바꿈 방지 */
+}
+
+.search-form input[type="text"],
+.search-form select
+ {
+   width: 320px; /* ✅ 고정 너비 또는 max-width 사용 가능 */
+  height: 34px;
+  font-size: 14px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  line-height: 1.5;
+}
+
+.search-form input[type="text"] {
+  border: 1.5px solid #c5ead2;
+  background: #fff;
+  color: #27806c;
+  transition: border-color 0.2s;
+}
+
+.search-form input[type="text"]:focus {
+  border-color: #74e0a8;
+  outline: none;
+}
+
+
+/* ✅ 인풋 필드 */
+.input, .search-input {
+  padding: 10px 14px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  font-size: 14px;
+  width: 100%;
+}
+
+/* ✅ 병원 목록 테이블 */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 18px;
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(185, 238, 218, 0.2);
+}
+
+th, td {
+  padding: 13px 8px;
+  font-size: 1.02rem;
+  text-align: center;
+  border-bottom: 1px solid #e3f7ef;
+  color: #444444;  /* ✅ 글씨 색 회색으로 변경 */
+  background: #fff;
+}
+
+th {
+  background: #1F7C3E;
+  font-weight: 800;
+  color: #ffffff;  /* ✅ 헤더도 회색으로 통일 */
+  border-bottom: 2.2px solid #caf3df;
+}
+
+tbody tr:nth-child(odd) {
+  background: #f8fcf8;
+}
+
+tbody tr:nth-child(even) {
+  background: #f3f9f6;
+}
+
+tbody tr:hover {
+  background: #e2faeb !important;
+}
+
+
+/* ✅ 테이블 내 링크 (회색 계열) */
+table a {
+  color: #555555;        /* ✅ 중간 회색 */
+  font-weight: 500;      /* ✅ 강조 줄이기 */
+  text-decoration: none;
+}
+
+table a:hover {
+  color: #222222;        /* ✅ 어두운 회색으로 hover 강조 */
+  text-decoration: underline;
+}
+
+html, body {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  font-family: 'Noto Sans KR', sans-serif;
+}
+
+@media (max-width: 768px) {
+  .main-banner h1 {
+    font-size: 20px;
+  }
+
+  .main-button {
+    padding: 10px 20px;
+    font-size: 14px;
+  }
+
+  .title {
+    font-size: 18px;
+  }
+
+  .btn {
+    font-size: 14px;
+    padding: 8px 14px;
+  }
+}
+
+/* 공통 버튼 */
+.btn-login,
+.btn-simple {
+  border-radius: 10px;
+  font-weight: bold;
+  font-size: 15px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+/* 기본 오류 메시지 */
+.msg {
+  display: block;
+  font-size: 12px;
+  color: #e74c3c;
+  margin-bottom: 4px;
+}
+
+/* 기본 입력창 */
+input[type="text"],
+input[type="password"],
+input[type="email"] {
+  width: 100%;
+  padding: 6px;
+  border: 1.5px solid #d4e8d6;
+  border-radius: 10px;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+input:focus {
+  outline: none;
+  border-color: #3D7152;
+  box-shadow: 0 0 0 3px rgba(61, 113, 82, 0.1);
+}
+
+/* ✅ 버튼 공통 스타일 (작은 버튼용) */
+.btn-action {
+  display: inline-block;
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #3D7152;
+  background-color: #E6F4EC;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  text-decoration: none;
+  margin-right: 6px;
+  transition: background-color 0.2s ease;
+}
+
+.btn-action:hover {
+  background-color: #cce9dc;
+}
+
+/* ✅ 삭제 전용 버튼 (강조) */
+.btn-delete {
+  background-color: #F1948A;  /* 연한 빨강색 */
+  color: white !important;
+  padding: 6px 14px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 13px;
+  transition: background-color 0.2s;
+}
+
+.btn-delete:hover {
+  background-color: #CD5C5C;  /* 진한 레드 */
+}
+
+button.btn-delete{
+  background-color: #F1948A;  /* 연한 빨강색 */
+  color: white !important;
+  padding: 6px 14px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 13px;
+  transition: background-color 0.2s;
+  border: none;               /* ✅ 기본 테두리 제거 */
+  outline: none;              /* ✅ 포커스 테두리 제거 */
+  box-shadow: none;           /* ✅ 그림자 제거 */
+  -webkit-appearance: none;   /* ✅ 브라우저 기본 스타일 제거 (크롬/사파리) */
+  -moz-appearance: none;      /* ✅ 파이어폭스용 */
+  appearance: none;           /* ✅ 공통 */
+  cursor: pointer;
+}
+
+button.btn-delete:hover {
+  background-color: #CD5C5C;  /* 진한 레드 */
+}
+
+/* ✅ 버튼 정렬용 flex */
+.btn-group {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+/* ✅ 일반 텍스트 링크 스타일 */
+.section a,
+.subsection a {
+  color: #2F4F4F;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.section a:hover,
+.subsection a:hover {
+  color: #3D7152;
+  text-decoration: underline;
+}
+
+/* ✅ 저장 버튼 스타일 */
+.btn.confirm {
+  background-color: #3D7152;
+  color: #fff;
+}
+
+.btn.confirm:hover {
+  background-color: #2F5F45;
+}
+
+/* ✅ 취소 버튼 스타일 */
+.btn.cancel {
+  background-color: #F5F5F5;
+  color: #555;
+}
+
+.btn.cancel:hover {
+  background-color: #ddd;
+}
+
+.btn-sm {
+  padding: 6px 12px;
+  font-size: 14px;
+  border-radius: 8px;
+  background-color: #B8D9C0;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+.btn-sm:hover {
+  background-color: #3D7152;
+}
+
+/*
+전에 쓰던 페이징
+.pagination {
+  margin: 24px 0;
+  text-align: center;
+}
+.pagination a, .pagination span {
+  display: inline-block;
+  margin: 0 4px;
+  padding: 6px 10px;
+  font-size: 14px;
+  color: #3D7152;
+  border: 1px solid #B8D9C0;
+  border-radius: 6px;
+  text-decoration: none;
+}
+.pagination a:hover {
+  background-color: #B8D9C0;
+  color: white;
+}
+.pagination .active {
+  background-color: #3D7152;
+  color: white;
+  border: none;
+}
+*/
+
+.icon {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+}
+
+/* ✅ 페이징 영역 (병원 스타일로 통일) */
+.paging {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;  /* ✅ 간격 줄임 */
+  margin: 24px 0;
+  font-size: 15px;
+}
+
+.paging .btn-page {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 6px;
+  background-color: transparent;
+  color: #333;
+  font-weight: 500;
+  text-decoration: none;
+  cursor: pointer;
+  transition: 0.2s;
+  line-height: 1.5;
+  vertical-align: middle;
+}
+
+.paging .btn-page:hover {
+  background-color: #e0f2e9;
+  color: #3D7152;
+}
+
+.paging .btn-page.current {
+  background-color: transparent;
+  color: #3D7152;
+  font-weight: bold;
+  cursor: default;
+}
+
+
+/* ✅ 화살표 스타일 개선 */
+.paging .arrow {
+  font-size: 16px;
+  color: #3D7152;
+  cursor: pointer;
+  user-select: none;
+  line-height: 1.5;
+  vertical-align: middle;
+  padding: 2px 6px;
+  transition: color 0.2s;
+}
+.paging .arrow:hover {
+  color: #265a3d;
+}
+
+footer {
+  background-color: #FDF9F0;
+  color: #999;
+  font-size: 13px;
+  padding: 20px 0;
+  text-align: center;
+  border-top: 1px solid #e5e5e5;
+}
+
+/* ✅ 헤더 타이틀 영역 */
+.table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 100%;
+  margin: 0 auto 12px auto;
+  padding: 0 0px;
+}
+
+.left-title {
+  display: flex;
+  align-items: center;
+  font-size: 1.6rem;
+  font-weight: bold;
+  color: #29794c;
+  letter-spacing: -1.2px;
+  text-shadow: 1px 1px 1px rgba(160, 200, 180, 0.3);
+  gap: 8px;
+}
+
+.container_box {
+  background-color: #fff;
+  padding: 30px;
+  border-radius: 16px;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.05);
+  max-width: 600px;
+  margin: 30px auto;
+}
+
+.msg_warning {
+  font-size: 16px;
+  color: #D9534F;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.form-group {
+    margin-bottom: 18px;
+  }
+
+  .button-group {
+  text-align: center;
+  margin-top: 24px;
+}
+
+.button-group .btn {
+  margin: 0 8px;
+}

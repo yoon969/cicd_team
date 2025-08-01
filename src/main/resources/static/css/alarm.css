@@ -1,0 +1,72 @@
+.alarm-list {
+  list-style: none;
+  padding: 0;
+  margin-top: 12px;
+}
+
+.alarm-item {
+  padding: 12px;
+  border-bottom: 1px solid #ddd;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: background 0.2s;
+}
+
+.alarm-item.unread {
+  background-color: #fff8cc;
+  font-weight: bold;
+}
+
+.alarm-item a {
+  text-decoration: none;
+  color: #2f4f4f;
+}
+
+.alarm-item a:hover {
+  text-decoration: underline;
+}
+
+.alarm-item .date {
+  font-size: 0.85em;
+  color: #888;
+}
+
+.alarm-filter {
+  margin-bottom: 15px;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.alarm-filter a {
+  padding: 5px 10px;
+  border-radius: 20px;
+  background-color: #f1f1f1;
+  color: #333;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.alarm-filter a.active {
+  background-color: #3D7152;
+  color: white;
+  font-weight: bold;
+}
+
+.popup-modal {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: rgba(0,0,0,0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+.popup-content {
+  background: #fff;
+  padding: 2rem 3rem;
+  border-radius: 1rem;
+  box-shadow: 0 0 10px rgba(0,0,0,0.3);
+  text-align: center;
+}

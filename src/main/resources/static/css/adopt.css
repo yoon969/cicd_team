@@ -1,0 +1,72 @@
+/* 🌱 기본 배경과 폼 컨테이너 */
+
+
+/* 메인 컨테이너 */
+.container_main {
+  background-color: #fff; /* 따뜻한 아이보리 */
+  border-radius: 20px;
+  padding: 30px;
+  box-shadow: 0 6px 16px rgba(50, 100, 70, 0.08);
+}
+
+/* 제목 스타일 */
+.container_main h2 {
+  color: #2d5944;
+  font-size: 1.6rem;
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+/* 폼 요소 기본 설정 */
+form label {
+  font-weight: bold;
+  color: #2f4f3f;
+  display: block;
+  margin-bottom: 6px;
+}
+
+select, textarea {
+  font-family: 'Noto Sans KR', sans-serif;
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #cde7d4;
+  border-radius: 8px;
+  background: #ffffff;
+  font-size: 14px;
+  box-sizing: border-box;
+  transition: border 0.2s;
+}
+
+select:focus,
+textarea:focus {
+  outline: none;
+  border: 1px solid #7cbf9e;
+}
+
+/* 버튼 스타일 */
+#submitBtn {
+  background-color: #B8D9C0;
+  color: #fff;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-top: 10px;
+  width: 100%;
+  font-weight: bold;
+  transition: background-color 0.2s;
+}
+
+#submitBtn:hover {
+  background-color: #3D7152;
+}
+
+/* 로딩 및 결과 */
+#progress,
+#result {
+  text-align: center;
+  font-size: 14px;
+  color: #355e3b;
+}
+
+

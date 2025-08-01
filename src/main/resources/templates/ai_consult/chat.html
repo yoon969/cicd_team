@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="ko" layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <meta charset="UTF-8">
+  <title>AI 상담하기</title>
+
+  <meta name="_csrf" th:content="${_csrf.token}">
+  <meta name="_csrf_header" th:content="${_csrf.headerName}">
+
+  <th:block layout:fragment="styles">
+    <link rel="stylesheet" href="/css/ai_consult.css">
+
+  </th:block>
+
+  <script>
+    let lastQuestion = '';
+    let lastAnswer = '';
+    let lastSymptomTags = '';
+    let lastSourceType = '';
+
+    const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+    const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+
+    function sendQuestion() {
+      const input = document.getElementById('question');
+      const chatBox = document.getElementById('chatBox');
+      const message = input.value.trim();
+
+      if (!message) return;
+
+      lastQuestion = message;
+
+      const userMsg = document.createElement('div');
+      userMsg.className = 'chat-msg user';
+      userMsg.textContent = message;
+      chatBox.appendChild(userMsg);
+
+      input.value = '';
+      chatBox.scrollTop = chatBox.scrollHeight;
+
+      const loadingMsg = document.createElement('div');
+      loadingMsg.className = 'chat-msg loading';
+      loadingMsg.textContent = 'AI가 답변 중입니다...';
+      chatBox.appendChild(loadingMsg);
+
+      fetch('/ai_consult/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          [csrfHeader]: csrfToken
+        },
+        body: JSON.stringify({ question: message })
+      })
+        .then(res => res.json())
+        .then(data => {
+          const loadingElement = document.querySelector('.chat-msg.loading');
+          if (loadingElement) loadingElement.remove();
+
+          const result = data.result || {};
+          const answer = result.answer || 'AI 응답을 받지 못했어요 😢';
+          const symptomTags = result.symptom_tags || '';
+          const sourceType = result.source_type || 'GPT';
+
+          const aiMsg = document.createElement('div');
+          aiMsg.className = 'chat-msg ai';
+          aiMsg.innerHTML = `
+            <div class="ai-box">
+              <div class="ai-label">🤖 AI의 답변</div>
+              <div class="ai-answer">${answer}</div>
+              ${symptomTags ? `<div class="ai-meta">🧠 키워드: ${symptomTags}</div>` : ''}
+              ${sourceType ? `<div class="ai-meta">📚 출처: ${sourceType}</div>` : ''}
+            </div>
+          `;
+          chatBox.appendChild(aiMsg);
+
+          lastAnswer = answer;
+          lastSymptomTags = symptomTags;
+          lastSourceType = sourceType;
+
+          chatBox.scrollTop = chatBox.scrollHeight;
+        })
+        .catch(err => {
+          const loadingElement = document.querySelector('.chat-msg.loading');
+          if (loadingElement) loadingElement.remove();
+
+          const errorMsg = document.createElement('div');
+          errorMsg.className = 'chat-msg ai';
+          errorMsg.textContent = '오류 발생: ' + err.message;
+          chatBox.appendChild(errorMsg);
+        });
+    }
+
+    function saveLastQA() {
+      if (!lastQuestion || !lastAnswer) {
+        alert('저장할 질문과 답변이 없습니다.');
+        return;
+      }
+
+      fetch('/ai_consult/summary', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          [csrfHeader]: csrfToken
+        },
+        body: JSON.stringify({
+          content: "Q: " + lastQuestion + "\nA: " + lastAnswer
+        })
+      })
+        .then(res => res.json())
+        .then(summaryData => {
+          fetch('/ai_consult/save', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              [csrfHeader]: csrfToken
+            },
+            body: JSON.stringify({
+              question: lastQuestion,
+              answer: lastAnswer,
+              symptom_tags: lastSymptomTags,
+              source_type: lastSourceType,
+              summary: summaryData.summary || '',
+              emotion: summaryData.emotion ?? -1
+            })
+          })
+            .then(res => {
+              if (res.status === 409) {
+                alert('이미 저장된 상담 내용입니다.');
+                return;
+              }
+              if (!res.ok) {
+                alert('저장 실패: 서버 오류');
+                return;
+              }
+              alert('상담 + 요약 저장 완료!');
+            })
+            .catch(err => {
+              alert('저장 요청 중 오류 발생: ' + err.message);
+            });
+        })
+        .catch(err => {
+          alert("FastAPI 요약 실패: " + err.message);
+        });
+    }
+
+    window.onload = () => {
+      const input = document.getElementById('question');
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          sendQuestion();
+        }
+      });
+    };
+  </script>
+</head>
+
+<body>
+  <div layout:fragment="content" class="chat-container">
+    <div class="chat-title">💬 숨숨이 AI 상담</div>
+
+    <div class="chat-box" id="chatBox">
+      <!-- 대화 내용이 여기에 표시됨 -->
+    </div>
+
+    <div class="chat-input">
+      <input type="text" id="question" placeholder="궁금한 점을 입력해보세요..." />
+      <button onclick="sendQuestion()" class="navbar-btn">전송</button>
+      <button onclick="saveLastQA()" class="navbar-btn">저장하기</button>
+    </div>
+  </div>
+</body>
+
+</html>

@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+  <title>공지사항</title>
+   <!-- 🔹 자동 전달된 CSS 경로 사용 -->
+  <link rel="stylesheet" th:href="@{${reactCssPath}}">
+</head>
+
+<div layout:fragment="content">
+
+    <!-- ✅ React 앱이 렌더링될 루트 엘리먼트 -->
+    <div id="react-root"></div>
+
+    <!-- ✅ Vite에서 만든 실제 JS 경로 삽입 -->
+    <script th:src="@{${reactJsPath}}"></script>
+</div>

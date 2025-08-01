@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>유사 상담 결과</title>
+</head>
+
+<body>
+<div layout:fragment="content" style="width: 80%; margin: 50px auto; text-align: center;">
+  <h2>🤖 유사 상담 결과</h2>
+
+  <div th:if="${#lists.isEmpty(list)}">
+    <p style="margin-top: 20px;">유사한 상담이 없습니다 😢</p>
+  </div>
+
+  <div th:if="${!#lists.isEmpty(list)}" style="margin-top: 20px;">
+    <table class="table table-bordered table-striped">
+      <thead class="table-light">
+        <tr>
+          <th>상담 번호</th>
+          <th>질문 내용</th>
+          <th>유사도</th>
+          <th>일시</th>
+          <th>관리</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr th:each="vo : ${list}">
+          <td th:text="${vo.matchedConsultno}">123</td>
+          <td>
+            <a th:href="@{|/ai/consult/read?consultno=${vo.matchedConsultno}|}"
+               th:text="${#strings.abbreviate(vo.target_question, 0, 40)}">질문 미리보기</a>
+          </td>
+          <td th:text="${#numbers.formatDecimal(vo.matchScore * 100, 0, 1) + '%'}">88.7%</td>
+          <td th:text="${vo.created_at}">2025-06-24</td>
+          <td>
+            <form method="post" th:action="@{/consult_match/delete}">
+              <input type="hidden" name="matchno" th:value="${vo.matchno}" />
+              <input type="hidden" name="consultno" th:value="${consultno}" />
+              <button type="submit" class="btn btn-sm btn-outline-danger">삭제</button>
+            </form>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <form method="post" th:action="@{/consult_match/delete_by_consultno}">
+      <input type="hidden" name="consultno" th:value="${consultno}" />
+      <button type="submit" class="btn btn-danger btn-sm mt-3">🔁 전체 삭제</button>
+    </form>
+  </div>
+</div>
+</body>
+</html>

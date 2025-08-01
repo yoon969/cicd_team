@@ -1,0 +1,42 @@
+.memory-container {
+  max-width: 60%;
+  margin: 60px auto;
+  padding: 32px;
+  background-color: #fff;
+  border-radius: 16px;
+  box-shadow: 0 8px 28px rgba(60, 170, 100, 0.1);
+  text-align: center;
+  color: #2F4F4F;
+  font-family: 'Noto Sans KR', sans-serif;
+}
+
+.memory-title {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: #3D7152;
+  margin-bottom: 30px;
+}
+
+.memory-section {
+  margin-bottom: 24px;
+}
+
+.memory-label {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.memory-image {
+  width: 90%;
+  max-width: 500px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.memory-meta {
+  margin-top: 20px;
+  font-size: 0.95rem;
+  color: #666;
+}
+

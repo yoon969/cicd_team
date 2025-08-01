@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="dev.mvc.pet.PetDAOInter">
+
+  <!-- 반려동물 등록 -->
+  <insert id="create" parameterType="dev.mvc.pet.PetVO">
+    INSERT INTO pet (
+      petno, name, gender, birthday, description,
+      speciesno, usersno, regdate,
+      file1, file1saved, thumb1, size1
+    ) VALUES (
+      pet_seq.NEXTVAL,
+      #{name}, #{gender}, #{birthday}, #{description},
+      #{speciesno}, #{usersno}, SYSDATE,
+      #{file1}, #{file1saved}, #{thumb1}, #{size1}
+    )
+  </insert>
+
+  <!-- 전체 목록 -->
+  <select id="list" resultType="dev.mvc.pet.PetVO">
+    SELECT * FROM pet ORDER BY petno DESC
+  </select>
+
+  <!-- 특정 사용자(usersno)의 반려동물 목록 -->
+  <select id="listByUserno" parameterType="int" resultType="dev.mvc.pet.PetVO">
+    SELECT * FROM pet WHERE usersno = #{usersno} ORDER BY petno DESC
+  </select>
+
+  <!-- 반려동물 상세 조회 -->
+  <select id="read" parameterType="int" resultType="dev.mvc.pet.PetVO">
+    SELECT * FROM pet WHERE petno = #{petno}
+  </select>
+  
+  <!-- 조인 반려동물 상세 조회 -->
+  <select id="readJoin" resultType="dev.mvc.pet.PetJoinVO" parameterType="int">
+    SELECT 
+      P.petno, P.name, P.gender, P.birthday, P.description, P.regdate,
+      P.usersno, P.speciesno,
+      P.file1, P.file1saved, P.thumb1, P.size1,
+      S.sname, S.grp
+    FROM pet P
+    JOIN species S ON P.speciesno = S.speciesno
+    WHERE P.petno = #{petno}
+  </select>
+
+  <!-- 반려동물 수정 -->
+  <update id="update" parameterType="dev.mvc.pet.PetVO">
+    UPDATE pet
+    SET name = #{name},
+        gender = #{gender},
+        birthday = #{birthday},
+        description = #{description},
+        speciesno = #{speciesno},
+        file1 = #{file1},
+        file1saved = #{file1saved},
+        thumb1 = #{thumb1},
+        size1 = #{size1}
+    WHERE petno = #{petno}
+  </update>
+
+  <!-- 반려동물 삭제 -->
+  <delete id="delete" parameterType="int">
+    DELETE FROM pet WHERE petno = #{petno}
+  </delete>
+  
+  <!-- 사용자 + 종 정보 포함한 목록 -->
+  <select id="listByUsersnoJoin" resultType="dev.mvc.pet.PetJoinVO" parameterType="int">
+    SELECT 
+      P.petno, P.name, P.gender, P.birthday, P.description, P.regdate,
+      P.usersno, P.speciesno,
+      P.file1, P.file1saved, P.thumb1, P.size1,
+      S.sname, S.grp
+    FROM pet P
+    JOIN species S ON P.speciesno = S.speciesno
+    WHERE P.usersno = #{usersno}
+    ORDER BY P.petno DESC
+  </select>
+
+</mapper>

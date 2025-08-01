@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html layout:decorate="~{layout}">
+<th:block layout:fragment="styles">
+  <link rel="stylesheet" href="/css/users_admin.css">
+</th:block>
+<div class="container_main">
+  <div class="title_line">회원관리</div>
+  <div class="aside_right">
+    <a href="/users/create" class="btn">신규 등록</a>
+  </div>
+  <div class="menu_line"></div>
+  <div class="user-search-bar">
+    <form th:action="@{/users/list}" method="get">
+      <input type="text" name="word" placeholder="검색어를 입력하세요" th:value="${word}">
+      <button type="submit" class="btn">검색</button>
+    </form>
+  </div>
+  <table class="species-admin-table" style="width:100%;" aria-label="회원 목록">
+    <colgroup>
+      <col style="width: 7%;">
+      <col style="width: 18%;">
+      <col style="width: 16%;">
+      <col style="width: 18%;">
+      <col style="width: 23%;">
+      <col style="width: 13%;">
+      <col style="width: 11%;">
+    </colgroup>
+    <thead>
+      <tr>
+        <th>순서</th>
+        <th>이메일(ID)</th>
+        <th>성명</th>
+        <th>전화번호</th>
+        <th>주소</th>
+        <th>가입일</th>
+        <th>관리</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr th:if="${#lists.isEmpty(list)}">
+        <td colspan="7" style="color:#aaa; text-align:center; padding: 32px 0;">
+          등록된 회원이 없습니다.
+        </td>
+      </tr>
+      <tr th:each="usersVO, stat : ${list}">
+        <td th:text="${no - stat.index}"></td>
+        <td class="td_left ellipsis">
+          <a th:href="@{|/users/read/${usersVO.usersno}|}" th:text="${usersVO.email}"></a>
+        </td>
+        <td class="td_left ellipsis" th:text="${usersVO.username}"></td>
+        <td th:text="${usersVO.phone}"></td>
+        <td class="td_left ellipsis" th:text="${usersVO.address} ?: '주소 없음'"></td>
+        <td th:text="${#dates.format(usersVO.created_at, 'yyyy-MM-dd')}"></td>
+        <td>
+          <a th:href="@{|/users/update/${usersVO.usersno}|}">
+            <img src="/users/images/update.png" class="icon" alt="수정" title="수정">
+          </a>
+          <a th:href="@{|/users/delete/${usersVO.usersno}|}" onclick="return confirm('정말 삭제하시겠습니까?');">
+            <img src="/users/images/delete.png" class="icon" alt="삭제" title="삭제">
+          </a>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="bottom_menu" th:utext="${paging}"></div>
+</div>
+</html>

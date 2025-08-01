@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="dev.mvc.notice.NoticeDAOInter">
+
+  <!-- 등록 -->
+  <insert id="create" parameterType="dev.mvc.notice.NoticeVO">
+    INSERT INTO notice (notice_id, title, content, rdate)
+    VALUES (notice_seq.NEXTVAL, #{title}, #{content}, SYSDATE)
+  </insert>
+
+   <select id="list" resultType="dev.mvc.notice.NoticeVO">
+      <![CDATA[
+      SELECT * FROM (
+        SELECT inner_notice.*, ROWNUM AS rnum
+        FROM (
+          SELECT * FROM notice
+          ORDER BY notice_id DESC
+        ) inner_notice
+        WHERE ROWNUM <= #{end}
+      )
+      WHERE rnum >= #{start}
+    ]]>
+  </select>
+
+  <!-- 단건 조회 -->
+  <select id="read" parameterType="int" resultType="dev.mvc.notice.NoticeVO">
+    SELECT * FROM notice WHERE notice_id = #{notice_id}
+  </select>
+
+  <!-- 수정 -->
+  <update id="update" parameterType="dev.mvc.notice.NoticeVO">
+    UPDATE notice
+    SET title = #{title},
+        content = #{content}
+    WHERE notice_id = #{notice_id}
+  </update>
+
+  <!-- 삭제 -->
+  <delete id="delete" parameterType="int">
+    DELETE FROM notice WHERE notice_id = #{notice_id}
+  </delete>
+
+  <!-- 전체 개수 -->
+  <select id="total" resultType="int">
+    SELECT COUNT(*) FROM notice
+  </select>
+
+</mapper>

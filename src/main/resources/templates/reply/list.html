@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html layout:decorate="~{layout}">
+<div layout:fragment="content">
+
+  <div class="container_main">
+    <h2>🗨️ 내가 쓴 댓글 목록</h2>
+    <p>총 <strong th:text="${replyCount}">0</strong>개의 댓글이 있습니다.</p>
+
+    <table class="table">
+      <thead>
+        <tr>
+          <th>내용</th>
+          <th>작성일</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr th:each="reply : ${myReplies}">
+          <td th:text="${reply.content}">내용</td>
+          <td th:text="${reply.rdate}">날짜</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div th:if="${#lists.isEmpty(myReplies)}" class="text-muted mt-3">
+      아직 작성한 댓글이 없습니다 😢
+    </div>
+  </div>
+
+</div>
+</html>

@@ -1,0 +1,110 @@
+/* 메인 컨테이너 */
+.container_main {
+  width: 90%;
+  margin: 40px auto 80px auto;
+  background: #fff;
+  border-radius: 20px;
+  padding: 36px 28px;
+  box-shadow: 0 10px 28px rgba(60, 170, 100, 0.08);
+  box-sizing: border-box;
+}
+
+/* 타이틀/우측 */
+.title_line {
+  font-size: 20px;
+  font-weight: 600;
+  color: #29794c;
+  margin-bottom: 15px;
+  letter-spacing: -1.2px;
+}
+.aside_right {
+  float: right;
+  font-size: 0.98rem;
+  margin-top: -26px;
+  margin-bottom: 8px;
+  color: #168971;
+}
+.aside_right a {
+  color: #1a8666;
+  text-decoration: underline;
+  font-weight: 600;
+  transition: color 0.13s;
+}
+.aside_right a:hover {
+  color: #14b985;
+}
+
+/* 구분선 */
+.menu_line {
+  border-bottom: 1.3px solid #c7f3db;
+  margin: 15px 0 22px 0;
+}
+
+.users-search-bar form {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 40px;         /* ⬅️ 높이 명시 */
+
+}
+
+
+/* 반응형 */
+@media (max-width: 900px) {
+  .container_main { max-width: 97vw; padding: 14px 5vw; }
+  .species-form-bar form, .user-search-bar form, .species-search-bar form { flex-direction: column; gap: 7px; }
+  .species-form-bar input, .species-form-bar select, .user-search-bar input { width: 100%; min-width: 80px; }
+  .species-admin-table th, .species-admin-table td { font-size: 0.98rem; padding: 8px 2px; }
+  .species-admin-table .icon { width: 15px; height: 15px; }
+}
+
+/* 테이블 둥글게 (좌우 위아래 모서리) */
+.species-admin-table th:first-child { border-top-left-radius: 15px; }
+.species-admin-table th:last-child { border-top-right-radius: 15px; }
+.species-admin-table tr:last-child td:first-child { border-bottom-left-radius: 15px; }
+.species-admin-table tr:last-child td:last-child { border-bottom-right-radius: 15px; }
+
+/* ✅ 사용자 검색 폼 정렬 */
+.users-search-bar form {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+/* ✅ 검색 인풋 크기 */
+.users-search-bar .search-input {
+  width: 240px;
+  height: 30px;
+  font-size: 13px;
+  padding: 6px 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+}
+
+.user-info-center {
+  text-align: center;
+  font-size: 16px;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.btn-group-center {
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px; /* 🔹 label과 input 사이 여백 */
+}
+
+.title_line span {
+  font-weight: 600;
+  margin-left: 4px;  /* 🔹 > 기호와 이름 사이 약간 띄움 */
+  display: inline;  
+}

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ko" layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <th:block layout:fragment="styles">
+    <link rel="stylesheet" href="/css/post.css">
+  </th:block>
+  <meta charset="UTF-8">
+  <title>Youtube 등록/수정</title>
+</head>
+
+<body>
+  <div layout:fragment="content">
+    <div class="container_box">
+      <!-- ✅ 제목 상단 라인 -->
+      <div class='title_line'>
+        <span class="title_line_text" th:text="${postVO.title}">제목</span> &gt; Youtube 등록/수정/삭제
+      </div>
+
+      <!-- ✅ 우측 상단 메뉴 -->
+      <aside class="aside_right">
+        <a th:href="@{'/post/create?grp=' + ${grp}}">등록</a>
+        <span class="menu_divide">│</span>
+        <a href="javascript:location.reload();">새로고침</a>
+        <span class="menu_divide">│</span>
+        <a th:if="${fromSearch == null or !fromSearch}" th:href="@{/post/list(speciesno=${postVO.speciesno})}">목록</a>
+        <span class="menu_divide">│</span>
+        <a th:href="@{/post/youtube(postno=${postVO.postno})}">유튜브 수정</a>
+        <span class="menu_divide">│</span>
+        <a th:href="@{/post/map(postno=${postVO.postno})}">지도 수정</a>
+      </aside>
+      <div class="menu_line"></div>
+
+      <!-- ✅ 본문 컨테이너 시작 -->
+      <div class="fieldset_basic">
+
+        <!-- 도움말 -->
+        <!-- 📌 도움말 안내 -->
+        <div class="mb-3 map-guide-box" style="text-align:center;">
+          <h5>📌 Youtube 등록 예시</h5>
+          <p>
+            1. 유튜브 영상 페이지에서 <strong>공유 ➝ 퍼가기 ➝ iframe 복사</strong><br>
+            2. 아래 입력란에 <strong>iframe 코드 전체</strong>를 붙여넣기<br>
+          </p>
+
+          <pre><code>&lt;iframe width="560" height="315" src="https://www.youtube.com/embed/영상ID" frameborder="0"&gt;&lt;/iframe&gt;</code></pre>
+        </div>
+
+        </p>
+
+      </div>
+
+      <!-- Youtube 입력 폼 -->
+      <form name="frm" method="post" th:action="@{/post/youtube}">
+        <input type="hidden" name="postno" th:value="${postVO.postno}" />
+
+        <div class="mb-3">
+          <label for="youtube">Youtube 스크립트</label>
+          <textarea id="youtube" name="youtube" class="youtube-textarea" rows="10"
+            placeholder='<iframe src="..."></iframe>' th:text="${postVO.youtube}"></textarea>
+        </div>
+
+        <!-- 하단 버튼 -->
+        <div class="youtube-btn-group">
+          <button type="submit" class="btn">저장</button>
+          <button type="button" onclick="frm.youtube.value=''; frm.submit();" class="btn">Youtube 삭제</button>
+          <button type="button" th:onclick="|location.href='@{/post/read(postno=${postVO.postno})}'|"
+            class=" btn-delete">취소</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  <!-- ✅ 본문 컨테이너 끝 -->
+
+  </div>
+</body>
+
+</html>

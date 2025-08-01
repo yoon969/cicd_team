@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="dev.mvc.alarm_log.AlarmLogDAOInter">
+
+  <!-- 시퀀스 번호 가져오기 -->
+  <select id="getAlarmno" resultType="int">
+    SELECT alarm_log_seq.NEXTVAL FROM dual
+  </select>
+
+  <!-- 알람 등록 -->
+  <insert id="create" parameterType="dev.mvc.alarm_log.AlarmLogVO">
+    INSERT INTO alarm_log (
+      alarmno,
+      usersno,
+      content,
+      msg,
+      url,
+      type,
+      rdate,
+      checked
+    )
+    VALUES (
+      alarm_log_seq.NEXTVAL,
+      #{usersno},
+      #{content},   <!-- ✅ 필수 -->
+      #{msg, jdbcType=VARCHAR},
+      #{url, jdbcType=VARCHAR},
+      #{type, jdbcType=VARCHAR},
+      sysdate,
+      'N'
+    )
+  </insert>
+
+  <!-- 사용자 알람 목록 -->
+  <select id="listByUsersno" resultType="dev.mvc.alarm_log.AlarmLogVO" parameterType="int">
+    SELECT * FROM alarm_log
+    WHERE usersno = #{usersno}
+    ORDER BY rdate DESC
+  </select>
+
+  <!-- 알람 읽음 처리 -->
+  <update id="check" parameterType="int">
+    UPDATE alarm_log SET checked = 'Y'
+    WHERE alarmno = #{alarmno}
+  </update>
+
+  <!-- 사용자 알람 전체 삭제 -->
+  <delete id="deleteByUsersno" parameterType="int">
+    DELETE FROM alarm_log WHERE usersno = #{usersno}
+  </delete>
+
+  <select id="listByUsersnoAndType" parameterType="map" resultType="dev.mvc.alarm_log.AlarmLogVO">
+    SELECT * FROM alarm_log
+    WHERE usersno = #{usersno}
+      AND type = #{type}
+    ORDER BY rdate DESC
+  </select>
+
+  <!-- 동일 알림 존재 여부 확인 (중복 방지용) -->
+  <select id="exists" parameterType="dev.mvc.alarm_log.AlarmLogVO" resultType="int">
+    SELECT COUNT(*) FROM alarm_log
+    WHERE usersno = #{usersno}
+      AND type = #{type}
+      AND content = #{content}
+      AND url = #{url}
+      AND TO_CHAR(rdate, 'YYYY-MM-DD') = TO_CHAR(SYSDATE, 'YYYY-MM-DD')
+  </select>
+
+  <select id="calendarExists" resultType="int">
+    SELECT COUNT(*) FROM calendar WHERE calno = #{calno}
+  </select>
+
+</mapper>

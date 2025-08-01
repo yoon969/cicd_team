@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+
+<html layout:decorate="~{layout}"> <!-- layout.html 상속-->
+<div layout:fragment="content">
+
+  <div class="container_box">
+
+  <div class='title_line'>
+    일정 등록
+  </div>
+  
+  <aside class="aside_right">
+    <a th:href="@{|./create|}">등록</a>
+    <span class='menu_divide' >│</span>
+    <a href="javascript:location.reload();">새로고침</a>
+    <span class='menu_divide' >│</span>
+    <a th:href="@{|./list_all|}">기본 목록형</a>    
+  </aside>
+  
+  <div class='menu_line'></div>
+  
+  <form name='frm' method='post' action='/calendar/create'>   
+    <input type="hidden" id="summary" name="summary" value="">
+    <input type="hidden" id="emotion" name="emotion" value="">
+    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
+    <div>
+      <label>출력할 날짜</label>
+      <input type='date' name='labeldate' value='' required="required" 
+            autofocus="autofocus" class="form-control" style='width: 100%;'>
+    </div>
+    <div>
+      <label>달력에 출력될 레이블</label>
+      <input type='text' name='label' value='1월 1일 정기 검진' required="required" 
+              autofocus="autofocus" class="form-control" style='width: 100%;'>
+    </div>
+    <div>
+       <label>제목</label>
+       <input type='text' name='title' value='건강하세요.' required="required" 
+                 autofocus="autofocus" class="form-control" style='width: 100%;'>
+    </div>
+    <div>
+       <label>글 내용</label>
+       <textarea name='content' required="required" class="form-control" rows="12" style='width: 100%;'>정상 진료합니다.</textarea>
+    </div>
+    <div>                
+      <label>출력 순서</label>
+      <input type="number" name="seqno" value="1" min="1" step="1"
+             class="form-control" style="width: 50%;">   
+    </div>
+
+    <div class="content_body_bottom">
+      <button type="button" id="send" class="btn btn-secondary btn-sm">등록</button>
+      <button type="button" th:attr="onclick=|location.href='./list_search'|" class="btn btn-secondary btn-sm">목록</button>
+    </div>
+  
+  </form>
+
+  <script>
+  const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+  const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+
+  console.log("-> JS 로드됨");
+  window.onload = () => {
+    let content_tag = document.querySelector('textarea[name="content"]');
+    let summary_tag = document.getElementById('summary');
+    let emotion_tag = document.getElementById('emotion');
+    let send_btn = document.getElementById('send');
+    let frm = document.forms['frm'];
+
+    send_btn.addEventListener("click", () => {
+      let content = content_tag.value.trim();
+      if (!content) {
+        alert("내용을 입력해주세요.");
+        return;
+      }
+
+      fetch("/calendar/summary", {
+        method: "POST",
+        headers: {'Content-Type': 'application/json',
+        [csrfHeader]: csrfToken },
+        body: JSON.stringify({content: content})
+      })
+      .then(res => res.json())
+      .then(data => {
+          console.log("AI 응답:", data);
+          console.log("📥 summary =", data.summary);
+          console.log("📥 emotion =", data.emotion);
+  
+        if (data.summary && data.emotion !== undefined) {
+          summary_tag.value = data.summary;
+          emotion_tag.value = data.emotion;
+        } else {
+          alert("AI 분석 실패. 그냥 등록됩니다.");
+        }
+        frm.submit();  // 최종 제출
+      })
+      .catch(err => {
+        alert("FastAPI 호출 오류: " + err);
+        frm.submit(); // 오류가 나도 기본 등록은 진행
+      });
+    });
+  }
+</script>
+
+</div>
+
