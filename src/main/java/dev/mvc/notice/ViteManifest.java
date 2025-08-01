@@ -1,12 +1,14 @@
 package dev.mvc.notice;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
+
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -15,10 +17,13 @@ public class ViteManifest {
   private final Map<String, Map<String, Object>> manifest;
 
   public ViteManifest() throws IOException {
-    String path = "src/main/resources/static/notice/assets/manifest.json";
-    byte[] bytes = Files.readAllBytes(Paths.get(path));
-    ObjectMapper mapper = new ObjectMapper();
-    this.manifest = mapper.readValue(bytes, new TypeReference<>() {});
+    ClassPathResource resource = new ClassPathResource("static/notice/assets/manifest.json");
+
+    try (InputStream is = resource.getInputStream()) {
+      byte[] bytes = is.readAllBytes();
+      ObjectMapper mapper = new ObjectMapper();
+      this.manifest = mapper.readValue(bytes, new TypeReference<>() {});
+    }
   }
 
   public String js(String entry) {
@@ -33,10 +38,9 @@ public class ViteManifest {
     }
     return null;
   }
-  
-//내부 클래스
+
   public static class Entry {
-      public String file;
-      public List<String> css;  // ✅ 배열로 선언
+    public String file;
+    public List<String> css;
   }
 }
