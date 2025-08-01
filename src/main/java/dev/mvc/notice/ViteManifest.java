@@ -15,7 +15,7 @@ public class ViteManifest {
   private final Map<String, Map<String, Object>> manifest;
 
   public ViteManifest() throws IOException {
-    String path = "src/main/resources/static/notice/.vite/manifest.json";
+    String path = "src/main/resources/static/notice/assets/manifest.json";
     byte[] bytes = Files.readAllBytes(Paths.get(path));
     ObjectMapper mapper = new ObjectMapper();
     this.manifest = mapper.readValue(bytes, new TypeReference<>() {});
