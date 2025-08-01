@@ -9,7 +9,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableScheduling 
 @ComponentScan(basePackages = {"dev.mvc"})
 public class Team1V2sbm3cApplication {
-
+//시작클래스
     public static void main(String[] args) {
         SpringApplication.run(Team1V2sbm3cApplication.class, args);
     }
