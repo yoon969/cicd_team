@@ -30,8 +30,8 @@ jobs:
 
     # Configure Gradle for optimal use in GitHub Actions, including caching of downloaded dependencies.
     # See: https://github.com/gradle/actions/blob/main/setup-gradle/README.md
-    - name: Setup Gradle
-      uses: gradle/actions/setup-gradle@af1da67850ed9a4cedd57bfd976089dd991e2582 # v4.0.0
+    - name: Run chmod to make gradlew executable
+      run: chmod +x ./gradlew
 
     - name: Build with Gradle Wrapper
       run: ./gradlew build
@@ -57,7 +57,7 @@ jobs:
         script: |
           whoami
           ls -al
-          
+
     - name: Copy war file to remote
       uses: appleboy/scp-action@master
       with:
@@ -67,9 +67,9 @@ jobs:
         source: "./build/libs/*.war"
         target: "/home/ubuntu/deploy"
         strip_components: 2
-        
+    
   dependency-submission:
-  
+
     runs-on: ubuntu-latest
     permissions:
       contents: write
