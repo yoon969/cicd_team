@@ -67,7 +67,7 @@ jobs:
         source: "./build/libs/*.war"
         target: "/home/ubuntu/deploy"
         strip_components: 2
-    
+  
   dependency-submission:
 
     runs-on: ubuntu-latest
