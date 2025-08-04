@@ -77,7 +77,7 @@ jobs:
         script_stop: true
         script: |
           chmod +x /home/ubuntu/deploy/deploy.sh
-          sh /home/ubuntu/deploy/deploy.sh
+          sh /home/ubuntu/deploy/deploy.sh       
   
   dependency-submission:
 
