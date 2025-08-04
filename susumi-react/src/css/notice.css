@@ -1,0 +1,165 @@
+.notice-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* 가운데 정렬 */
+  padding: 20px 40px 40px 40px; /* top만 줄임 */
+}
+
+.notice-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); /* 4열 고정 */
+  gap: 20px;
+  justify-items: center;
+  width: 100%;
+  max-width: 960px;
+  max-height: 500px; /* 👈 이 줄 추가! */
+}
+
+.notice-card-link {
+  text-decoration: none;
+  color: inherit;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.notice-card {
+  background-color: #faf7e7; /* 연한 배경 */
+  border-radius: 12px;
+  box-shadow: 2px 2px 12px rgba(0, 0, 0, 0.05);
+  padding: 16px;
+  text-align: center;
+  transition: transform 0.2s;
+  width: 100%;
+  max-width: 190px;
+  height: 140px;
+}
+
+.notice-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+}
+
+.notice-card-title {
+  font-size: 20px;
+  font-weight: bold;
+  color: #444;
+  margin-bottom: 10px;
+}
+
+.notice-card-content {
+  font-size: 13px;
+  color: #555;
+  margin-bottom: 10px;
+  min-height: 70px;
+}
+
+.notice-card-footer {
+  font-size: 12px;
+  color: #888;
+}
+
+.notice-header {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: end;
+  margin-bottom: 20px;
+  position: relative;
+  width: 100%; /* ✅ 부모 컨테이너 전체 넓이로 확장 */
+}
+
+.notice-title {
+  grid-column: 2; /* 가운데 영역 */
+  font-size: 28px;
+  font-weight: bold;
+  text-align: center;
+}
+
+.notice-create-btn {
+  grid-column: 3; /* 오른쪽 끝 영역 */
+  justify-self: end;
+  background-color: #B8D9C0;
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  color: white;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.notice-create-btn:hover {
+  background-color: #3D7152;
+}
+
+.container_box {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.notice-detail-title {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  color: #2F4F4F;
+}
+
+.notice-detail-content {
+  font-size: 16px;
+  line-height: 1.6;
+  margin-bottom: 15px;
+}
+
+.notice-detail-date {
+  color: #888;
+  font-size: 14px;
+  margin-bottom: 25px;
+  display: block;
+}
+
+.notice-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.form-title {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  color: #2F4F4F;
+}
+
+.form-input,
+.form-textarea {
+  width: 100%;
+  max-width: 400px;
+  padding: 10px 12px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 15px;
+  box-sizing: border-box;
+  background-color: #fefefe;
+}
+
+.form-input:focus,
+.form-textarea:focus {
+  outline: none;
+  border-color: #A8DAB5;
+  box-shadow: 0 0 4px #A8DAB5;
+}
+
+.form-textarea {
+  height: 120px;
+  resize: vertical;
+}
+
+.notice-button-group {
+  display: flex;
+  justify-content: center;
+  gap: 10px;  /* ✅ 버튼 간격 */
+  margin-top: 20px;  /* 상단 여백 */
+}
