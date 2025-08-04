@@ -160,7 +160,7 @@ public class MemoryCont {
     model.addAttribute("paging", paging);
     model.addAttribute("now_page", now_page);
 
-    return "/memory/list";
+    return "memory/list";
   }
  
   @PostMapping("/delete")

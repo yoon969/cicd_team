@@ -41,7 +41,7 @@ public class NoticePageCont {
           model.addAttribute("reactCssPath", "");
       }
 
-      return "/notice/page"; // 🔸 타임리프 템플릿 경로
+      return "notice/page"; // 🔸 타임리프 템플릿 경로
   }
   
 

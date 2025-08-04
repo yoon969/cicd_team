@@ -44,7 +44,7 @@ public class HospitalCont {
       // ❌ 로그인 안 한 경우
       return "redirect:/users/login_cookie_need?url=/hospital/recommend";
   }
-    return "/hospital/recommend"; // templates/hospital/hospital_recommend.html
+    return "hospital/recommend"; // templates/hospital/hospital_recommend.html
   }
 
   @PostMapping("/recommend")
